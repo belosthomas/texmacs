@@ -648,9 +648,71 @@ immediate_options (int argc, char** argv) {
 }
 
 #include <cstdio>
+#include <QDir>
+#include <QDirIterator>
+
+void removeResources() {
+    QDir dir(QDir::homePath() + "/.TeXmacs");
+    if (dir.exists()) {
+        dir.removeRecursively();
+    }
+}
+
+void extractResources() {
+    removeResources();
+    QString source = ":";
+    QDirIterator it(":", QDirIterator::Subdirectories);
+    QString destination = QDir::homePath() + "/.TeXmacs";
+    if (QFile(destination + "/.resources_extracted").exists()) {
+        return;
+    }
+    QDir().mkpath(destination);
+    while (it.hasNext()) {
+        QString source_filename = it.next();
+        QString destination_filename = source_filename;
+        destination_filename.replace(source, destination);
+       // qDebug() << "Copying " << source_filename << " to " << destination_filename;
+        if (it.fileInfo().isDir()) {
+            QDir().mkpath(destination_filename);
+        } else {
+            if (!QFile::copy(source_filename, destination_filename)) {
+                throw std::runtime_error("Could not copy " + source_filename.toStdString() + " to " + destination_filename.toStdString());
+            }
+        }
+    }
+    // Create a dummy file to indicate that the resources have been extracted
+    QFile f(destination + "/.resources_extracted");
+    f.open(QIODevice::WriteOnly);
+    f.close();
+}
 
 int
 main (int argc, char** argv) {
+
+    setvbuf(stdout, NULL, _IONBF, 0);
+    setvbuf(stderr, NULL, _IONBF, 0);
+
+
+    QString texmacsHomePath = QDir::homePath() + "/.TeXmacs";
+    QString texmacsPath = QDir::homePath() + "/.TeXmacs/TeXmacs";
+
+    set_env("TEXMACS_HOME_PATH", string(texmacsHomePath.toUtf8().constData(), texmacsHomePath.toUtf8().size()));
+    set_env("TEXMACS_PATH", string(texmacsPath.toUtf8().constData(), texmacsPath.toUtf8().size()));
+
+    extractResources();
+    register_all_scheme();
+
+    auto allSchemes = get_scheme_factories();
+    if (allSchemes.size() == 0) {
+        qDebug() << "TeXmacs] Error: no scheme factories registered";
+        return 1;
+    }
+    qDebug() << "Found Scheme : ";
+    for (auto scheme : allSchemes) {
+        qDebug() << " - " << QString::fromStdString(scheme);
+    }
+    qDebug() << "Using " << QString::fromStdString(allSchemes[0]) << " by default";
+    use_scheme(allSchemes[0]);
 
 #ifdef STACK_SIZE
   struct rlimit limit;
@@ -728,7 +790,7 @@ main (int argc, char** argv) {
 //#ifdef EXPERIMENTAL
 //  test_environments ();
 //#endif
-  start_scheme (argc, argv, TeXmacs_main);
+    TeXmacs_main (argc, argv);
 #ifdef QTTEXMACS
   if (headless_mode)
     delete qtmcoreapp;
