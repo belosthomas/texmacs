@@ -254,14 +254,14 @@ release_boot_lock () {
 static void
 init_guile () {
   url guile_path= "$TEXMACS_PATH/progs:$GUILE_LOAD_PATH";
-  if (!exists (guile_path * "init-texmacs.scm")) {
+  if (!exists (guile_path * "init-texmacs-s7.scm")) {
     boot_error << "\n";
     boot_error << "Installation problem: please send a bug report.\n";
-    boot_error << "The initialization file init-texmacs.scm"
+    boot_error << "The initialization file init-texmacs-s7.scm"
                << " could not be found.\n";
     boot_error << "Please check the values of the environment variables\n";
     boot_error << "TEXMACS_PATH and GUILE_LOAD_PATH."
-               << " init-texmacs.scm should\n";
+               << " init-texmacs-s7.scm should\n";
     boot_error << "be readable and in the directory $TEXMACS_PATH/progs\n";
     boot_error << "or in the directory $GUILE_LOAD_PATH\n";
     boot_error << "\n";
