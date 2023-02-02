@@ -20,6 +20,9 @@ jobs:
     steps:
     - uses: actions/checkout@v3
 
+    - name: Update apt
+      run: sudo apt update
+
     - name: Install Aptitude
       run: sudo apt install aptitude
 
