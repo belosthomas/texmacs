@@ -12,6 +12,7 @@
 
 #ifndef STRING_H
 #define STRING_H
+
 #include "basic.hpp"
 
 class string;
@@ -43,6 +44,7 @@ class string {
   bool operator == (string s);
   bool operator != (string s);
   string operator () (int start, int end);
+  char *data() { return rep->a; }
 };
 CONCRETE_CODE(string);
 
