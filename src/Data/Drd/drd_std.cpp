@@ -109,7 +109,7 @@ init_std_drd () {
   init (STRING, "string", fixed (0) -> returns_string ());
   init (UNKNOWN, "unknown", fixed (0));
   init (UNINIT, "uninit", fixed (0));
-  init (ERROR, "error", fixed (1));
+  init (LABEL_ERROR, "error", fixed (1));
   init (RAW_DATA, "raw-data", fixed (1) -> raw (0));
 
   init (DOCUMENT, "document",

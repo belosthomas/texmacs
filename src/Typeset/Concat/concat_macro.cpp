@@ -255,13 +255,13 @@ concater_rep::typeset_argument (tree t, path ip) {
     for (i=1; i<n; i++) {
       tree r= env->exec (t[i]);
       if (!is_int (r)) {
-        value= tree (ERROR, "arg " * name);
+        value= tree (LABEL_ERROR, "arg " * name);
         valip= decorate_right (ip);
         break;
       }
       int nr= as_int (r);
       if ((!is_compound (value)) || (nr<0) || (nr>=N(value))) {
-        value= tree (ERROR, "arg " * name);
+        value= tree (LABEL_ERROR, "arg " * name);
         valip= decorate_right (ip);
         break;
       }
@@ -402,7 +402,7 @@ concater_rep::typeset_range (tree t, path ip) {
   tree t2= env->exec (t[1]);
   tree t3= env->exec (t[2]);
   if (!(is_int (t2) && is_int (t3)))
-    typeset_dynamic (tree (ERROR, "bad range"), ip);
+    typeset_dynamic (tree (LABEL_ERROR, "bad range"), ip);
   else if (is_compound (t1)) {
     if (is_tuple (t1)) {
       int i1= max (0, as_int (t2));
@@ -410,7 +410,7 @@ concater_rep::typeset_range (tree t, path ip) {
       i2 = max (i1, i2);
       typeset_dynamic (t1 (i1, i2), ip);
     }
-    else typeset_dynamic (tree (ERROR, "bad range"), ip);
+    else typeset_dynamic (tree (LABEL_ERROR, "bad range"), ip);
   }
   else {
     int i1= max (0, as_int (t2));

@@ -47,10 +47,10 @@ tree
 line_inc (tree t, int i) {
   if (i == 0) return t;
   path p= obtain_ip (t);
-  if (is_nil (p) || last_item (p) < 0) return tree (ERROR);
+  if (is_nil (p) || last_item (p) < 0) return tree (LABEL_ERROR);
   tree pt= subtree (the_et, reverse (p->next));
-  if (!is_func (pt, DOCUMENT)) return tree (ERROR);
-  if ((p->item + i < 0) || (p->item + i >= N(pt))) return tree (ERROR);
+  if (!is_func (pt, DOCUMENT)) return tree (LABEL_ERROR);
+  if ((p->item + i < 0) || (p->item + i >= N(pt))) return tree (LABEL_ERROR);
   return pt[p->item + i];
 }
 

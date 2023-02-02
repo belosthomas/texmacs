@@ -18,7 +18,7 @@
 ******************************************************************************/
 
 enum tree_label {
-  STRING= 0, UNKNOWN, UNINIT, ERROR, RAW_DATA,
+  STRING= 0, UNKNOWN, UNINIT, LABEL_ERROR, RAW_DATA,
 
   // basic formatting tags
   DOCUMENT, PARA, SURROUND, CONCAT,
