@@ -100,6 +100,10 @@ public:
     return out << s.sid; }
 };
 
+inline string as_string (slot s) {
+    return as_string(s.sid);
+}
+
 const char * slot_name (const slot s);
 
 //extern bool* slot_state_table;
