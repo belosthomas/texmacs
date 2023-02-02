@@ -9,7 +9,7 @@
 * in the root directory or <http://www.gnu.org/licenses/gpl-3.0.html>.
 ******************************************************************************/
 
-#include "glue.hpp"
+#include "Scheme/scheme.hpp"
 
 #include "promise.hpp"
 #include "tree.hpp"
@@ -32,19 +32,19 @@
 
 tmscm 
 blackboxP (tmscm t) {
-  bool b= tmscm_is_blackbox (t);
-  return bool_to_tmscm (b);
+  bool b= t->is_blackbox();
+  return scheme().bool_to_tmscm(b);
 }
 
 #if 0
 template<class T> tmscm box_to_tmscm (T o) {
   return blackbox_to_tmscm (close_box<T> (o)); }
 template<class T> T tmscm_to_box (tmscm obj) { 
-  return open_box<T>(tmscm_to_blackbox (obj));  }
+  return open_box<T>(obj->to_blackbox());  }
 template<class T> tmscm cmp_box (tmscm o1, tmscm o2) { 
   return bool_to_tmscm (tmscm_to_box<T> (o1) == tmscm_to_box<T> (o2)); }
 template<class T> tmscm boxP (tmscm t) {
-  bool b= tmscm_is_blackbox (t) && 
+  bool b= t->is_blackbox() && 
           (type_box (blackboxvalue(t)) == type_helper<T>::id);
   return bool_to_tmscm (b);
 }
@@ -170,25 +170,27 @@ cout_unbuffer () {
 * Basic assertions
 ******************************************************************************/
 
+#define TMSCM_ASSERT(a, b, c, d)
+
 #define TMSCM_ASSERT_STRING(s,arg,rout) \
-TMSCM_ASSERT (tmscm_is_string (s), s, arg, rout)
+TMSCM_ASSERT (s->is_string(), s, arg, rout)
 #define TMSCM_ASSERT_BOOL(flag,arg,rout) \
-TMSCM_ASSERT (tmscm_is_bool (flag), flag, arg, rout)
+TMSCM_ASSERT (flag->is_bool(), flag, arg, rout)
 #define TMSCM_ASSERT_INT(i,arg,rout) \
-TMSCM_ASSERT (tmscm_is_int (i), i, arg, rout);
+TMSCM_ASSERT (i->is_int(), i, arg, rout);
 #define TMSCM_ASSERT_DOUBLE(i,arg,rout) \
-  TMSCM_ASSERT (tmscm_is_double (i), i, arg, rout);
+  TMSCM_ASSERT (i->is_double(), i, arg, rout);
 //TMSCM_ASSERT (SCM_REALP (i), i, arg, rout);
 #define TMSCM_ASSERT_URL(u,arg,rout) \
-TMSCM_ASSERT (tmscm_is_url (u) || tmscm_is_string (u), u, arg, rout)
+TMSCM_ASSERT (u->is_url() || u->is_string(), u, arg, rout)
 #define TMSCM_ASSERT_MODIFICATION(m,arg,rout) \
-TMSCM_ASSERT (tmscm_is_modification (m), m, arg, rout)
+TMSCM_ASSERT (m->is_modification(), m, arg, rout)
 #define TMSCM_ASSERT_PATCH(p,arg,rout) \
-TMSCM_ASSERT (tmscm_is_patch (p), p, arg, rout)
+TMSCM_ASSERT (p->is_patch(), p, arg, rout)
 #define TMSCM_ASSERT_BLACKBOX(t,arg,rout) \
-TMSCM_ASSERT (tmscm_is_blackbox (t), t, arg, rout)
+TMSCM_ASSERT (t->is_blackbox(), t, arg, rout)
 #define TMSCM_ASSERT_SYMBOL(s,arg,rout) \
-  TMSCM_ASSERT (tmscm_is_symbol (s), s, arg, rout)
+  TMSCM_ASSERT (s->is_symbol (), s, arg, rout)
 //TMSCM_ASSERT (SCM_NFALSEP (tmscm_symbol_p (s)), s, arg, rout)
 
 #define TMSCM_ASSERT_OBJECT(a,b,c)
@@ -203,12 +205,12 @@ TMSCM_ASSERT (tmscm_is_blackbox (t), t, arg, rout)
 tmscm 
 tree_label_to_tmscm (tree_label l) {
   string s= as_string (l);
-  return symbol_to_tmscm (s);
+  return scheme().symbol_to_tmscm (s);
 }
 
 tree_label
 tmscm_to_tree_label (tmscm p) {
-  string s= tmscm_to_symbol (p);
+  string s= p->to_symbol();
   return make_tree_label (s);
 }
 
@@ -221,25 +223,25 @@ tmscm_to_tree_label (tmscm p) {
 
 bool
 tmscm_is_tree (tmscm u) {
-  return (tmscm_is_blackbox (u) && 
-         (type_box (tmscm_to_blackbox(u)) == type_helper<tree>::id));
+  return (u->is_blackbox() && 
+         (type_box (u->to_blackbox()) == type_helper<tree>::id));
 }
 
 tmscm 
 tree_to_tmscm (tree o) {
-  return blackbox_to_tmscm (close_box<tree> (o));
+  return scheme().blackbox_to_tmscm (close_box<tree> (o));
 }
 
 tree
 tmscm_to_tree (tmscm obj) {
-  return open_box<tree>(tmscm_to_blackbox (obj));
+  return open_box<tree>(obj->to_blackbox());
 }
 
 tmscm 
 treeP (tmscm t) {
-  bool b= tmscm_is_blackbox (t) && 
-          (type_box (tmscm_to_blackbox(t)) == type_helper<tree>::id);
-  return bool_to_tmscm (b);
+  bool b= t->is_blackbox() && 
+          (type_box (t->to_blackbox()) == type_helper<tree>::id);
+  return scheme().bool_to_tmscm (b);
 }
 
 tree
@@ -411,40 +413,40 @@ tmscm
 scheme_tree_to_tmscm (scheme_tree t) {
   if (is_atomic (t)) {
     string s= t->label;
-    if (s == "#t") return tmscm_true ();
-    if (s == "#f") return tmscm_false ();
-    if (is_int (s)) return int_to_tmscm (as_int (s));
+    if (s == "#t") return scheme().tmscm_true ();
+    if (s == "#f") return scheme().tmscm_false ();
+    if (is_int (s)) return scheme().int_to_tmscm (as_int (s));
     if (is_quoted (s))
-      return string_to_tmscm (scm_unquote (s));
+      return scheme().string_to_tmscm (scm_unquote (s));
     //if ((N(s)>=2) && (s[0]=='\42') && (s[N(s)-1]=='\42'))
     //return string_to_tmscm (s (1, N(s)-1));
-    if (N(s) >= 1 && s[0] == '\'') return symbol_to_tmscm (s (1, N(s)));
-    return symbol_to_tmscm (s);
+    if (N(s) >= 1 && s[0] == '\'') return scheme().symbol_to_tmscm (s (1, N(s)));
+    return scheme().symbol_to_tmscm (s);
   }
   else {
     int i;
-    tmscm p= tmscm_null ();
+    tmscm p= scheme().tmscm_null ();
     for (i=N(t)-1; i>=0; i--)
-      p= tmscm_cons (scheme_tree_to_tmscm (t[i]), p);
+      p= scheme_tree_to_tmscm (t[i])->cons(p);
     return p;
   }
 }
 
 scheme_tree
 tmscm_to_scheme_tree (tmscm p) {
-  if (tmscm_is_list (p)) {
+  if (p->is_list ()) {
     tree t (TUPLE);
-    while (!tmscm_is_null (p)) {
-      t << tmscm_to_scheme_tree (tmscm_car (p));
-      p= tmscm_cdr (p);
+    while (!p->is_null()) {
+      t << tmscm_to_scheme_tree (p->car());
+      p= p->cdr();
     }
     return t;
   }
-  if (tmscm_is_symbol (p)) return tmscm_to_symbol (p);
-  if (tmscm_is_string (p)) return scm_quote (tmscm_to_string (p));
-  //if (tmscm_is_string (p)) return "\"" * tmscm_to_string (p) * "\"";
-  if (tmscm_is_int (p)) return as_string ((int) tmscm_to_int (p));
-  if (tmscm_is_bool (p)) return (tmscm_to_bool (p)? string ("#t"): string ("#f"));
+  if (p->is_symbol ()) return p->to_symbol();
+  if (p->is_string()) return scm_quote (p->to_string());
+  //if (p->is_string()) return "\"" * tmscm_to_string (p) * "\"";
+  if (p->is_int()) return as_string ((int)p->to_int());
+  if (p->is_bool()) return (p->to_bool()? string ("#t"): string ("#f"));
   if (tmscm_is_tree (p)) return tree_to_scheme_tree (tmscm_to_tree (p));
   return "?";
 }
@@ -455,11 +457,11 @@ tmscm_to_scheme_tree (tmscm p) {
 
 bool
 tmscm_is_content (tmscm p) {
-  if (tmscm_is_string (p) || tmscm_is_tree (p)) return true;
-  else if (!tmscm_is_pair (p) || !tmscm_is_symbol (tmscm_car (p))) return false;
+  if (p->is_string() || tmscm_is_tree (p)) return true;
+  else if (!p->is_pair() || !p->car()->is_symbol()) return false;
   else {
-    for (p= tmscm_cdr (p); !tmscm_is_null (p); p= tmscm_cdr (p))
-      if (!tmscm_is_content (tmscm_car (p))) return false;
+    for (p= p->cdr(); !p->is_null(); p= p->cdr())
+      if (!tmscm_is_content (p->car())) return false;
     return true;
   }
 }
@@ -471,15 +473,15 @@ tmscm_is_content (tmscm p) {
 
 tree
 tmscm_to_content (tmscm p) {
-  if (tmscm_is_string (p)) return tmscm_to_string (p);
+  if (p->is_string()) return p->to_string();
   if (tmscm_is_tree (p)) return tmscm_to_tree (p);
-  if (tmscm_is_pair (p)) {
-    if (!tmscm_is_symbol (tmscm_car (p))) return "?";
-    tree t (make_tree_label (tmscm_to_symbol (tmscm_car (p))));
-    p= tmscm_cdr (p);
-    while (!tmscm_is_null (p)) {
-      t << tmscm_to_content (tmscm_car (p));
-      p= tmscm_cdr (p);
+  if (p->is_pair()) {
+    if (!p->car()->is_symbol()) return "?";
+    tree t (make_tree_label (p->car()->to_symbol()));
+    p= p->cdr();
+    while (!p->is_null()) {
+      t << tmscm_to_content (p->car());
+      p= p->cdr();
     }
     return t;
   }
@@ -489,7 +491,7 @@ tmscm_to_content (tmscm p) {
 tmscm 
 contentP (tmscm t) {
   bool b= tmscm_is_content (t);
-  return bool_to_tmscm (b);
+  return scheme().bool_to_tmscm (b);
 }
 
 /******************************************************************************
@@ -498,8 +500,8 @@ contentP (tmscm t) {
 
 bool
 tmscm_is_path (tmscm p) {
-  if (tmscm_is_null (p)) return true;
-  else return tmscm_is_int (tmscm_car (p)) && tmscm_is_path (tmscm_cdr (p));
+  if (p->is_null()) return true;
+  else return p->car()->is_int() && p->cdr()->is_path();
 }
 
 #define TMSCM_ASSERT_PATH(p,arg,rout) \
@@ -507,15 +509,14 @@ TMSCM_ASSERT (tmscm_is_path (p), p, arg, rout)
 
 tmscm 
 path_to_tmscm (path p) {
-  if (is_nil (p)) return tmscm_null ();
-  else return tmscm_cons (int_to_tmscm (p->item), path_to_tmscm (p->next));
+  if (is_nil (p)) return scheme().tmscm_null();
+  else return scheme().int_to_tmscm (p->item)->cons(path_to_tmscm (p->next));
 }
 
 path
 tmscm_to_path (tmscm p) {
-  if (tmscm_is_null (p)) return path ();
-  else return path ((int) tmscm_to_int (tmscm_car (p)), 
-                          tmscm_to_path (tmscm_cdr (p)));
+  if (p->is_null()) return path ();
+  else return path ((int) p->car()->to_int(), tmscm_to_path (p->cdr()));
 }
 
 
@@ -529,25 +530,25 @@ TMSCM_ASSERT (tmscm_is_observer (o), o, arg, rout)
 
 bool
 tmscm_is_observer (tmscm o) {
-  return (tmscm_is_blackbox (o) &&
-         (type_box (tmscm_to_blackbox(o)) == type_helper<observer>::id));
+  return (o->is_blackbox() &&
+         (type_box (o->to_blackbox()) == type_helper<observer>::id));
 }
 
 tmscm 
 observer_to_tmscm (observer o) {
-  return blackbox_to_tmscm (close_box<observer> (o));
+  return scheme().blackbox_to_tmscm (close_box<observer> (o));
 }
 
 static observer
 tmscm_to_observer (tmscm obj) {
-  return open_box<observer>(tmscm_to_blackbox (obj));
+  return open_box<observer>(obj->to_blackbox());
 }
 
 tmscm 
 observerP (tmscm t) {
-  bool b= tmscm_is_blackbox (t) && 
-  (type_box (tmscm_to_blackbox(t)) == type_helper<observer>::id);
-  return bool_to_tmscm (b);
+  bool b= t->is_blackbox() && 
+  (type_box (t->to_blackbox()) == type_helper<observer>::id);
+  return scheme().bool_to_tmscm (b);
 }
 
 
@@ -560,19 +561,19 @@ TMSCM_ASSERT (tmscm_is_widget (o), o, arg, rout)
 
 bool
 tmscm_is_widget (tmscm u) {
-  return (tmscm_is_blackbox (u) &&
-         (type_box (tmscm_to_blackbox(u)) == type_helper<widget>::id));
+  return (u->is_blackbox() &&
+         (type_box (u->to_blackbox()) == type_helper<widget>::id));
 }
 
 
 static tmscm 
 widget_to_tmscm (widget o) {
-  return blackbox_to_tmscm (close_box<widget> (o));
+  return scheme().blackbox_to_tmscm (close_box<widget> (o));
 }
 
 widget
 tmscm_to_widget (tmscm o) {
-  return open_box<widget> (tmscm_to_blackbox (o));
+  return open_box<widget> (o->to_blackbox());
 }
 
 /******************************************************************************
@@ -584,44 +585,30 @@ TMSCM_ASSERT (tmscm_is_command (o), o, arg, rout)
 
 bool
 tmscm_is_command (tmscm u) {
-  return (tmscm_is_blackbox (u) && 
-      (type_box (tmscm_to_blackbox(u)) == type_helper<command>::id));
+  return (u->is_blackbox() && 
+      (type_box (u->to_blackbox()) == type_helper<command>::id));
 }
 
 static tmscm 
 command_to_tmscm (command o) {
-  return blackbox_to_tmscm (close_box<command> (o));
+  return scheme().blackbox_to_tmscm (close_box<command> (o));
 }
 
 static command
 tmscm_to_command (tmscm o) {
-  return open_box<command> (tmscm_to_blackbox (o));
+  return open_box<command> (o->to_blackbox());
 }
 
 /******************************************************************************
 *  Widget Factory
 ******************************************************************************/
 
+#include "promise_widget.hpp"
 typedef promise<widget> promise_widget;
 
 #define TMSCM_ASSERT_PROMISE_WIDGET(o,arg,rout) \
 TMSCM_ASSERT (tmscm_is_promise_widget (o), o, arg, rout)
 
-bool
-tmscm_is_promise_widget (tmscm u) {
-  return (tmscm_is_blackbox (u) && 
-         (type_box (tmscm_to_blackbox(u)) == type_helper<promise_widget>::id));
-}
-
-static tmscm 
-promise_widget_to_tmscm (promise_widget o) {
-  return blackbox_to_tmscm (close_box<promise_widget> (o));
-}
-
-static promise_widget
-tmscm_to_promise_widget (tmscm o) {
-  return open_box<promise_widget> (tmscm_to_blackbox (o));
-}
 
 /******************************************************************************
 * Urls
@@ -629,31 +616,31 @@ tmscm_to_promise_widget (tmscm o) {
 
 bool
 tmscm_is_url (tmscm u) {
-  return (tmscm_is_blackbox (u)
-              && (type_box (tmscm_to_blackbox(u)) == type_helper<url>::id))
-         || (tmscm_is_string(u));
+  return (u->is_blackbox()
+              && (type_box (u->to_blackbox()) == type_helper<url>::id))
+         || (u->is_string());
 }
 
 tmscm 
 url_to_tmscm (url u) {
-  return blackbox_to_tmscm (close_box<url> (u));
+  return scheme().blackbox_to_tmscm (close_box<url> (u));
 }
 
 url
 tmscm_to_url (tmscm obj) {
-  if (tmscm_is_string (obj))
+  if (obj->is_string())
 #ifdef OS_MINGW
-    return url_system (tmscm_to_string (obj));
+    return url_system (obj->to_string());
 #else
-  return tmscm_to_string (obj);
+  return obj->to_string();
 #endif
-  return open_box<url> (tmscm_to_blackbox (obj));
+  return open_box<url> (obj->to_blackbox());
 }
 
 tmscm 
 urlP (tmscm t) {
   bool b= tmscm_is_url (t);
-  return bool_to_tmscm (b);
+  return scheme().bool_to_tmscm (b);
 }
 
 url url_concat (url u1, url u2) { return u1 * u2; }
@@ -670,25 +657,25 @@ url url_ref (url u, int i) { return u[i]; }
 
 bool
 tmscm_is_modification (tmscm m) {
-  return (tmscm_is_blackbox (m) &&
-	  (type_box (tmscm_to_blackbox(m)) == type_helper<modification>::id))
-    || (tmscm_is_string (m));
+  return (m->is_blackbox() &&
+	  (type_box (m->to_blackbox()) == type_helper<modification>::id))
+    || (m->is_string());
 }
 
 tmscm 
 modification_to_tmscm (modification m) {
-  return blackbox_to_tmscm (close_box<modification> (m));
+  return scheme().blackbox_to_tmscm (close_box<modification> (m));
 }
 
 modification
 tmscm_to_modification (tmscm obj) {
-  return open_box<modification> (tmscm_to_blackbox (obj));
+  return open_box<modification> (obj->to_blackbox());
 }
 
 tmscm 
 modificationP (tmscm t) {
   bool b= tmscm_is_modification (t);
-  return bool_to_tmscm (b);
+  return scheme().bool_to_tmscm (b);
 }
 
 tree
@@ -708,25 +695,25 @@ var_clean_apply (tree& t, modification m) {
 
 bool
 tmscm_is_patch (tmscm p) {
-  return (tmscm_is_blackbox (p) &&
-	  (type_box (tmscm_to_blackbox(p)) == type_helper<patch>::id))
-    || (tmscm_is_string (p));
+  return (p->is_blackbox() &&
+	  (type_box (p->to_blackbox()) == type_helper<patch>::id))
+    || (p->is_string());
 }
 
 tmscm 
 patch_to_tmscm (patch p) {
-  return blackbox_to_tmscm (close_box<patch> (p));
+  return scheme().blackbox_to_tmscm (close_box<patch> (p));
 }
 
 patch
 tmscm_to_patch (tmscm obj) {
-  return open_box<patch> (tmscm_to_blackbox (obj));
+  return open_box<patch> (obj->to_blackbox());
 }
 
 tmscm 
 patchP (tmscm t) {
   bool b= tmscm_is_patch (t);
-  return bool_to_tmscm (b);
+  return scheme().bool_to_tmscm (b);
 }
 
 patch
@@ -753,14 +740,14 @@ typedef hashmap<string,string> table_string_string;
 
 bool
 tmscm_is_table_string_string (tmscm p) {
-  if (tmscm_is_null (p)) return true;
-  else if (!tmscm_is_pair (p)) return false;
+  if (p->is_null()) return true;
+  else if (!p->is_pair()) return false;
   else {
-    tmscm f= tmscm_car (p);
-    return tmscm_is_pair (f) &&
-    tmscm_is_string (tmscm_car (f)) &&
-    tmscm_is_string (tmscm_cdr (f)) &&
-    tmscm_is_table_string_string (tmscm_cdr (p));
+    tmscm f= p->car();
+    return f->is_pair() &&
+    f->car()->is_string() &&
+    f->cdr()->is_string() &&
+    tmscm_is_table_string_string (p->cdr());
   }
 }
 
@@ -769,12 +756,12 @@ TMSCM_ASSERT (tmscm_is_table_string_string (p), p, arg, rout)
 
 tmscm 
 table_string_string_to_tmscm (hashmap<string,string> t) {
-  tmscm p= tmscm_null ();
+  tmscm p= scheme().tmscm_null ();
   iterator<string> it= iterate (t);
   while (it->busy ()) {
     string s= it->next ();
-    tmscm n= tmscm_cons (string_to_tmscm (s), string_to_tmscm (t[s]));
-    p= tmscm_cons (n, p);
+    tmscm n= scheme().string_to_tmscm (s)->cons(scheme().string_to_tmscm (t[s]));
+    p= n->cons(p);
   }
   return p;
 }
@@ -782,10 +769,10 @@ table_string_string_to_tmscm (hashmap<string,string> t) {
 hashmap<string,string>
 tmscm_to_table_string_string (tmscm p) {
   hashmap<string,string> t;
-  while (!tmscm_is_null (p)) {
-    tmscm n= tmscm_car (p);
-    t (tmscm_to_string (tmscm_car (n)))= tmscm_to_string (tmscm_cdr (n));
-    p= tmscm_cdr (p);
+  while (!p->is_null()) {
+    tmscm n= p->car();
+    t (n->car()->to_string()) = n->cdr()->to_string();
+    p= p->cdr();
   }
   return t;
 }
@@ -813,10 +800,10 @@ typedef array<array<array<double> > > array_array_array_double;
 
 static bool
 tmscm_is_array_int (tmscm p) {
-  if (tmscm_is_null (p)) return true;
-  else return tmscm_is_pair (p) &&
-    tmscm_is_int (tmscm_car (p)) &&
-    tmscm_is_array_int (tmscm_cdr (p));
+  if (p->is_null()) return true;
+  else return p->is_pair() &&
+    p->car()->is_int() &&
+    tmscm_is_array_int (p->cdr());
 }
 
 #define TMSCM_ASSERT_ARRAY_INT(p,arg,rout) \
@@ -825,36 +812,36 @@ TMSCM_ASSERT (tmscm_is_array_int (p), p, arg, rout)
 /* static */ tmscm 
 array_int_to_tmscm (array<int> a) {
   int i, n= N(a);
-  tmscm p= tmscm_null ();
-  for (i=n-1; i>=0; i--) p= tmscm_cons (int_to_tmscm (a[i]), p);
+  tmscm p= scheme().tmscm_null ();
+  for (i=n-1; i>=0; i--) p= scheme().int_to_tmscm (a[i])->cons(p);
   return p;
 }
 
 /* static */ array<int>
 tmscm_to_array_int (tmscm p) {
   array<int> a;
-  while (!tmscm_is_null (p)) {
-    a << ((int) tmscm_to_int (tmscm_car (p)));
-    p= tmscm_cdr (p);
+  while (!p->is_null()) {
+    a << ((int) p->car()->to_int());
+    p= p->cdr();
   }
   return a;
 }
 
 static bool
 tmscm_is_array_string (tmscm p) {
-  if (tmscm_is_null (p)) return true;
-  else return tmscm_is_pair (p) && 
-    tmscm_is_string (tmscm_car (p)) &&
-    tmscm_is_array_string (tmscm_cdr (p));
+  if (p->is_null()) return true;
+  else return p->is_pair() && 
+     p->car()->is_string() &&
+    tmscm_is_array_string (p->cdr());
 }
 
 
 /* static */ bool
 tmscm_is_array_double (tmscm p) {
-  if (tmscm_is_null (p)) return true;
-  else return tmscm_is_pair (p) &&
-    tmscm_is_double (tmscm_car (p)) &&
-    tmscm_is_array_double (tmscm_cdr (p));
+  if (p->is_null()) return true;
+  else return p->is_pair() &&
+    p->car()->is_double() &&
+    tmscm_is_array_double (p->cdr());
 }
 
 #define TMSCM_ASSERT_ARRAY_DOUBLE(p,arg,rout) \
@@ -863,27 +850,27 @@ TMSCM_ASSERT (tmscm_is_array_double (p), p, arg, rout)
 /* static */ tmscm 
 array_double_to_tmscm (array<double> a) {
   int i, n= N(a);
-  tmscm p= tmscm_null();
-  for (i=n-1; i>=0; i--) p= tmscm_cons (double_to_tmscm (a[i]), p);
+  tmscm p= scheme().tmscm_null();
+  for (i=n-1; i>=0; i--) p= scheme().double_to_tmscm (a[i])->cons(p);
   return p;
 }
 
 /* static */ array<double>
 tmscm_to_array_double (tmscm p) {
   array<double> a;
-  while (!tmscm_is_null (p)) {
-    a << ((double) tmscm_to_double (tmscm_car (p)));
-    p= tmscm_cdr (p);
+  while (!p->is_null()) {
+    a << (double)p->car()->to_double();
+    p= p->cdr();
   }
   return a;
 }
 
 static bool
 tmscm_is_array_array_double (tmscm p) {
-  if (tmscm_is_null (p)) return true;
-  else return tmscm_is_pair (p) &&
-    tmscm_is_array_double (tmscm_car (p)) &&
-    tmscm_is_array_array_double (tmscm_cdr (p));
+  if (p->is_null()) return true;
+  else return p->is_pair() &&
+    tmscm_is_array_double (p->car()) &&
+    tmscm_is_array_array_double (p->cdr());
 }
 
 #define TMSCM_ASSERT_ARRAY_ARRAY_DOUBLE(p,arg,rout) \
@@ -892,27 +879,27 @@ TMSCM_ASSERT (tmscm_is_array_array_double (p), p, arg, rout)
 /* static */ tmscm 
 array_array_double_to_tmscm (array<array_double> a) {
   int i, n= N(a);
-  tmscm p= tmscm_null ();
-  for (i=n-1; i>=0; i--) p= tmscm_cons (array_double_to_tmscm (a[i]), p);
+  tmscm p= scheme().tmscm_null ();
+  for (i=n-1; i>=0; i--) p= array_double_to_tmscm (a[i])->cons(p);
   return p;
 }
 
 /* static */ array<array_double>
 tmscm_to_array_array_double (tmscm p) {
   array<array_double> a;
-  while (!tmscm_is_null (p)) {
-    a << ((array_double) tmscm_to_array_double (tmscm_car (p)));
-    p= tmscm_cdr (p);
+  while (!p->is_null()) {
+    a << ((array_double) tmscm_to_array_double (p->car()));
+    p= p->cdr();
   }
   return a;
 }
 
 static bool
 tmscm_is_array_array_array_double (tmscm p) {
-  if (tmscm_is_null (p)) return true;
-  else return tmscm_is_pair (p) &&
-    tmscm_is_array_array_double (tmscm_car (p)) &&
-    tmscm_is_array_array_array_double (tmscm_cdr (p));
+  if (p->is_null()) return true;
+  else return p->is_pair() &&
+    tmscm_is_array_array_double (p->car()) &&
+    tmscm_is_array_array_array_double (p->cdr());
 }
 
 #define TMSCM_ASSERT_ARRAY_ARRAY_ARRAY_DOUBLE(p,arg,rout) \
@@ -921,17 +908,17 @@ TMSCM_ASSERT (tmscm_is_array_array_array_double (p), p, arg, rout)
 /* static */ tmscm 
 array_array_array_double_to_tmscm (array<array_array_double> a) {
   int i, n= N(a);
-  tmscm p= tmscm_null ();
-  for (i=n-1; i>=0; i--) p= tmscm_cons (array_array_double_to_tmscm (a[i]), p);
+  tmscm p= scheme().tmscm_null ();
+  for (i=n-1; i>=0; i--) p= array_array_double_to_tmscm (a[i])->cons(p);
   return p;
 }
 
 /* static */ array<array_array_double>
 tmscm_to_array_array_array_double (tmscm p) {
   array<array_array_double> a;
-  while (!tmscm_is_null (p)) {
-    a << ((array_array_double) tmscm_to_array_array_double (tmscm_car (p)));
-    p= tmscm_cdr (p);
+  while (!p->is_null()) {
+    a << ((array_array_double) tmscm_to_array_array_double (p->car()));
+    p= p->cdr();
   }
   return a;
 }
@@ -947,27 +934,27 @@ TMSCM_ASSERT (tmscm_is_array_string (p), p, arg, rout)
 /* static */ tmscm 
 array_string_to_tmscm (array<string> a) {
   int i, n= N(a);
-  tmscm p= tmscm_null ();
-  for (i=n-1; i>=0; i--) p= tmscm_cons (string_to_tmscm (a[i]), p);
+  tmscm p= scheme().tmscm_null ();
+  for (i=n-1; i>=0; i--) p=  scheme().string_to_tmscm (a[i])->cons(p);
   return p;
 }
 
 /* static */ array<string>
 tmscm_to_array_string (tmscm p) {
   array<string> a;
-  while (!tmscm_is_null (p)) {
-    a << tmscm_to_string (tmscm_car (p));
-    p= tmscm_cdr (p);
+  while (!p->is_null()) {
+    a << p->car()->to_string();
+    p= p->cdr();
   }
   return a;
 }
 
 static bool
 tmscm_is_array_tree (tmscm p) {
-  if (tmscm_is_null (p)) return true;
-  else return tmscm_is_pair (p) && 
-    tmscm_is_tree (tmscm_car (p)) &&
-    tmscm_is_array_tree (tmscm_cdr (p));
+  if (p->is_null()) return true;
+  else return p->is_pair() && 
+    tmscm_is_tree (p->car()) &&
+    tmscm_is_array_tree (p->cdr());
 }
 
 #define TMSCM_ASSERT_ARRAY_TREE(p,arg,rout) \
@@ -976,27 +963,27 @@ TMSCM_ASSERT (tmscm_is_array_tree (p), p, arg, rout)
 /* static */ tmscm 
 array_tree_to_tmscm (array<tree> a) {
   int i, n= N(a);
-  tmscm p= tmscm_null ();
-  for (i=n-1; i>=0; i--) p= tmscm_cons (tree_to_tmscm (a[i]), p);
+  tmscm p= scheme().tmscm_null();
+  for (i=n-1; i>=0; i--) p= tree_to_tmscm (a[i])->cons(p);
   return p;
 }
 
 /* static */ array<tree>
 tmscm_to_array_tree (tmscm p) {
   array<tree> a;
-  while (!tmscm_is_null (p)) {
-    a << tmscm_to_tree (tmscm_car (p));
-    p= tmscm_cdr (p);
+  while (!p->is_null()) {
+    a << tmscm_to_tree (p->car());
+    p= p->cdr();
   }
   return a;
 }
 
 static bool
 tmscm_is_array_widget (tmscm p) {
-  if (tmscm_is_null (p)) return true;
-  else return tmscm_is_pair (p) &&
-    tmscm_is_widget (tmscm_car (p)) &&
-    tmscm_is_array_widget (tmscm_cdr (p));
+  if (p->is_null()) return true;
+  else return p->is_pair() &&
+    tmscm_is_widget (p->car()) &&
+    tmscm_is_array_widget (p->cdr());
 }
 
 #define TMSCM_ASSERT_ARRAY_WIDGET(p,arg,rout) \
@@ -1005,27 +992,27 @@ TMSCM_ASSERT (tmscm_is_array_widget (p), p, arg, rout)
 /* static */ tmscm 
 array_widget_to_tmscm (array<widget> a) {
   int i, n= N(a);
-  tmscm p= tmscm_null ();
-  for (i=n-1; i>=0; i--) p= tmscm_cons (widget_to_tmscm (a[i]), p);
+  tmscm p= scheme().tmscm_null();
+  for (i=n-1; i>=0; i--) p= widget_to_tmscm (a[i])->cons(p);
   return p;
 }
 
 /* static */ array<widget>
 tmscm_to_array_widget (tmscm p) {
   array<widget> a;
-  while (!tmscm_is_null (p)) {
-    a << tmscm_to_widget (tmscm_car (p));
-    p= tmscm_cdr (p);
+  while (!p->is_null()) {
+    a << tmscm_to_widget (p->car());
+    p= p->cdr();
   }
   return a;
 }
 
 static bool
 tmscm_is_array_url (tmscm p) {
-  if (tmscm_is_null (p)) return true;
-  else return tmscm_is_pair (p) &&
-    tmscm_is_url (tmscm_car (p)) &&
-    tmscm_is_array_url (tmscm_cdr (p));
+  if (p->is_null()) return true;
+  else return p->is_pair() &&
+    tmscm_is_url (p->car()) &&
+    tmscm_is_array_url (p->cdr());
 }
 
 
@@ -1035,27 +1022,27 @@ TMSCM_ASSERT (tmscm_is_array_url (p), p, arg, rout)
 /* static */ tmscm 
 array_url_to_tmscm (array<url> a) {
   int i, n= N(a);
-  tmscm p= tmscm_null ();
-  for (i=n-1; i>=0; i--) p= tmscm_cons (url_to_tmscm (a[i]), p);
+  tmscm p= scheme().tmscm_null ();
+  for (i=n-1; i>=0; i--) p= url_to_tmscm (a[i])->cons(p);
   return p;
 }
 
 /* static */ array<url>
 tmscm_to_array_url (tmscm p) {
   array<url> a;
-  while (!tmscm_is_null (p)) {
-    a << tmscm_to_url (tmscm_car (p));
-    p= tmscm_cdr (p);
+  while (!p->is_null()) {
+    a << tmscm_to_url (p->car());
+    p= p->cdr();
   }
   return a;
 }
 
 static bool
 tmscm_is_array_patch (tmscm p) {
-  if (tmscm_is_null (p)) return true;
-  else return tmscm_is_pair (p) &&
-    tmscm_is_patch (tmscm_car (p)) &&
-    tmscm_is_array_patch (tmscm_cdr (p));
+  if (p->is_null()) return true;
+  else return p->is_pair() &&
+    tmscm_is_patch (p->car()) &&
+    tmscm_is_array_patch (p->cdr());
 }
 
 
@@ -1065,27 +1052,27 @@ TMSCM_ASSERT (tmscm_is_array_patch (p), p, arg, rout)
 /* static */ tmscm 
 array_patch_to_tmscm (array<patch> a) {
   int i, n= N(a);
-  tmscm p= tmscm_null ();
-  for (i=n-1; i>=0; i--) p= tmscm_cons (patch_to_tmscm (a[i]), p);
+  tmscm p= scheme().tmscm_null ();
+  for (i=n-1; i>=0; i--) p=  patch_to_tmscm (a[i])->cons(p);
   return p;
 }
 
 /* static */ array<patch>
 tmscm_to_array_patch (tmscm p) {
   array<patch> a;
-  while (!tmscm_is_null (p)) {
-    a << tmscm_to_patch (tmscm_car (p));
-    p= tmscm_cdr (p);
+  while (!p->is_null()) {
+    a << tmscm_to_patch (p->car());
+    p= p->cdr();
   }
   return a;
 }
 
 static bool
 tmscm_is_array_path (tmscm p) {
-  if (tmscm_is_null (p)) return true;
-  else return tmscm_is_pair (p) &&
-    tmscm_is_path (tmscm_car (p)) &&
-    tmscm_is_array_path (tmscm_cdr (p));
+  if (p->is_null()) return true;
+  else return p->is_pair() &&
+    tmscm_is_path (p->car()) &&
+    tmscm_is_array_path (p->cdr());
 }
 
 #define TMSCM_ASSERT_ARRAY_PATH(p,arg,rout) \
@@ -1094,17 +1081,17 @@ TMSCM_ASSERT (tmscm_is_array_path (p), p, arg, rout)
 /* static */ tmscm 
 array_path_to_tmscm (array<path> a) {
   int i, n= N(a);
-  tmscm p= tmscm_null ();
-  for (i=n-1; i>=0; i--) p= tmscm_cons (path_to_tmscm (a[i]), p);
+  tmscm p= scheme().tmscm_null ();
+  for (i=n-1; i>=0; i--) p= path_to_tmscm (a[i])->cons(p);
   return p;
 }
 
 /* static */ array<path>
 tmscm_to_array_path (tmscm p) {
   array<path> a;
-  while (!tmscm_is_null (p)) {
-    a << tmscm_to_path (tmscm_car (p));
-    p= tmscm_cdr (p);
+  while (!p->is_null()) {
+    a << tmscm_to_path (p->car());
+    p= p->cdr();
   }
   return a;
 }
@@ -1117,10 +1104,10 @@ typedef list<string> list_string;
 
 bool
 tmscm_is_list_string (tmscm p) {
-  if (tmscm_is_null (p)) return true;
-  else return tmscm_is_pair (p) &&
-    tmscm_is_string (tmscm_car (p)) &&
-    tmscm_is_list_string (tmscm_cdr (p));
+  if (p->is_null()) return true;
+  else return p->is_pair() &&
+    p->car()->is_string() &&
+    tmscm_is_list_string (p->cdr());
 }
 
 #define TMSCM_ASSERT_LIST_STRING(p,arg,rout) \
@@ -1128,26 +1115,24 @@ TMSCM_ASSERT (tmscm_is_list_string (p), p, arg, rout)
 
 tmscm 
 list_string_to_tmscm (list_string l) {
-  if (is_nil (l)) return tmscm_null ();
-  return tmscm_cons (string_to_tmscm (l->item),
-           list_string_to_tmscm (l->next));
+  if (is_nil (l)) return scheme().tmscm_null();
+  return scheme().string_to_tmscm (l->item)->cons(list_string_to_tmscm (l->next));
 }
 
 list_string
 tmscm_to_list_string (tmscm p) {
-  if (tmscm_is_null (p)) return list_string ();
-  return list_string (tmscm_to_string (tmscm_car (p)),
-            tmscm_to_list_string (tmscm_cdr (p)));
+  if (p->is_null()) return list_string ();
+  return list_string ( p->car()->to_string(), tmscm_to_list_string (p->cdr()));
 }
 
 typedef list<tree> list_tree;
 
 bool
 tmscm_is_list_tree (tmscm p) {
-  if (tmscm_is_null (p)) return true;
-  else return tmscm_is_pair (p) &&
-    tmscm_is_tree (tmscm_car (p)) &&
-    tmscm_is_list_tree (tmscm_cdr (p));
+  if (p->is_null()) return true;
+  else return p->is_pair() &&
+    tmscm_is_tree (p->car()) &&
+    tmscm_is_list_tree (p->cdr());
 }
 
 #define TMSCM_ASSERT_LIST_TREE(p,arg,rout) \
@@ -1155,16 +1140,14 @@ TMSCM_ASSERT (tmscm_is_list_tree (p), p, arg, rout)
 
 tmscm 
 list_tree_to_tmscm (list_tree l) {
-  if (is_nil (l)) return tmscm_null ();
-  return tmscm_cons (tree_to_tmscm (l->item),
-           list_tree_to_tmscm (l->next));
+  if (is_nil (l)) return scheme().tmscm_null();
+  return tree_to_tmscm (l->item)->cons(list_tree_to_tmscm (l->next));
 }
 
 list_tree
 tmscm_to_list_tree (tmscm p) {
-  if (tmscm_is_null (p)) return list_tree ();
-  return list_tree (tmscm_to_tree (tmscm_car (p)),
-            tmscm_to_list_tree (tmscm_cdr (p)));
+  if (p->is_null()) return list_tree ();
+  return list_tree (tmscm_to_tree (p->car()),tmscm_to_list_tree (p->cdr()));
 }
 
 /******************************************************************************
@@ -1204,6 +1187,8 @@ tmscm_to_list_tree (tmscm p) {
 #include "packrat.hpp"
 #include "new_style.hpp"
 #include "persistent.hpp"
+
+#include "promise_widget.hpp"
 
 #include "../Glue/glue_basic.cpp"
 #include "../Glue/glue_editor.cpp"
