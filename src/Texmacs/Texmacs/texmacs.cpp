@@ -750,10 +750,6 @@ main (int argc, char** argv) {
     tm_style_sheet= theme;
 #ifndef OS_MINGW
   set_env ("LC_NUMERIC", "POSIX");
-#ifndef OS_MACOS
-  set_env ("QT_QPA_PLATFORM", "xcb");
-  set_env ("XDG_SESSION_TYPE", "x11");
-#endif
 #endif
 #ifdef MACOSX_EXTENSIONS
   // Reset TeXmacs if Alt is pressed during startup
