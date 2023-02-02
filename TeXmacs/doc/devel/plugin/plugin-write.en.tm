@@ -1,6 +1,6 @@
-<TeXmacs|2.1.2>
+<TeXmacs|1.0.3.7>
 
-<style|<tuple|tmdoc|english>>
+<style|tmdoc>
 
 <\body>
   <tmdoc-title|Writing your own plug-ins>
@@ -19,7 +19,7 @@
   <\description-dash>
     <item*|<verbatim|bin>>For binary files.
 
-    <item*|<verbatim|doc>>For documentation.
+    <item*|<verbatim|doc>>For documentation (not yet supported).
 
     <item*|<verbatim|langs>>For language related files, such as dictionaries
     (not yet supported).
@@ -28,7 +28,7 @@
 
     <item*|<verbatim|packages>>For style packages.
 
-    <item*|<verbatim|progs>>For <scheme> programs.
+    <item*|<verbatim|progs>>For <value|scheme> programs.
 
     <item*|<verbatim|src>>For source files.
 
@@ -46,22 +46,6 @@
   will be automatically added to the <verbatim|PATH> environment variable at
   startup. Notice that the subdirectory structure of a plug-in is very
   similar to the subdirectory structure of <verbatim|$TEXMACS_PATH>.
-
-  Similarly, plugin documentation is intended to be automatically added to
-  the <menu|Help|Plug-ins> submenu. For this to automation to work, the
-  <verbatim|myplugin/doc/> directory should contain at least two files
-
-  <\verbatim>
-    \ \ \ \ myplugin.en.tm
-
-    \ \ \ \ myplugin-abstract.en.tm
-  </verbatim>
-
-  The first file is the main entry point to the plugin's documentation and
-  should follow <hlink|the general conventions for structuring <TeXmacs>
-  documentation|../../about/contribute/documentation/traversal.en.tm>. The
-  <verbatim|-abstract> file provides a short description of the plugin's
-  functionality.
 
   <\example>
     The easiest type of plug-in only consists of data files, such as a
@@ -82,8 +66,9 @@
     package> menus.
   </example>
 
-  For more complex plug-ins, such as plug-ins with additional <scheme> or
-  <c++> code, one usually has to provide a <scheme> configuration file
+  For more complex plug-ins, such as plug-ins with additional <value|scheme>
+  or <value|cpp> code, one usually has to provide a <value|scheme>
+  configuration file
 
   <\verbatim>
     \ \ \ \ $TEXMACS_HOME_PATH/plugins/<em|myplugin>/progs/init-<em|myplugin>.scm
@@ -91,11 +76,11 @@
 
   This configuration file should contain an instruction of the following form
 
-  <\scm-code>
+  <\scheme-fragment>
     (plugin-configure <em|myplugin>
 
     \ \ <em|configuration-options>)
-  </scm-code>
+  </scheme-fragment>
 
   Here the <verbatim|<em|configuration-options>> describe the principal
   actions which have to be undertaken at startup, including sanity checks for
@@ -109,10 +94,10 @@
     \ \ \ \ $TEXMACS_PATH/plugins
   </verbatim>
 
-  Some of these are <hlink|described|../interface/interface.en.tm> in more
-  detail in the chapter about writing new interfaces.
+  Some of these are <hyper-link|described|../interface/interface.en.tm> in
+  more detail in the chapter about writing new interfaces.
 
-  <tmdoc-copyright|1998\U2002|Joris van der Hoeven>
+  <tmdoc-copyright|1998--2002|Joris van der Hoeven>
 
   <tmdoc-license|Permission is granted to copy, distribute and/or modify this
   document under the terms of the GNU Free Documentation License, Version 1.1
@@ -122,5 +107,20 @@
   Documentation License".>
 </body>
 
-<initial|<\collection>
-</collection>>
+<\initial>
+  <\collection>
+    <associate|language|english>
+    <associate|page-bot|30mm>
+    <associate|page-even|30mm>
+    <associate|page-odd|30mm>
+    <associate|page-reduce-bot|15mm>
+    <associate|page-reduce-left|25mm>
+    <associate|page-reduce-right|25mm>
+    <associate|page-reduce-top|15mm>
+    <associate|page-right|30mm>
+    <associate|page-top|30mm>
+    <associate|page-type|a4>
+    <associate|par-width|150mm>
+    <associate|sfactor|4>
+  </collection>
+</initial>

@@ -254,7 +254,7 @@
                    (cdr (string-split ret #\newline))
                    (string-split ret #\newline))))
     (define (convert body)
-      (let* ((alist (string-split body #\tab)))
+      (let* ((alist (string-split body #\ht)))
         (with dest (url-append root (third alist))
           (if (== (first alist) "-")
               (list 0 0 (utf8->cork (third alist))

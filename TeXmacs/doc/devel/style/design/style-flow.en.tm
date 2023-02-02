@@ -1,6 +1,6 @@
-<TeXmacs|2.1.2>
+<TeXmacs|1.0.3.7>
 
-<style|<tuple|tmdoc|english>>
+<style|tmdoc>
 
 <\body>
   <tmdoc-title|Control flow>
@@ -50,10 +50,11 @@
   can be edited by the user). Therefore, you will have to manually give this
   information using the <markup|drd-props> primitive. The <markup|case>,
   <markup|while> and <markup|for-each> primitives are explained in more
-  detail in the <hlink|corresponding section|../../format/stylesheet/prim-control.en.tm>
-  on the <hlink|<TeXmacs> primitives|../../format/stylesheet/stylesheet.en.tm>.
+  detail in the <hyper-link|corresponding
+  section|../../format/primitives/prim-control.en.tm> on the
+  <hyper-link|<TeXmacs> primitives|../../format/primitives/primitives.en.tm>.
 
-  <tmdoc-copyright|1998\U2004|Joris van der Hoeven>
+  <tmdoc-copyright|1998--2004|Joris van der Hoeven>
 
   <tmdoc-license|Permission is granted to copy, distribute and/or modify this
   document under the terms of the GNU Free Documentation License, Version 1.1
@@ -63,5 +64,17 @@
   Documentation License".>
 </body>
 
-<initial|<\collection>
-</collection>>
+<\initial>
+  <\collection>
+    <associate|page-bot|30mm>
+    <associate|page-even|30mm>
+    <associate|page-odd|30mm>
+    <associate|page-reduce-bot|15mm>
+    <associate|page-reduce-left|25mm>
+    <associate|page-reduce-right|25mm>
+    <associate|page-reduce-top|15mm>
+    <associate|page-right|30mm>
+    <associate|page-top|30mm>
+    <associate|par-width|150mm>
+  </collection>
+</initial>

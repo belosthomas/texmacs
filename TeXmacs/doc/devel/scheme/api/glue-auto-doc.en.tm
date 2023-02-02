@@ -323,6 +323,22 @@ source code.
   </explain>
 
   <\explain>
+    <scm|(get-user-login)>
+<explain-synopsis|no synopsis>
+  <|explain>
+    Calls the <c++> function <cpp|get_user_login> which returns
+    <scm|string>.
+  </explain>
+
+  <\explain>
+    <scm|(get-user-name)>
+<explain-synopsis|no synopsis>
+  <|explain>
+    Calls the <c++> function <cpp|get_user_name> which returns
+    <scm|string>.
+  </explain>
+
+  <\explain>
     <scm|(plugin-list)>
 <explain-synopsis|no synopsis>
   <|explain>
@@ -2027,30 +2043,6 @@ source code.
   </explain>
 
   <\explain>
-    <scm|(math-stats-compile <scm-arg|string> <scm-arg|content> <scm-arg|string>)>
-<explain-synopsis|no synopsis>
-  <|explain>
-    Calls the <c++> function <cpp|compile_stats> which returns
-    <scm|void>.
-  </explain>
-
-  <\explain>
-    <scm|(math-stats-occurrences <scm-arg|string> <scm-arg|content>)>
-<explain-synopsis|no synopsis>
-  <|explain>
-    Calls the <c++> function <cpp|number_occurrences> which returns
-    <scm|int>.
-  </explain>
-
-  <\explain>
-    <scm|(math-stats-number-in-role <scm-arg|string> <scm-arg|content>)>
-<explain-synopsis|no synopsis>
-  <|explain>
-    Calls the <c++> function <cpp|number_in_role> which returns
-    <scm|int>.
-  </explain>
-
-  <\explain>
     <scm|(path-strip <scm-arg|path> <scm-arg|path>)>
 <explain-synopsis|no synopsis>
   <|explain>
@@ -2779,7 +2771,7 @@ source code.
   </explain>
 
   <\explain>
-    <scm|(cpp-string-number? <scm-arg|string>)>
+    <scm|(string-number? <scm-arg|string>)>
 <explain-synopsis|no synopsis>
   <|explain>
     Calls the <c++> function <cpp|is_double> which returns
@@ -7475,7 +7467,7 @@ source code.
   </explain>
 
   <\explain>
-    <scm|(mouse-any <scm-arg|string> <scm-arg|int> <scm-arg|int> <scm-arg|int> <scm-arg|double> <scm-arg|array_double>)>
+    <scm|(mouse-any <scm-arg|string> <scm-arg|int> <scm-arg|int> <scm-arg|int> <scm-arg|double>)>
 <explain-synopsis|no synopsis>
   <|explain>
     Calls the <c++> function <cpp|mouse_any> which returns
@@ -8183,14 +8175,6 @@ source code.
 <explain-synopsis|no synopsis>
   <|explain>
     Calls the <c++> function <cpp|get_y> which returns
-    <scm|double>.
-  </explain>
-
-  <\explain>
-    <scm|(get-graphical-pixel)>
-<explain-synopsis|no synopsis>
-  <|explain>
-    Calls the <c++> function <cpp|get_pixel> which returns
     <scm|double>.
   </explain>
 

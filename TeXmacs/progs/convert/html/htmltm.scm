@@ -352,17 +352,6 @@
   (if (sxhtml-list? (xpath-parent env))
       '()
       '((next-line))))
-      
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; Unlike previously, Mathml nodes in HTML5 have no namespace prefix 
-;; => xmltm.scm prefixes them with h:
-;; Yet, the import code in mathtm.scm expects m: prefix : replace prefix (hacky)
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-(define (htmltm-math env a c)
-(with cm `(m:math (@ ,@a) ,(replace-nsprefix-in-stree c "h:" "m:"))
-  `(,(mathtm-as-serial env cm))
-))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; MathJax extension
@@ -444,7 +433,7 @@
 (tm-define (htmltm-as-serial root)
   ;; As htmltm, but returns a serial node.
   ;; Actually also initializes the dynamic enviroment.
-  ;; FIXME: move the html initialization elsewhere for symmetry with htmltm.
+  ;; FIXME: move the htmlinitialization elsewhere for symmetry with htmltm.
   (define (sub env)
     (htmltm-serial (htmltm-preserve-space? env)
 		   (htmltm env (cleanup-root env root))))
@@ -549,7 +538,6 @@
   (small (handler :collapse :inline '(with "font-size" "0.83")))
   ((:or s strike) (handler :collapse :inline htmltm-pass))
   (u (handler :collapse :inline "underline"))
-  (style htmltm-drop) ; <style> contains css data
 
   ;; Font modifiers (deprecated)
   (font (handler :collapse :inline htmltm-font))
@@ -576,9 +564,6 @@
 
   ;;; Extensions
   (mathjax (handler :collapse :inline htmltm-mathjax))
-  
-  ;;; Math tag in HTML5 (no namespace prefix)
-  (math (handler :mixed :block htmltm-math))
   
   ;; Tags present in the previous converter
   ;; Unknown: FIG FN NOTE AU LANG PERSON
@@ -623,13 +608,6 @@
     ((list? from) (replace-stree-in-stree st from to))
     (else
       st))) ; unexpected entry
-
-(define (replace-nsprefix-in-stree st from to)
-  (cond ((and (nnull? st) (symbol? st) (string-starts? (symbol->string st) from))
-           (string->symbol (string-append to 
-            (string-drop (symbol->string st) (string-length from))))) 
-        ((list? st) (map (lambda (x) (replace-nsprefix-in-stree x from to)) st))
-        (else st)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Post processing

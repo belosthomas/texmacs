@@ -38,18 +38,6 @@
 ;; Transform author and editor names
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(define (unstructure-name t)
-  (cond ((tm-in? t '(name person)) (tm-ref t 0))
-        (else t)))
-
-(define (unstructure-names t)
-  (cond ((string? t) t)
-        ((tm-func? t 'concat)
-         (let* ((l (tm-children t))
-                (r (map unstructure-name l)))
-           (apply tmconcat r)))
-        (else t)))
-
 (define (transform-one-name s*)
   (let* ((s (tm-string-trim-both s*))
          (l (cpp-string-tokenize s " ")))
@@ -82,8 +70,7 @@
   (:require (and (db-field? t) (not shift?)
                  (in? (db-field-attr t) (list "author" "editor"))))
   (let* ((old (tm->stree (tm-ref t :down)))
-         (aux (unstructure-names old))
-         (new (transform-names aux)))
+         (new (transform-names old)))
     (if (== new old)
         (former t shift?)
         (tree-assign (tm-ref t :down) new))))

@@ -509,14 +509,12 @@
   ("auto" "Automatic")
   ("cork" "Cork")
   ("iso-8859-1" "Iso-8859-1")
-  ("iso-8859-2" "Iso-8859-2")
   ("utf-8" "Utf-8"))
 
 (define-preference-names "verbatim->texmacs:encoding"
-  ("auto" "Automatic")
+  ("auto" "Auto")
   ("cork" "Cork")
   ("iso-8859-1" "Iso-8859-1")
-  ("iso-8859-2" "Iso-8859-2")
   ("utf-8" "Utf-8"))
 
 (tm-widget (verbatim-preferences-widget)
@@ -531,7 +529,7 @@
   (aligned
     (item (text "Character encoding:")
       (enum (set-pretty-preference "texmacs->verbatim:encoding" answer)
-            '("Automatic" "Cork" "Iso-8859-1" "Iso-8859-2" "Utf-8")
+            '("Automatic" "Cork" "Iso-8859-1" "Utf-8")
             (get-pretty-preference "texmacs->verbatim:encoding")
             "12em")))
   ====== ======
@@ -545,7 +543,7 @@
   (aligned
     (item (text "Character encoding:")
       (enum (set-pretty-preference "verbatim->texmacs:encoding" answer)
-            '("Automatic" "Cork" "Iso-8859-1" "Iso-8859-2" "Utf-8")
+            '("Auto" "Cork" "Iso-8859-1" "Utf-8")
             (get-pretty-preference "verbatim->texmacs:encoding")
             "12em"))))
 
@@ -605,7 +603,7 @@
   (bold (text "TeXmacs -> Image"))
   ===
   (aligned
-    (item (text "Bitmap export resolution (dpi):")
+    (item (text "Bitmap resolution (dpi):")
       (enum (set-preference "texmacs->image:raster-resolution" answer)
             '("1200" "600" "300" "150" "")
             (get-preference "texmacs->image:raster-resolution")

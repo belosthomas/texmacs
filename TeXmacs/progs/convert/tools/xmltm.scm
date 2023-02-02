@@ -488,7 +488,7 @@
 ;; Producing mathml handlers for dispatch table
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(tm-define (mathtm-handler model method . amethod)
+(tm-define (mathtm-handler model method)
   ;;  model: content model category
   ;;         :empty -- element defined to be empty
   ;;         :element -- text node are ignored
@@ -496,7 +496,6 @@
   ;;         :mixed -- drop heading and trailing whitespaces, normalize and
   ;;           collapse internal whitespaces.
   ;;  method: <procedure> to convert the element content to a node-list.
-  ;;  amethod <procedure> to process global attributes
   (if (not (in? model '(:empty :element :mixed)))
       (error "Bad model: " model))
   (if (not (procedure? method))
@@ -504,15 +503,13 @@
   (let ((clean (cond ((eq? model :empty) (lambda (env c) c))
 		     ((eq? model :element) htmltm-space-element)
 		     ((eq? model :mixed) htmltm-space-mixed))))
-    ;(let ((proc method))
+    (let ((proc method))
       (lambda (env a c)
 	(mathtm-handler/procedure
-	 env a (clean env c) method amethod))));)
+	 env a (clean env c) proc)))))
 
-(define (mathtm-handler/procedure env a c proc aproc)
-  (if (null? aproc) 
-    (proc env a c)
-    ((car aproc) env a c proc)))
+(define (mathtm-handler/procedure env a c proc)
+  (proc env a c))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Producing gallina handlers for dispatch table

@@ -65,7 +65,7 @@
   ;; negations
   nin nni notni nequiv nleadsto
   npreccurlyeq npreceqq nprecsim
-  nsimeq nsubset napprox nsqsubset nsqsubseteq nsqsubseteqq
+  nsimeq nsqsubset nsqsubseteq nsqsubseteqq
   nsqsupset nsqsupseteq nsqsupseteqq
   nsucccurlyeq nsucceqq nsuccsim  
   
@@ -115,12 +115,9 @@
   uvec ubreve uinvbreve ucheck uring uacute ugrave
   underdot uddot udddot uddddot
   widespacing nonconverted
-  groupcommoncounter
+  tmcodeinline groupcommoncounter
   ;; NOTE: for personal use from vdh style package
   gb gbt)
-
-(logic-group latex-texmacs-1*%
-  tmcodeinline)
 
 (logic-group latex-texmacs-2%
   tmcolor

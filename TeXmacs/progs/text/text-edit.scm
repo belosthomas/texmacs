@@ -579,9 +579,6 @@
 ;; Editing enunciations
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(tm-define (enunciation-context? t)
-  (tree-in? t (enunciation-tag-list)))
-
 (tm-define (style-category p)
   (:require (in? p (list "framed-theorems" "hanging-theorems")))
   :theorem-decorations)
@@ -599,7 +596,7 @@
   (make 'dueto))
 
 (tm-define (focus-label t)
-  (:require (enunciation-context? t))
+  (:require (tree-in? t (enunciation-tag-list)))
   (and (== (tree-arity t) 1)
        (focus-search-label (tree-ref t 0))))
 

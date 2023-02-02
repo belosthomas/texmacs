@@ -148,8 +148,8 @@
       (when (and (not (cursor-accessible?)) (not (in-source?)))
         (cursor-show-hidden)))))
 
-(tm-define (mouse-event key x y mods time data)
-  (former key x y mods time data)
+(tm-define (mouse-event key x y mods time)
+  (former key x y mods time)
   (when (and (in-comments-editor?) (!= key "move"))
     (sync-master-cursor)))
 
@@ -182,8 +182,8 @@
             (tree-go-to c :start))
           (selection-cancel)))))
 
-(tm-define (mouse-event key x y mods time data)
-  (former key x y mods time data)
+(tm-define (mouse-event key x y mods time)
+  (former key x y mods time)
   (when (and (has-comments-editor?) (!= key "move"))
     (sync-comments-cursor)))
 
