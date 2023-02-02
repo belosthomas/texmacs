@@ -29,7 +29,6 @@
 #include "qt_simple_widget.hpp"
 #include "qt_window_widget.hpp"
 
-#include <QDesktopWidget>
 #include <QClipboard>
 #include <QBuffer>
 #include <QFileOpenEvent>
@@ -45,7 +44,6 @@
 #include <QLibraryInfo>
 #include <QImage>
 #include <QUrl>
-#include <QDesktopWidget>
 #include <QApplication>
 
 #include "QTMGuiHelper.hpp"
@@ -54,29 +52,6 @@
 
 #ifdef MACOSX_EXTENSIONS
 #include "MacOS/mac_utilities.h"
-#endif
-
-#if (QT_VERSION >= 0x050000)
-#include <QtPlugin>
-#ifdef qt_static_plugin_qjpeg
-Q_IMPORT_PLUGIN(qjpeg)
-#endif
-#ifdef qt_static_plugin_qgif
-Q_IMPORT_PLUGIN(qgif)
-#endif
-#ifdef qt_static_plugin_qico
-Q_IMPORT_PLUGIN(qico)
-#endif
-#ifdef qt_static_plugin_qsvg
-Q_IMPORT_PLUGIN(qsvg)
-#endif
-
-#ifdef WIN32 
-Q_IMPORT_PLUGIN(QWindowsIntegrationPlugin)
-#endif
-#ifdef QT_MAC_USE_COCOA
-Q_IMPORT_PLUGIN(QCocoaIntegrationPlugin)
-#endif
 #endif
 
 qt_gui_rep* the_gui = NULL;
@@ -197,8 +172,7 @@ needing_update (false)
 /* important routines */
 void
 qt_gui_rep::get_extents (SI& width, SI& height) {
-  coord2 size = headless_mode ? coord2 (480, 320)
-    : from_qsize (QApplication::desktop()->size());
+  coord2 size = headless_mode ? coord2 (480, 320) : from_qsize (QApplication::primaryScreen()->geometry().size());
   width  = size.x1;
   height = size.x2;
 }
@@ -275,7 +249,7 @@ qt_gui_rep::get_selection (string key, tree& t, string& s, string format) {
       }
       else {
         QBuffer qbuf(&buf);
-        QImage image= qvariant_cast<QImage> (md->imageData());
+        QImage image = qvariant_cast<QImage> (md->imageData());
         qbuf.open (QIODevice::WriteOnly);
         image.save (&qbuf, "PNG");
         input_format = "picture";
@@ -348,7 +322,7 @@ qt_gui_rep::set_selection (string key, tree t,
   cb->clear (mode);
   
   c_string selection (s);
-  cb->setText (QString::fromLatin1 (selection), mode);
+  cb->setText (QString::fromLatin1 ((QByteArrayView)&*selection), mode);
   QMimeData *md = new QMimeData;
   
   if (format == "verbatim" || format == "default") {
@@ -372,21 +346,21 @@ qt_gui_rep::set_selection (string key, tree t,
       enc = get_locale_charset ();
     
     if (enc == "utf-8" || enc == "UTF-8")
-      md->setText (QString::fromUtf8 (selection));
+      md->setText (QString::fromUtf8 (&*selection));
     else if (enc == "iso-8859-1" || enc == "ISO-8859-1")
-      md->setText (QString::fromLatin1 (selection));
+      md->setText (QString::fromLatin1 (&*selection));
     else
-      md->setText (QString::fromLatin1 (selection));
+      md->setText (QString::fromLatin1 (&*selection));
   }
   else if (format == "latex") {
     string enc = get_preference ("texmacs->latex:encoding"); 
     if (enc == "utf-8" || enc == "UTF-8" || enc == "cork")
-      md->setText (to_qstring (string (selection)));
+      md->setText (to_qstring (string (&*selection)));
     else
-      md->setText (QString::fromLatin1 (selection));
+      md->setText (QString::fromLatin1 (&*selection));
   }
   else
-    md->setText (QString::fromLatin1 (selection));
+    md->setText (QString::fromLatin1 (&*selection));
   cb->setMimeData (md, mode);
     // according to the docs, ownership of mimedata is transferred to clipboard
     // so no memory leak here
@@ -490,7 +464,7 @@ qt_gui_rep::show_wait_indicator (widget w, string message, string arg)  {
     waitWindow->close();
   }
   qApp->processEvents();
-  QApplication::flush();
+  // QApplication::flush();
   
   wid->qwid->activateWindow ();
   send_keyboard_focus (wid);
@@ -884,7 +858,7 @@ qt_gui_rep::update () {
   
   time_t delay = delayed_commands.lapse - texmacs_time();
   if (needing_update) delay = 0;
-  else                delay = max (0, min (std_delay, delay));
+  else                delay = std::max ((time_t)0, std::min ((time_t)std_delay, delay));
   if (postpone_treatment) delay= 9; // NOTE: force occasional display
  
   updatetimer->start (delay);

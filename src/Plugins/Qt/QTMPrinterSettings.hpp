@@ -78,7 +78,7 @@ public:
   bool          duplex;  //! Print on both sides of the paper
   int     pagesPerSide;  //! Can be one of 1,2,4,6,9,16
   PagePrintingOrder pagesOrder;
-  PageOrientation  orientation;
+  QPageLayout::Orientation  orientation;
   
 public:
   QTMPrinterSettings();
@@ -99,8 +99,8 @@ public:
    */
   virtual QList<QPair<QString,QString> > availablePrinters() = 0;
   
-  static QString qtPaperSizeToQString(const QPrinter::PaperSize);
-  static QPrinter::PaperSize qStringToQtPaperSize(const QString&);
+  static QString qtPaperSizeToQString(const QPageSize&);
+  static QPageSize qStringToQtPaperSize(const QString&);
 
 signals:
   void doneReading();

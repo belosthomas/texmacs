@@ -20,10 +20,8 @@
 #include <QColor>
 #include <QFont>
 #include <QUrl>
-
-
-class QStringList;
-class QKeySequence;
+#include <QStringList>
+#include <QKeySequence>
 
 typedef quartet<SI,SI,SI,SI> coord4;
 typedef pair<SI,SI> coord2;

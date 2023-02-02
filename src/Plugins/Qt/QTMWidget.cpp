@@ -35,6 +35,7 @@
 #include <QImage>
 #include <QUrl>
 #include <QFileInfo>
+#include <QRect>
 
 
 hashmap<int,string> qtkeymap (0);
@@ -249,9 +250,7 @@ QTMWidget::resizeEventBis (QResizeEvent *event) {
 void
 QTMWidget::paintEvent (QPaintEvent* event) {
   QPainter p (surface());
-  QVector<QRect> rects = event->region().rects();
-  for (int i = 0; i < rects.count(); ++i) {
-    QRect qr = rects.at (i);
+  for (auto qr : event->region()) {
     p.drawPixmap (QRect (qr.x(), qr.y(), qr.width(), qr.height()),
                   *(tm_widget()->backingPixmap),
                   QRect (retina_factor * qr.x(),
@@ -456,7 +455,7 @@ mouse_state (QMouseEvent* event, bool flag) {
   Qt::KeyboardModifiers kstate= event->modifiers ();
   if (flag) bstate= bstate | tstate;
   if ((bstate & Qt::LeftButton     ) != 0) i += 1;
-  if ((bstate & Qt::MidButton      ) != 0) i += 2;
+  if ((bstate & Qt::MiddleButton   ) != 0) i += 2;
   if ((bstate & Qt::RightButton    ) != 0) i += 4;
   if ((bstate & Qt::XButton1       ) != 0) i += 8;
   if ((bstate & Qt::XButton2       ) != 0) i += 16;
@@ -589,11 +588,11 @@ QTMWidget::inputMethodEvent (QInputMethodEvent* event) {
 QVariant 
 QTMWidget::inputMethodQuery (Qt::InputMethodQuery query) const {
   switch (query) {
-    case Qt::ImMicroFocus : {
+ /*   case Qt::ImMicroFocus : {
       const QPoint &topleft= cursor_pos - tm_widget()->backing_pos + surface()->geometry().topLeft();
       return QVariant (QRect (topleft, QSize (5, 5)));
     }
-    default:
+    default:*/ // todo
       return QWidget::inputMethodQuery (query);
   }
 }
@@ -642,7 +641,7 @@ tablet_state (QTabletEvent* event, bool flag) {
   Qt::MouseButton  tstate= event->button ();
   if (flag) bstate= bstate | tstate;
   if ((bstate & Qt::LeftButton     ) != 0) i += 1;
-  if ((bstate & Qt::MidButton      ) != 0) i += 2;
+  if ((bstate & Qt::MiddleButton   ) != 0) i += 2;
   if ((bstate & Qt::RightButton    ) != 0) i += 4;
   if ((bstate & Qt::XButton1       ) != 0) i += 8;
   if ((bstate & Qt::XButton2       ) != 0) i += 16;
@@ -959,7 +958,7 @@ wheel_state (QWheelEvent* event) {
   Qt::MouseButtons bstate= event->buttons ();
   Qt::KeyboardModifiers kstate= event->modifiers ();
   if ((bstate & Qt::LeftButton     ) != 0) i += 1;
-  if ((bstate & Qt::MidButton      ) != 0) i += 2;
+  if ((bstate & Qt::MiddleButton   ) != 0) i += 2;
   if ((bstate & Qt::RightButton    ) != 0) i += 4;
   if ((bstate & Qt::XButton1       ) != 0) i += 8;
   if ((bstate & Qt::XButton2       ) != 0) i += 16;
@@ -985,7 +984,7 @@ QTMWidget::wheelEvent(QWheelEvent *event) {
   if (as_bool (call ("wheel-capture?"))) {
 #if (QT_VERSION >= 0x060000)
     QPointF pos  = event->position();
-    QPoint  point= QPointF (pos.x(), pos.y()) + origin();
+    QPointF point = QPointF (pos.x(), pos.y()) + origin();
 #else
     QPoint  point= event->pos() + origin();
 #endif
@@ -996,7 +995,7 @@ QTMWidget::wheelEvent(QWheelEvent *event) {
     bool   hor  = event->orientation() == Qt::Horizontal;
     QPoint wheel (hor? delta: 0.0, hor? 0.0: delta);
 #endif
-    coord2 pt = from_qpoint (point);
+    coord2 pt = from_qpoint (point.toPoint());
     coord2 wh = from_qpoint (wheel);
     unsigned int mstate= wheel_state (event);
     array<double> data; data << ((double) wh.x1) << ((double) wh.x2);
@@ -1004,10 +1003,10 @@ QTMWidget::wheelEvent(QWheelEvent *event) {
                               mstate, texmacs_time (), data);
   }
   else if (QApplication::keyboardModifiers() == Qt::ControlModifier) {
-    if (event->delta() > 0)
-      call ("zoom-in", object (sqrt (sqrt (2.0))));
+    if (event->angleDelta().y() > 0)
+      call ("zoom-in",  sqrt (sqrt (2.0)));
     else
-      call ("zoom-out", object (sqrt (sqrt (2.0))));
+      call ("zoom-out",  sqrt (sqrt (2.0)));
   }
   else QAbstractScrollArea::wheelEvent (event);
 }

@@ -14,7 +14,7 @@
 #include "iterator.hpp"
 #include "analyze.hpp"
 
-#ifndef OS_MINGW
+#ifndef WIN32
 
 #include <errno.h>
 #include <unistd.h>
@@ -74,7 +74,7 @@ static string
 string_from_socket_address (SOCKADDR_STORAGE* sock) {
   static char tmp[128];
   if (sock->ss_family == AF_INET) {
-#ifdef OS_MINGW
+#ifdef WIN32
     return wsoc::inet_ntoa (((SOCKADDR_IN*) sock)->sin_addr);
 #else
     if (inet_ntop (AF_INET, &(((sockaddr_in*) sock)->sin_addr),
@@ -160,7 +160,7 @@ socket_link::socket_link (string host, unsigned short port) {
   }
   if (rp == NULL) { err= ERRNO; st= ST_CONNECTION; return; }
   FREEADDRINFO (result);
-#ifndef OS_MINGW
+#ifndef WIN32
   if (fcntl (sock, F_SETFL, O_NONBLOCK) == -1) {
     err= errno; st= ST_FCNTL; return; }
 #else
@@ -294,7 +294,7 @@ socket_link::ready_to_send (int s) {
 
 void
 socket_link::listen (int msecs) {
-#ifdef OS_MINGW
+#ifdef WIN32
   using namespace wsoc;
 #endif
   if (!alive ()) return;
@@ -347,7 +347,7 @@ socket_server::socket_server (string host, unsigned short port) {
     sock= SOCKET (rp->ai_family, rp->ai_socktype, rp->ai_protocol);
     if (sock < 0)
       continue;
-#ifndef OS_MINGW
+#ifndef WIN32
     if (fcntl (sock, F_SETFL, O_NONBLOCK) == -1) 
       continue;
 #else 
@@ -396,7 +396,7 @@ socket_server::connection (int s) {
         connect (clt, SIGNAL (disconnection(socket_link*)), this,
 		 SLOT (disconnection (socket_link*)));
         clts->insert ((pointer) clt);
-        call ("server-add", object (clt->getid ()));
+        call ("server-add",  clt->getid ());
         DBG_IO ("Client Connected from "
 	        << string_from_socket_address (&cltadd)
 	        << ", with id: " << clt->getid ());
@@ -413,7 +413,7 @@ socket_server::connection (int s) {
 
 void 
 socket_server::disconnection (class socket_link* clt) {
-  call ("server-remove", object (clt->getid()));
+  call ("server-remove",  clt->getid());
   clts->remove ((pointer) clt);
   tm_delete (clt);
 }

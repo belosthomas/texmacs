@@ -41,7 +41,7 @@ QTMGuiHelper::eventFilter (QObject *obj, QEvent *event) {
       //qDebug ("File Open Event %s", s);
     const char *win= new_window_flag? ":new-window": ":current-window";
     exec_delayed (scheme_cmd (list_object (symbol_object ("load-buffer"),
-                              object (url_system (s)), eval (win))));
+                              object_from (url_system (s)), eval (win))));
     new_window_flag= true;
     return true;
   } else {

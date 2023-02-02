@@ -15,11 +15,9 @@
 #include <QThread>
 #include <QSocketNotifier>
 
-#include "hashset.hpp"
-#include "string.hpp"
-#include "tm_link.hpp"
 
-#ifndef OS_MINGW
+
+#ifndef WIN32
 
 #include <sys/types.h>
 #include <sys/socket.h>
@@ -45,6 +43,9 @@ typedef int socklen_t;
 
 #endif
 
+#include "hashset.hpp"
+#include "string.hpp"
+#include "tm_link.hpp"
 // Common structures fors sockets
 
 extern unsigned qtmsocket_debug_count;

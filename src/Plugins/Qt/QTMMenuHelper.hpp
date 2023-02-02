@@ -329,7 +329,7 @@ class QTMRefreshWidget : public QWidget {
   widget    cur;
   qt_widget tmwid;
   QWidget*   qwid;
-  hashmap<object,widget> cache;
+  // hashmap<object,widget> cache;
   
 public:
   QTMRefreshWidget (qt_widget _tmwid, string _strwid, string _kind);

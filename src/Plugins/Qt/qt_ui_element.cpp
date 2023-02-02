@@ -81,7 +81,7 @@ class qt_toggle_command_rep: public command_rep {
   
 public:
   qt_toggle_command_rep(QCheckBox* w, command c) : qwid(w), cmd(c) { }
-  void apply () { if (qwid) cmd (list_object (object (qwid->isChecked()))); }
+  void apply () { if (qwid) cmd (list_object (object_from (qwid->isChecked()))); }
 
   tm_ostream& print (tm_ostream& out) { return out << "Toggle"; }
 };
@@ -100,7 +100,7 @@ public:
   qt_enum_command_rep(QComboBox* w, command c) : qwid(w), cmd(c) {}
   void apply () { 
     if (qwid)
-      cmd (list_object (object (from_qstring(qwid->currentText()))));
+      cmd (list_object (object_from (from_qstring(qwid->currentText()))));
   }
   
   tm_ostream& print (tm_ostream& out) { return out << "Enum"; }
@@ -233,7 +233,7 @@ qt_ui_element_rep::~qt_ui_element_rep() {
 blackbox
 qt_ui_element_rep::get_payload (qt_widget qtw, types check_type) {
   ASSERT (check_type == none || qtw->type == check_type,
-          c_string ("get_payload: widget " * qtw->type_as_string() *
+             c_string ("get_payload: widget " * qtw->type_as_string() *
                     " was not of the expected type."));
   switch (qtw->type) {
     case horizontal_menu:   case vertical_menu:    case horizontal_list:
@@ -542,7 +542,7 @@ qt_ui_element_rep::as_qaction () {
 
     default:
       FAILED (c_string ("qt_ui_element: unknown type for as_qaction, "
-                        * type_as_string()));
+                           * type_as_string()));
   }
 
   return act;

@@ -173,14 +173,14 @@ public:
       object l= null_object ();
       if (multiple)
         for (int i = selected.size() - 1; i >= 0; --i)
-          l = cons (from_qstring (selected[i]), l);
+          l = cons (object_from(from_qstring (selected[i])), l);
       else if (selected.size() > 0)
-        l = from_qstring (selected[0]);
+        l = object_from(from_qstring (selected[0]));
       else
-        l = "";
+        l = object_from("");
       
       if (filtered)
-        cmd (list_object (l, from_qstring (qwid->filter()->filterRegExp().pattern())));
+        cmd (list_object (l, from_qstring (qwid->filter()->filterRegularExpression().pattern())));
       else
         cmd (list_object (l));
     }

@@ -126,8 +126,7 @@ QTMPrintDialog::accept() {
   _settings->printOddPages  = oddPagesCheck->isChecked();
   _settings->printEvenPages = evenPagesCheck->isChecked();
   _settings->paperSize      = paperSizeCombo->currentText();
-  _settings->orientation    = (QTMPrinterSettings::PageOrientation)
-            orientationCombo->itemData(orderPagesCombo->currentIndex()).toInt();
+  _settings->orientation    = (QPageLayout::Orientation)orientationCombo->itemData(orderPagesCombo->currentIndex()).toInt();
   _settings->duplex         = duplexCheck->isChecked();
   _settings->blackWhite     = blackWhiteCheck->isChecked();
   _settings->pagesPerSide   = pagesPerSideCombo->currentText().toInt();

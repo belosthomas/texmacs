@@ -19,7 +19,6 @@
 #include <QCoreApplication>
 #include <QLocale>
 #include <QDateTime>
-#include <QTextCodec>
 #include <QHash>
 #include <QStringList>
 #include <QKeySequence>
@@ -480,7 +479,7 @@ qt_image_to_pdf (url image, url outfile, int w_pt, int h_pt, int dpi) {
 // or the actual dpi will be lower  
   if (DEBUG_CONVERT) debug_convert << "qt_image_to_eps_or_pdf " << image << " -> "<<outfile<<LF;
   QPrinter printer;
-  printer.setOrientation(QPrinter::Portrait);
+  printer.pageLayout().setOrientation(QPageLayout::Orientation::Portrait);
   if (suffix(outfile)=="eps") {
 #if (QT_VERSION >= 0x050000)
     //note that PostScriptFormat is gone in Qt5. a substitute?: http://soft.proindependent.com/eps/
@@ -507,7 +506,7 @@ qt_image_to_pdf (url image, url outfile, int w_pt, int h_pt, int dpi) {
   << "dpi set: " << printer.resolution() <<LF;
 */
     if (dpi > 0 && w_pt > 0 && h_pt > 0) {
-	    printer.setPaperSize(QSizeF(w_pt, h_pt), QPrinter::Point); // in points
+	    printer.pageLayout().setPageSize(QPageSize(QSizeF(w_pt, h_pt), QPageSize::Unit::Point)); // in points
 
       // w_pt and h_pt are dimensions in points (and there are 72 points per inch)
       int ww = w_pt * dpi / 72;
@@ -518,7 +517,7 @@ qt_image_to_pdf (url image, url outfile, int w_pt, int h_pt, int dpi) {
         printer.setResolution((int) (dpi*im.width())/(double)ww);
       if (DEBUG_CONVERT) debug_convert << "dpi asked: "<< dpi <<" ; actual dpi set: " << printer.resolution() <<LF;
 	  }
-	  else printer.setPaperSize(QSizeF(im.width (), im.height ()), QPrinter::DevicePixel);
+	  else printer.pageLayout().setPageSize(QPageSize(QSizeF(im.width (), im.height ()), QPageSize::Unit::Point));
     QPainter p;
     p.begin(&printer);
     p.drawImage(0, 0, im);
@@ -772,17 +771,17 @@ qt_get_date (string lan, string fm) {
 
 string
 qt_pretty_time (int t) {
-  QDateTime dt= QDateTime::fromTime_t (t);
+  QDateTime dt= QDateTime::fromSecsSinceEpoch(t);
   QString s= dt.toString ();
   return from_qstring (s);
 }
 
 #ifndef _MBD_EXPERIMENTAL_PRINTER_WIDGET  // this is in qt_printer_widget
 
-#define PAPER(fmt)  case QPrinter::fmt : return "fmt"
+#define PAPER(fmt)  case QPageSize::fmt : return "fmt"
 static string 
-qt_papersize_to_string (QPrinter::PaperSize sz) {
-  switch (sz) {
+qt_papersize_to_string (QPageSize sz) {
+  switch (sz.id()) {
       PAPER (A0) ;
       PAPER (A1) ;
       PAPER (A2) ;
@@ -823,8 +822,8 @@ qt_print (bool& to_file, bool& landscape, string& pname, url& filename,
     to_file = !(qprinter->outputFileName().isNull());
     pname = from_qstring( qprinter->printerName() );
     filename = from_qstring( qprinter->outputFileName() );
-    landscape = (qprinter->orientation() == QPrinter::Landscape);
-    paper_type = qt_papersize_to_string(qprinter->paperSize());
+    landscape = (qprinter->pageLayout().orientation() == QPageLayout::Landscape);
+    paper_type = qt_papersize_to_string(qprinter->pageLayout().pageSize());
     if (qprinter->printRange() == QPrinter::PageRange) {
       first = qprinter->fromPage(); 
       last = qprinter->toPage(); 
@@ -900,7 +899,7 @@ static string current_style_sheet;
 
 void
 init_palette (QApplication* app) {
-  if (occurs ("dark", tm_style_sheet)) {
+  /*if (occurs ("dark", tm_style_sheet)) {
     QPalette pal= app -> style () -> standardPalette ();
     pal.setColor (QPalette::Window, QColor (64, 64, 64));
     pal.setColor (QPalette::WindowText, QColor (224, 224, 224));
@@ -939,7 +938,7 @@ init_palette (QApplication* app) {
     tm_background= rgb_color (col.red (), col.green (), col.blue ());
   }
   else if (tm_style_sheet != "")
-    tm_background= rgb_color (160, 160, 160);
+    tm_background= rgb_color (160, 160, 160);*/ // todo
 }
 
 string

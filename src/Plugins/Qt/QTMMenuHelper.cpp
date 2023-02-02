@@ -555,7 +555,7 @@ QTMLineEdit::keyPressEvent (QKeyEvent* ev)
     if (ev->modifiers() & Qt::AltModifier) key= "A-" * key;
     if (ev->modifiers() & Qt::MetaModifier) key= "C-" * key;
 #endif
-    cmd (list_object (list_object (object (s), object (key))));
+    cmd (list_object (list_object (object_from (s), object_from (key))));
     return;
   }
   else if (c) {
@@ -726,7 +726,7 @@ QTMLineEdit::inputMethodEvent (QInputMethodEvent* ev) {
       ev->preeditString().isEmpty() &&
       continuous()) {
     string str= from_qstring(ev->commitString());
-    cmd (list_object (list_object (object (str), object (str))));
+    cmd (list_object (list_object (object_from (str), object_from (str))));
   }
 }
 
@@ -803,13 +803,13 @@ extern bool menu_caching;
 
 QTMRefreshWidget::QTMRefreshWidget (qt_widget _tmwid, string _strwid, string _kind)
 : QWidget (), strwid (_strwid), kind (_kind),
-  curobj (false), cur (), tmwid (_tmwid), qwid (NULL), cache (widget ())
+  curobj (object_from(false)), cur (), tmwid (_tmwid), qwid (NULL) //, cache (widget ())
 {   
   QObject::connect (the_gui->gui_helper, SIGNAL (tmSlotRefresh (string)),
                    this, SLOT (doRefresh (string)));
   QVBoxLayout* l = new QVBoxLayout (this);
   l->setContentsMargins (0, 0, 0, 0);
-  l->setMargin (0);
+ // l->setMargin (0);
   setLayout (l);
   
   doRefresh ("init");
@@ -822,19 +822,19 @@ QTMRefreshWidget::recompute (string what) {
   eval ("(lazy-initialize-force)");
   object xwid = call ("menu-expand", eval (s));
   
-  if (cache->contains (xwid)) {
+  /*if (cache->contains (xwid)) {
     if (curobj == xwid) return false;
     curobj = xwid;
     cur    = cache [xwid];
     return true;
-  } else {
+  } else {*/
     curobj = xwid;
     object uwid = eval (s);
     cur = make_menu_widget (uwid);
     tmwid->add_child (cur); // FIXME?! Is this ok? what when we refresh?
-    if (menu_caching) cache (xwid) = cur;
+    //if (menu_caching) cache (xwid) = cur;
     return true;
-  }
+  //}
 }
 
 /*
@@ -891,13 +891,13 @@ END_SLOT
 
 QTMRefreshableWidget::QTMRefreshableWidget (qt_widget _tmwid, object _prom, string _kind)
 : QWidget (), prom (_prom), kind (_kind),
-  curobj (false), cur (), tmwid (_tmwid), qwid (NULL)
+  curobj (object_from(false)), cur (), tmwid (_tmwid), qwid (NULL)
 {   
   QObject::connect (the_gui->gui_helper, SIGNAL (tmSlotRefresh (string)),
                    this, SLOT (doRefresh (string)));
   QVBoxLayout* l = new QVBoxLayout (this);
   l->setContentsMargins (0, 0, 0, 0);
-  l->setMargin (0);
+ // l->setMargin (0);
   setLayout (l);
   
   doRefresh ("init");
@@ -998,7 +998,9 @@ QTMComboBox::addItemsAndResize (const QStringList& texts, string ww, string hh) 
   QComboBox::addItems (texts);
   
     ///// Calculate the minimal contents size:
-  calcSize = QApplication::globalStrut ();
+  //calcSize = QApplication::globalStrut ();
+  calcSize.setWidth (0);
+  calcSize.setHeight (0);
   const QFontMetrics& fm = fontMetrics ();
   
   for (int i = 0; i < count(); ++i) {
@@ -1194,13 +1196,13 @@ BEGIN_SLOT
   QVariant d = tmModel()->data (index, QTMTreeModel::CommandRole);
     // If there's no CommandRole, we return the subtree by default
   if (!d.isValid() || !d.canConvert (QVariant::String))
-    arguments = cons (tmModel()->item_from_index (index), arguments);
+    arguments = cons (object_from(tmModel()->item_from_index (index)), arguments);
   else
-    arguments = cons (from_qstring (d.toString()), arguments);
+    arguments = cons (object_from(from_qstring (d.toString())), arguments);
   int cnt = QTMTreeModel::TMUserRole;
   d = tmModel()->data (index, cnt);
   while (d.isValid() && d.canConvert (QVariant::String)) {
-    arguments = cons (from_qstring (d.toString()), arguments);
+    arguments = cons (object_from(from_qstring (d.toString())), arguments);
     d = tmModel()->data (index, ++cnt);
   }
   _cmd (arguments);

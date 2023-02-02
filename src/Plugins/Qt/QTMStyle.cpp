@@ -283,7 +283,7 @@ void
 QTMStyle::drawPrimitive (PrimitiveElement element, const QStyleOption *opt, QPainter *p, const QWidget *widget) const {
   //  if (element == QStyle::PE_FrameStatusBarItem) return;
   switch (element) {
-    case PE_FrameStatusBar : 
+    case PE_FrameStatusBarItem :
       return;
     case PE_PanelButtonTool:
       if ((opt->state & (State_Sunken | State_On))) {
