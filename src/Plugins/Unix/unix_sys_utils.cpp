@@ -20,6 +20,8 @@
 #include <sys/wait.h>
 #include <pthread.h>
 
+#include <QApplication>
+
 int
 unix_system (string s) {
   c_string _s (s * " > /dev/null 2>&1");
@@ -197,6 +199,7 @@ _background_write_task (void* channel_as_void_ptr) {
   return (void*) NULL;
 }
 
+#if !ANDROID
 // exception safe file actions
 struct _file_actions_t {
   posix_spawn_file_actions_t rep;
@@ -207,6 +210,7 @@ struct _file_actions_t {
     posix_spawn_file_actions_destroy (&rep); }
   inline int status () const { return st; }
 };
+#endif
 
 // Texmacs warning for long spawn commands
 static void
@@ -220,6 +224,10 @@ int
 unix_system (array<string> arg,
 	     array<int> fd_in, array<string> str_in,
 	     array<int> fd_out, array<string*> str_out) {
+#if ANDROID
+    qDebug() << "System command not allowed on Android";
+    return 0;
+#else
   // Run command arg[0] with arguments arg[i], i >= 1.
   // str_in[i] is sent to the file descriptor fd_in[i].
   // str_out[i] is filled from the file descriptor fd_out[i].
@@ -327,6 +335,7 @@ unix_system (array<string> arg,
   if (thread_status < 0) return thread_status;
   if (wret < 0 || WIFEXITED(status) == 0) return -1;
   return WEXITSTATUS(status);
+#endif
 }
 
 #else
