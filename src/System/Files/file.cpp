@@ -20,6 +20,8 @@
 #include "scheme.hpp"
 #include "convert.hpp"
 
+#include <QDir>
+
 #include <stddef.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -527,7 +529,16 @@ read_directory (url u, bool& error_flag) {
   bench_start ("read directory");
   // End caching
 
-  DIR* dp;
+  QDir qtdir (QString::fromStdString(std::string(name.data(), N(name))));
+  QStringList list = qtdir.entryList(QDir::AllEntries | QDir::NoDotAndDotDot);
+
+  array<string> dir;
+  for (int i=0; i<list.size(); i++) {
+    string s = string(list.at(i).toUtf8().constData(), list.at(i).toUtf8().size());
+    dir << s;
+  }
+
+ /* DIR* dp;
   c_string temp (name);
   dp= opendir (temp);
   error_flag= (dp==NULL);
@@ -547,7 +558,7 @@ read_directory (url u, bool& error_flag) {
     dir << string (ep->d_name);
   #endif
   }
-  (void) closedir (dp);
+  (void) closedir (dp);*/
   merge_sort (dir);
 
   // Caching of directory contents
