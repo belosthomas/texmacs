@@ -14,6 +14,7 @@
 #include <process.h>
 #include <string>
 //#include "string.hpp"
+#include "array.hpp"
 
 using namespace std;
 

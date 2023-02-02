@@ -9,10 +9,11 @@
 * in the root directory or <http://www.gnu.org/licenses/gpl-3.0.html>.
 ******************************************************************************/
 
+#include <windows.h>
 #include <errno.h>
 #include "array.hpp"
 #include "spawn.hpp"
-#include <windows.h>
+
 
 Channel::Channel (int s):sz(s) {
  origin= -1; saved= -1; fd= -1;toBeClosed= -1; str= NULL; tid= 0; 
