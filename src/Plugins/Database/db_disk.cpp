@@ -214,7 +214,7 @@ database_rep::purge () {
   if (N(pending) <= 4096) {
     // Appending is an atomic operation on most systems
     // for block sizes of less than 4096 bytes
-    int rnd= (int) (((unsigned int) random ()) & 0xffffff);
+    int rnd= (int) (((unsigned int) rand ()) & 0xffffff);
     url db_append= glue (db_name, ".append-" * as_string (rnd));
     if (!save_string (db_append, pending, false)) {
       if (last_modified (db_name) > time_stamp) {
@@ -237,7 +237,7 @@ database_rep::purge () {
   else {
     // For larger appends, save the concatenation in a temporary file
     // and use an atomic move in order to replace the old file
-    int rnd= (int) (((unsigned int) random ()) & 0xffffff);
+    int rnd= (int) (((unsigned int) rand ()) & 0xffffff);
     url replace= glue (db_name, ".replace-" * as_string (rnd));
     if (!save_string (replace, loaded * pending, false)) {
       if (last_modified (db_name) > time_stamp) {
@@ -280,7 +280,7 @@ sync_databases () {
     else {
       database db= dbs[i]->compress ();
       url current= dbs[i]->db_name;
-      int rnd= (int) (((unsigned int) random ()) & 0xffffff);
+      int rnd= (int) (((unsigned int) rand ()) & 0xffffff);
       url replace= glue (current, ".replace-" * as_string (rnd));
       db->db_name= replace;
       db->purge ();
