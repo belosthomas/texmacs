@@ -171,3 +171,6 @@
 
 /* Guile string size type */
 #define guile_str_size_t @guile_str_size_t@
+
+#cmakedefine SCHEME_DECL @SCHEME_DECL@
+#cmakedefine SCHEME_REGI @SCHEME_REGI@
