@@ -51,6 +51,10 @@ inline string as_system_string (url u) { return as_string (u, URL_SYSTEM); }
 inline string as_unix_string (url u) { return as_string (u, URL_UNIX); }
 inline string as_standard_string (url u) { return as_string (u,URL_STANDARD); }
 
+inline int hash(url u) {
+    return hash (as_tree (u));
+}
+
 /******************************************************************************
 * url constructors
 ******************************************************************************/
