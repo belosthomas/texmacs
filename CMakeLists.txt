@@ -86,8 +86,10 @@ function(GenerateResourcesQRC)
 
 endfunction()
 
+file(GLOB_RECURSE Texmacs_AppSources "${CMAKE_CURRENT_SOURCE_DIR}/src/Texmacs/Texmacs/*")
+
 if (ANDROID)
-    add_library (texmacs MODULE ${CMAKE_CURRENT_SOURCE_DIR}/src/Texmacs/Texmacs/texmacs.cpp)
+    add_library (texmacs MODULE ${Texmacs_AppSources})
     set_target_properties(texmacs PROPERTIES QT_ANDROID_PACKAGE_SOURCE_DIR "${PROJECT_SOURCE_DIR}/android")
     qt_android_generate_deployment_settings(texmacs)
     qt_android_add_apk_target(texmacs)
@@ -100,7 +102,7 @@ if (ANDROID)
             ARGS -E copy "${CMAKE_CURRENT_BINARY_DIR}/libtexmacs.so" "${CMAKE_CURRENT_BINARY_DIR}/android-build/libs/${ANDROID_ABI}/libtexmacs_${ANDROID_ABI}.so"
     )
 else()
-    add_executable (texmacs ${CMAKE_CURRENT_SOURCE_DIR}/src/Texmacs/Texmacs/texmacs.cpp)
+    add_executable (texmacs ${Texmacs_AppSources})
 endif()
 GenerateResourcesQRC()
 target_include_directories(texmacs PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src)
