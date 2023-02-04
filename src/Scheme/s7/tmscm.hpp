@@ -38,6 +38,10 @@ public:
         return mSCM;
     }
 
+    int hash() override {
+        return std::hash<void*>()(mSCM.get());
+    }
+
     tmscm null() override {
         return s7_tmscm::mk(mScheme, s7_nil(mScheme));
     }

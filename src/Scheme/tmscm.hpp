@@ -54,6 +54,8 @@ class abstract_tmscm {
 public:
     virtual ~abstract_tmscm() = default;
 
+    virtual int hash() = 0;
+
     virtual tmscm null() = 0;
 
     virtual void set_car(tmscm b) = 0;

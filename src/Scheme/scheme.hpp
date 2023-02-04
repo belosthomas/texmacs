@@ -531,5 +531,9 @@ inline command as_command (object obj) {
     return tm_new<object_command_rep> (obj);
 }
 
+[[deprecated]] inline int hash(object o) {
+    return o.hash(); // this is dangerous
+}
+
 #endif
 #endif // defined SCHEME_HH

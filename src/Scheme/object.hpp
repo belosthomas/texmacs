@@ -30,7 +30,11 @@ public:
     template <typename T> object(T obj);
 
     virtual ~object() = default;
-    
+
+    virtual int hash() {
+        return handle->hash();
+    }
+
     virtual bool as_bool () {
         tmscm b= to_tmscm();
         if (!b->is_bool()) return false;
