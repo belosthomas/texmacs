@@ -247,8 +247,9 @@ url
 new_buffer_in_new_window (url name, tree doc, tree geom) {
   if (is_nil (concrete_buffer (name)))
     create_buffer (name, doc);
+  auto passive_view = get_passive_view (name);
   url win= new_window (true, geom);
-  window_set_view (win, get_passive_view (name), true);
+  window_set_view (win, passive_view, true);
   return win;
 }
 
