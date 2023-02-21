@@ -11,6 +11,8 @@
 #ifndef TEXMACS_TEXMACSAPPLICATION_H
 #define TEXMACS_TEXMACSAPPLICATION_H
 
+#include <list>
+
 #include <QApplication>
 #include <QIcon>
 #include <QSplashScreen>
@@ -19,6 +21,8 @@
 #include <QDir>
 #include <QDirIterator>
 #include <QThread>
+
+#include "Window.hpp"
 
 #include "server.hpp"
 #include "string.hpp"
@@ -48,6 +52,12 @@ namespace texmacs {
 
     public:
         Application(int &argc, char **argv);
+
+        /**
+         * @brief Add a tab to the current window, or to a new window if there is no current window.
+         * @param centralWidget The central widget of the tab.
+         */
+        void addTab(ThingyTabInnerWindow *centralWidget);
 
     signals:
         /**
@@ -97,8 +107,16 @@ namespace texmacs {
     private:
         QSplashScreen mSlpashScreen;
         server *mServer = nullptr;
+        std::list<Window> mWindows;
 
     };
+
+    inline Application &getApplication() {
+        QApplication *app = qApp;
+        Application *texmacsApp = dynamic_cast<Application*>(app);
+        assert(texmacsApp != nullptr);
+        return *texmacsApp;
+    }
 
 }
 

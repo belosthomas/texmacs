@@ -15,6 +15,19 @@ texmacs::Application::Application(int &argc, char **argv) : QApplication(argc, a
     QTimer::singleShot(0, this, SLOT(onApplicationStarted()));
 }
 
+void texmacs::Application::addTab(ThingyTabInnerWindow *centralWidget) {
+    Window *currentWindow = nullptr;
+    QWidget *qtwindow = activeWindow();
+    if (qtwindow != nullptr) {
+        currentWindow = dynamic_cast<Window *>(qtwindow); // dynamic_cast returns nullptr if the cast is not possible
+    }
+    if (currentWindow == nullptr) {
+        currentWindow = &mWindows.emplace_back();
+    }
+    currentWindow->addTab(centralWidget);
+    currentWindow->show();
+}
+
 void texmacs::Application::loadSplashScreen() {
     mSlpashScreen.setPixmap(QPixmap(":/TeXmacs/misc/images/splash.png").scaledToWidth(primaryScreen()->size().width() / 4, Qt::SmoothTransformation));
     mSlpashScreen.show();
@@ -23,6 +36,7 @@ void texmacs::Application::loadSplashScreen() {
     });
     connect(this, &Application::initialized, this, [this]() {
         int n = 0;
+        init_plugins ();
         gui_open (n, nullptr);
         mServer = new server();
         open_window ();
@@ -107,7 +121,7 @@ void texmacs::Application::initializeScheme() {
 }
 
 void texmacs::Application::onApplicationStarted() {
-    resetTeXmacs();
+    // resetTeXmacs();
     extractResources();
     initializeEnvironmentVariables();
 
