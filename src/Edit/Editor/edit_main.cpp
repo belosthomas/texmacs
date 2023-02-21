@@ -80,13 +80,6 @@ new_editor (server_rep* sv, tm_buffer buf) {
   return tm_new<edit_main_rep> (sv, buf);
 }
 
-template<> void
-tm_delete<editor_rep> (editor_rep* ptr) {
-  void *mem= ptr->derived_this ();
-  ptr -> ~editor_rep ();
-  fast_delete (mem);
-}
-
 /******************************************************************************
 * Properties
 ******************************************************************************/
@@ -250,7 +243,7 @@ edit_main_rep::print_doc (url name, bool conform, int first, int last) {
   env->write (PAGE_SHOW_HF, "true");
   env->write (PAGE_SCREEN_MARGIN, "false");
   env->write (PAGE_BORDER, "none");
-  if (is_func (env->read (BG_COLOR), PATTERN))
+  if (is_func (env->read (BG_COLOR), TM_PATTERN))
     env->write (BG_COLOR, env->exec (env->read (BG_COLOR)));
   if (!conform) {
     env->write (PAGE_MEDIUM, "paper");

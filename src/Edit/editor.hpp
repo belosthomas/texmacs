@@ -631,8 +631,6 @@ public:
   friend void   delete_view (url u);
 };
 
-template<> void tm_delete<editor_rep> (editor_rep* ptr);
-
 class editor {
 EXTEND_NULL(widget,editor);
 public:

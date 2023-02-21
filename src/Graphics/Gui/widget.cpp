@@ -242,11 +242,3 @@ bool use_native_menubar = true;
 bool use_unified_toolbar= true;
 string tm_style_sheet;
 bool use_mini_bars= false;
-
-template<> void
-tm_delete<widget_rep> (widget_rep* ptr) {
-  void *mem= ptr->derived_this ();
-  ptr -> ~widget_rep ();
-  fast_delete (mem);
-}
-

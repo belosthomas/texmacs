@@ -59,8 +59,6 @@ public:
   friend class widget;
 };
 
-template<> void tm_delete<widget_rep> (widget_rep* ptr);
-
 class widget {
 public:
 ABSTRACT_NULL(widget);
