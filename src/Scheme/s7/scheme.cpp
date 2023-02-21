@@ -158,5 +158,13 @@ s7_tmscheme::s7_tmscheme() {
                                      false, "int getpid(void)",
                                      s7_make_signature2(mInstance, 2, s7_make_symbol(mInstance, "integer?"), s7_t(mInstance))));
 
+    install_procedure("get-user-login", [](abstract_scheme *sc, tmscm args) {
+        return sc->string_to_tmscm("test");
+    }, 0, 0);
+
+    install_procedure("get-user-name", [](abstract_scheme *sc, tmscm args) {
+        return sc->string_to_tmscm("test");
+    }, 0, 0);
+
 
 }
