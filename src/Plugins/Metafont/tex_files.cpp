@@ -84,9 +84,27 @@ tfm_font_path () {
 * Caching results
 ******************************************************************************/
 
+#include <QString>
+#include <QDir>
+#include <QDirIterator>
+
 url
-resolve_tex (url name) {
-  string s= as_string (name);
+resolve_tex (string name) {
+
+    QString texmacsPath = QDir::homePath() + "/.TeXmacs/TeXmacs/fonts";
+    QDirIterator it(texmacsPath, QDir::Files, QDirIterator::Subdirectories);
+
+    QString qname = QString::fromStdString(std::string(name.data(), N(name)));
+
+    while (it.hasNext()) {
+        QString fileName = it.next();
+        if (fileName.endsWith(qname)) {
+            return url_system(string(fileName.toUtf8().data(), fileName.toUtf8().size()));
+        }
+    }
+
+
+  string s= name;
   if (is_cached ("font_cache.scm", s)) {
     url u= url_system (cache_get ("font_cache.scm", s) -> label);
     if (exists (u)) return u;
@@ -97,10 +115,8 @@ resolve_tex (url name) {
   url u= url_none ();
   if (ends (s, "mf" )) {
     u= resolve_tfm (name);
-#ifdef OS_WIN32
     if (is_none (u))
       u= resolve_tfm (replace (s, ".mf", ".tfm"));
-#endif
   }
   if (ends (s, "tfm")) u= resolve_tfm (name);
   if (ends (s, "pk" )) u= resolve_pk  (name);
@@ -114,7 +130,7 @@ resolve_tex (url name) {
 
 bool
 exists_in_tex (url u) {
-  return !is_none (resolve_tex (u));
+  return !is_none (resolve_tex (as_string(u)));
 }
 
 /******************************************************************************

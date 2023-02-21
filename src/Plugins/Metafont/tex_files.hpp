@@ -19,7 +19,7 @@ url  tfm_font_path ();
 void reset_tfm_path (bool rehash= true);
 void reset_pk_path  (bool rehash= true);
 void reset_pfb_path ();
-url  resolve_tex (url name);
+url  resolve_tex (string name);
 bool exists_in_tex (url font_name);
 
 #endif // defined TEX_FILES_H

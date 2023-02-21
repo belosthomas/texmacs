@@ -64,7 +64,7 @@ try_tfm (string family, int size, int osize, tex_font_metric& tfm, bool make) {
       system_wait ("");
       u= resolve_tex (name);
       if (is_none (u)) {
-	reset_tfm_path ();
+	//reset_tfm_path ();
 	u= resolve_tex (name);
 	save_string (url ("$TEXMACS_HOME_PATH/fonts/error", name), "");
       }
@@ -324,12 +324,10 @@ load_tex (string family, int size, int dpi, int dsize,
       bench_cumul ("load tex font");
       return;
     }
-#ifdef OS_WIN32
   else {
     string name= family * as_string (size) * "@" * as_string (dpi);
     failed_error << "Could not open font " << name << "\nLoading default" << LF;
     cout << "Could not load font...\nLoading default" << LF;
-    XNoTexWarn();
     if (load_tex_tfm ("ecrm", 10, 10, tfm) &&
 	load_tex_pk ("ecrm", 10, 600, 10, tfm, pk))
       {
@@ -337,7 +335,7 @@ load_tex (string family, int size, int dpi, int dsize,
 	return;
       }
   }
-#endif
+
   string name= family * as_string (size) * "@" * as_string (dpi);
   failed_error << "Could not open " << name << "\n";
   FAILED ("Tex seems not to be installed properly");
