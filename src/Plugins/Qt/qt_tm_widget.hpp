@@ -25,6 +25,7 @@
 #include <QMainWindow>
 #include <QStackedWidget>
 #include <QLayout>
+#include <Texmacs/Window.hpp>
 
 class QLabel; 
 class QToolBar;
@@ -107,18 +108,18 @@ public:
 protected:
   
       ////// Convenience methods to access our QWidgets
-  
-  QMainWindow* mainwindow () {
-    return qobject_cast<QMainWindow*> (qwid); 
+
+  texmacs::ThingyTabInnerWindow* mainwindow () {
+    return qobject_cast<texmacs::ThingyTabInnerWindow*> (qwid);
   }
   QWidget* centralwidget () {
     return mainwindow()->centralWidget();
   }
-  QTMScrollView* scrollarea () {
-    return qobject_cast<QTMScrollView*> (main_widget->qwid);
+  QAbstractScrollArea* scrollarea () {
+    return dynamic_cast<QAbstractScrollArea *>(centralwidget());
   }
-  QTMWidget* canvas () {
-    return qobject_cast<QTMWidget*> (main_widget->qwid);
+  QWidget* canvas () {
+    return scrollarea()->viewport();
   }
 };
 

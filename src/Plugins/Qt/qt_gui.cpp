@@ -849,7 +849,9 @@ qt_gui_rep::update () {
 
   if (!postpone_treatment) {
     if (the_interpose_handler) the_interpose_handler();
-    qt_simple_widget_rep::repaint_all ();
+    // auto renderer = the_qt_renderer();
+    // renderer->begin();
+    // qt_simple_widget_rep::repaint_all (ren);
   }
   
   if (waiting_events.size() > 0) needing_update = true;

@@ -56,7 +56,7 @@ QTMTreeModel::QTMTreeModel (const tree& data, const tree& roles, QObject* p)
   tree t = tree (_t_rep);
   parse_roles (roles);
   const path& ip = obtain_ip (t);
-  if (is_nil (ip) || const_cast<path&>(ip)->item == DETACHED)
+  if (is_nil (ip) || const_cast<path&>(ip)->item == -5)
     attach_ip (t, path(0));
 
     // the qt_tree_observer takes ownership of this object
@@ -219,7 +219,7 @@ QTMTreeModel::ipath_has_parent (const path& ip) const {
     // already with inverse paths which lead further up the hierarchy
     // than we manage. That's why we need the extra check with obtain_ip()
   tree _t = tree (_t_rep);
-  return !is_nil (ip) && const_cast<path&>(ip)->item != DETACHED
+  return !is_nil (ip) && const_cast<path&>(ip)->item != -5
                       && obtain_ip (_t) != ip;
 }
 

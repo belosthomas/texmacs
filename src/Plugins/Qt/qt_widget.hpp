@@ -90,6 +90,7 @@ protected:
 public:
   long                id;
   QPointer<QWidget> qwid;
+  QWidget *associatedDocumentWidget;
 
   /*! A list of all supported widget types.
    FIXME: This enum breaks the basic inheritance rules, since we have to 

@@ -23,6 +23,8 @@
 #include <QPaintDevice>
 #include <QPainterPath>
 #include <QPixmap>
+#include <QApplication>
+#include <QScreen>
 
 /******************************************************************************
 * Qt images
@@ -282,7 +284,6 @@ qt_renderer_rep::line (SI x1, SI y1, SI x2, SI y2) {
   decode (x1, y1, rx1, ry1);
   decode (x2, y2, rx2, ry2);
   // y1--; y2--; // top-left origin to bottom-left origin conversion
-  painter->setRenderHints (QPainter::Antialiasing);
   painter->drawLine (QPointF (rx1, ry1), QPointF (rx2, ry2));
 }
 
@@ -310,7 +311,6 @@ qt_renderer_rep::lines (array<SI> x, array<SI> y) {
   p.setJoinStyle (Qt::RoundJoin);
   painter->setPen (p);
 
-  painter->setRenderHints (QPainter::Antialiasing);
   painter->drawPolyline (pnt, n);
   STACK_DELETE_ARRAY (pnt);
 }
@@ -324,8 +324,7 @@ qt_renderer_rep::clear (SI x1, SI y1, SI x2, SI y2) {
   decode (x2, y2);
   if ((x1>=x2) || (y1<=y2)) return;
   QBrush br (to_qcolor (bg_brush->get_color ()));
-  //painter->setRenderHints (0);
-  painter->fillRect (x1, y2, x2-x1, y1-y2, br);       
+  painter->fillRect (x1, y2, x2-x1, y1-y2, br);
 }
 
 void
@@ -350,8 +349,7 @@ qt_renderer_rep::fill (SI x1, SI y1, SI x2, SI y2) {
   decode (x2, y2);
 
   QBrush br (to_qcolor (pen->get_color ()));
-  //painter->setRenderHints (0);
-  painter->fillRect (x1, y2, x2-x1, y1-y2, br);       
+  painter->fillRect (x1, y2, x2-x1, y1-y2, br);
 }
 
 void
@@ -360,7 +358,6 @@ qt_renderer_rep::arc (SI x1, SI y1, SI x2, SI y2, int alpha, int delta) {
   double rx1, ry1, rx2, ry2;
   decode (x1, y1, rx1, ry1);
   decode (x2, y2, rx2, ry2);
-  painter->setRenderHints (QPainter::Antialiasing);
   painter->drawArc (QRectF (rx1, ry2, rx2-rx1, ry1-ry2), alpha / 4, delta / 4);
 }
 
@@ -378,7 +375,6 @@ qt_renderer_rep::fill_arc (SI x1, SI y1, SI x2, SI y2, int alpha, int delta) {
   pp.arcTo (QRectF (rx1, ry2, rx2-rx1, ry1-ry2), alpha / 64, delta / 64);
   pp.closeSubpath ();
   pp.setFillRule (Qt::WindingFill);
-  painter->setRenderHints (QPainter::Antialiasing);
   painter->fillPath (pp, br);
 }
 
@@ -401,7 +397,6 @@ qt_renderer_rep::polygon (array<SI> x, array<SI> y, bool convex) {
   pp.addPolygon (poly);
   pp.closeSubpath ();
   pp.setFillRule (convex? Qt::OddEvenFill: Qt::WindingFill);
-  painter->setRenderHints (QPainter::Antialiasing);
   painter->fillPath (pp, br);
 }
 
@@ -432,7 +427,6 @@ qt_renderer_rep::draw_triangle (SI x1, SI y1, SI x2, SI y2, SI x3, SI y3) {
   pp.addPolygon (poly);
   pp.closeSubpath ();
   pp.setFillRule (Qt::OddEvenFill);
-  painter->setRenderHints (QPainter::Antialiasing, false);
   painter->fillPath (pp, br);
 }
 
@@ -442,15 +436,35 @@ qt_renderer_rep::draw_triangle (SI x1, SI y1, SI x2, SI y2, SI x3, SI y3) {
 
 void
 qt_renderer_rep::draw_clipped (QImage *im, int w, int h, SI x, SI y) {
-  (void) w; (void) h;
   int x1=cx1-ox, y1=cy2-oy, x2= cx2-ox, y2= cy1-oy;
   decode (x , y );
   decode (x1, y1);
   decode (x2, y2);
   y--; // top-left origin to bottom-left origin conversion
        // clear(x1,y1,x2,y2);
-  //painter->setRenderHints (0);
-  painter->drawImage (x, y, *im);
+
+    qreal dpiX = QApplication::primaryScreen()->logicalDotsPerInchX();
+    qreal dpiY = QApplication::primaryScreen()->logicalDotsPerInchY();
+    im->setDotsPerMeterX(dpiX * 100 / 2.54);
+    im->setDotsPerMeterY(dpiY * 100 / 2.54);
+
+    float sx = (float) w / im->width();
+    float sy = (float) h / im->height();
+
+    // Scale the image down to an integer size using bicubic interpolation
+    //QImage scaledImage = im->scaled(w * 2);
+    //scaledImage = scaledImage.convertToFormat(QImage::Format_ARGB32_Premultiplied);
+
+    painter->save();
+
+    QTransform transform;
+    transform.translate(x, y);
+    transform.scale(sx, sy);
+    painter->setTransform(transform, true);
+    painter->drawImage(QPoint(0, 0), *im);
+
+    painter->restore();
+
 }
 
 void
@@ -462,7 +476,6 @@ qt_renderer_rep::draw_clipped (QTMPixmapOrImage *im, int w, int h, SI x, SI y) {
   decode (x , y );
   y--; // top-left origin to bottom-left origin conversion
   // clear(x1,y1,x2,y2);
-  //painter->setRenderHints (0);
   painter->drawPixmap (x, y, w, h, *(im->QPixmap_ptr ()));
 }
 
@@ -519,7 +532,7 @@ qt_renderer_rep::draw (int c, font_glyphs fng, SI x, SI y) {
 
   // get the pixmap
   color fgc= pen->get_color ();
-  basic_character xc (c, fng, std_shrinkf, fgc, 0);
+  basic_character xc (c, fng, 1, fgc, 0);
   qt_image mi = character_image [xc];
   if (is_nil(mi)) {
     int r, g, b, a;
@@ -527,7 +540,7 @@ qt_renderer_rep::draw (int c, font_glyphs fng, SI x, SI y) {
     if (get_reverse_colors ()) reverse (r, g, b);
     SI xo, yo;
     glyph pre_gl= fng->get (c); if (is_nil (pre_gl)) return;
-    glyph gl= shrink (pre_gl, std_shrinkf, std_shrinkf, xo, yo);
+    glyph gl= shrink (pre_gl, 1, 1, xo, yo);
     int i, j, w= gl->width, h= gl->height;
 #ifdef QTMPIXMAPS
     QTMPixmapOrImage* im= new QTMPixmapOrImage (w, h);
@@ -560,15 +573,15 @@ qt_renderer_rep::draw (int c, font_glyphs fng, SI x, SI y) {
         }
     }
 #else
-    QTMImage *im= new QImage (w, h, QImage::Format_ARGB32);
+    QTMImage *im= new QImage (w, h, QImage::Format_ARGB32_Premultiplied);
     //QTMImage *im= new QImage (w, h, QImage::Format_ARGB32_Premultiplied);
     {
-      int nr_cols= std_shrinkf*std_shrinkf;
+      int nr_cols= 1;
       if (nr_cols >= 64) nr_cols= 64;
 
       // the following line is disabled because
       // it causes a crash on Qt/X11 4.4.3
-      //im->fill (Qt::transparent);
+      im->fill (Qt::transparent);
 
       for (j=0; j<h; j++)
         for (i=0; i<w; i++) {
@@ -588,7 +601,7 @@ qt_renderer_rep::draw (int c, font_glyphs fng, SI x, SI y) {
   // draw the character
   //cout << (char)c << ": " << cx1/256 << ","  << cy1/256 << ","  
   //<< cx2/256 << ","  << cy2/256 << LF; 
-  draw_clipped (mi->img, mi->w, mi->h, x- mi->xo*std_shrinkf, y+ mi->yo*std_shrinkf);
+  draw_clipped (mi->img, mi->w / std_shrinkf, mi->h / std_shrinkf, x- mi->xo, y+ mi->yo);
 }
 
 void

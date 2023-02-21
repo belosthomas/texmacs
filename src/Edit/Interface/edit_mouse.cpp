@@ -644,7 +644,7 @@ call_mouse_event (string kind, SI x, SI y, SI m, time_t t, array<double> d) {
   array<object> args;
   args << object (kind) << object (x) << object (y)
        << object (m) << object ((double) t) << object (d);
-  call ("mouse-event", args);
+ // call ("mouse-event", args);
 }
 
 static string

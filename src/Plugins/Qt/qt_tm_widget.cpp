@@ -18,6 +18,7 @@
 #include <QMainWindow>
 #include <QMenuBar>
 #include <QLayoutItem>
+#include <Texmacs/DocumentWidget.hpp>
 
 #include "config.h"
 #include "analyze.hpp"
@@ -121,7 +122,7 @@ qt_tm_widget_rep::qt_tm_widget_rep(int mask, command _quit)
 
   // general setup for main window
   
-  QMainWindow* mw= mainwindow ();
+  auto* mw= mainwindow ();
   if (tm_style_sheet == "") {
     mw->setStyle (qtmstyle ());
     mw->menuBar()->setStyle (qtmstyle ());
@@ -142,20 +143,10 @@ qt_tm_widget_rep::qt_tm_widget_rep(int mask, command _quit)
   }
 #endif
 
-  // there is a bug in the early implementation of toolbars in Qt 4.6
-  // which has been fixed in 4.6.2 (at least)
-  // this is why we change dimension of icons
-  
-#if (defined(Q_OS_MAC)&&(QT_VERSION>=QT_VERSION_CHECK(4,6,0))&&(QT_VERSION<QT_VERSION_CHECK(4,6,2)))
-  mw->setIconSize (QSize (22, 30));  
-#else
-  mw->setIconSize (QSize (17, 17));
-#endif
-  mw->setFocusPolicy (Qt::NoFocus);
-  
+
   // status bar
   
-  QStatusBar* bar= new QStatusBar(mw);
+  QStatusBar* bar= mw->statusBar();
   leftLabel= new QLabel (qt_translate ("Welcome to TeXmacs"), mw);
   rightLabel= new QLabel (qt_translate ("Booting"), mw);
   leftLabel->setFrameStyle (QFrame::NoFrame);
@@ -198,8 +189,7 @@ qt_tm_widget_rep::qt_tm_widget_rep(int mask, command _quit)
   }
 #endif
 #endif
-  mw->setStatusBar (bar);
- 
+
   // toolbars
   
   mainToolBar   = new QToolBar ("main toolbar", mw);
@@ -293,8 +283,10 @@ qt_tm_widget_rep::qt_tm_widget_rep(int mask, command _quit)
     modeToolBar->setFixedHeight (h2);
     focusToolBar->setFixedHeight (h3);
   }
-  
-  QWidget *cw= new QWidget();
+
+  mw->setCentralWidget(new texmacs::DocumentWidget(qt_simple_widget_rep::last_created_widget));
+    qt_simple_widget_rep::last_created_widget = nullptr;
+  QWidget *cw = mw->centralWidget();
   cw->setObjectName("centralWidget");  // this is important for styling toolbars.
   
     // The main layout
@@ -306,8 +298,6 @@ qt_tm_widget_rep::qt_tm_widget_rep(int mask, command _quit)
   QWidget* q = main_widget->as_qwidget(); // force creation of QWidget
   q->setParent (qwid); // q->layout()->removeWidget(q) will reset the parent to this
   bl->addWidget (q);
-  
-  mw->setCentralWidget (cw);
 
   mainToolBar->setObjectName ("mainToolBar");
   modeToolBar->setObjectName ("modeToolBar");
@@ -891,24 +881,24 @@ qt_tm_widget_rep::write (slot s, blackbox index, widget w) {
     case SLOT_SCROLLABLE:
     {
       check_type_void (index, s);
-      
+
       QWidget* q = main_widget->qwid;
       q->hide();
       QLayout* l = centralwidget()->layout();
       l->removeWidget(q);
-      
+
       q = concrete(w)->as_qwidget();   // force creation of the new QWidget
       l->addWidget(q);
       /* " When you use a layout, you do not need to pass a parent when
        constructing the child widgets. The layout will automatically reparent
-       the widgets (using QWidget::setParent()) so that they are children of 
+       the widgets (using QWidget::setParent()) so that they are children of
        the widget on which the layout is installed " */
       main_widget = concrete (w);
         // canvas() now returns the new QTMWidget (or 0)
-      
-      if (scrollarea())   // Fix size to draw margins around.
-        scrollarea()->surface()->setSizePolicy (QSizePolicy::Fixed,
-                                                QSizePolicy::Fixed);
+
+    //  if (scrollarea())   // Fix size to draw margins around.
+    //    scrollarea()->surface()->setSizePolicy (QSizePolicy::Fixed,
+    //                                            QSizePolicy::Fixed);
       send_keyboard_focus (abstract (main_widget));
     }
       break;
@@ -965,7 +955,7 @@ qt_tm_widget_rep::write (slot s, blackbox index, widget w) {
       // HACK: we just disable the focus bar updating while preediting.
       // This seems enough since the other toolbars are not usually updated
       // while performing an input method keyboard sequence
-      if (canvas()) can_update = !canvas()->isPreediting();
+      //if (canvas()) can_update = !canvas()->isPreediting();
 #endif
       if (can_update) {
         focus_icons_widget = concrete (w);

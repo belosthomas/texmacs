@@ -70,10 +70,10 @@ protected:
   array<string> completions;
   string        completion_prefix;
   int           completion_pos;
-  renderer      shadow;
+  // renderer      shadow;
   SI            vx1, vy1, vx2, vy2;
-  rectangles    stored_rects;
-  renderer      stored;
+  // rectangles    stored_rects;
+  // renderer      stored;
   rectangles    locus_new_rects;
   rectangles    locus_rects;
   list<string>  mouse_ids;

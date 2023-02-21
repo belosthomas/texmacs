@@ -27,6 +27,10 @@ public:
 public:
   qt_renderer_rep (QPainter *_painter, int w = 0, int h = 0);
   ~qt_renderer_rep ();
+
+  qt_renderer_rep(const qt_renderer_rep& other) = delete;
+    qt_renderer_rep& operator=(const qt_renderer_rep& other) = delete;
+
   void* get_handle ();
 
   void set_zoom_factor (double zoom);

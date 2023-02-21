@@ -81,8 +81,8 @@ edit_interface_rep::draw_env (renderer ren) {
 
 void
 edit_interface_rep::draw_cursor (renderer ren) {
-  if (get_preference ("draw cursor") == "on" &&
-      !temp_invalid_cursor && (got_focus || full_screen)) {
+  //if (get_preference ("draw cursor") == "on" &&
+      if (!temp_invalid_cursor && (got_focus || full_screen)) {
     cursor cu= get_cursor();
     if (!inside_active_graphics ()) {
       SI dw= 0;
@@ -273,7 +273,7 @@ edit_interface_rep::draw_post (renderer win, renderer ren, rectangle r) {
   draw_context (ren, r);
   draw_env (ren);
   draw_selection (ren, r);
-  draw_graphics (ren);
+//  draw_graphics (ren); // todo
   draw_cursor (ren); // the text cursor must be drawn over the graphical object
   draw_keys (ren);
   ren->reset_zoom_factor ();
@@ -283,9 +283,11 @@ edit_interface_rep::draw_post (renderer win, renderer ren, rectangle r) {
 void
 edit_interface_rep::draw_with_shadow (renderer win, rectangle r) {
   rectangle sr= r * magf;
-  win->new_shadow (shadow);
-  win->get_shadow (shadow, sr->x1, sr->y1, sr->x2, sr->y2);
-  renderer ren= shadow;
+
+  //win->new_shadow (shadow);
+  //win->get_shadow (shadow, sr->x1, sr->y1, sr->x2, sr->y2);
+  //renderer ren= shadow;
+  auto ren = win;
 
   rectangles l;
   win->set_zoom_factor (zoomf);
@@ -321,47 +323,9 @@ edit_interface_rep::draw_with_shadow (renderer win, rectangle r) {
 
 void
 edit_interface_rep::draw_with_stored (renderer win, rectangle r) {
-  //cout << "Redraw " << (r*magf/PIXEL) << "\n";
+    draw_with_shadow(win, r);
+  draw_post (win, win, r);
 
-  /* Verify whether the backing store is still valid */
-  if (!is_nil (stored_rects)) {
-    SI w1, h1, w2, h2;
-    win    -> get_extents (w1, h1);
-    stored -> get_extents (w2, h2);
-    if (stored->ox != win->ox || stored->oy != win->oy ||
-        w1 != w2 || h1 != h2) {
-      // cout << "x"; cout.flush ();
-      stored_rects= rectangles ();
-    }
-  }
-
-  /* Either draw with backing store or regenerate */
-  rectangle sr= r * magf;
-  if (is_nil (rectangles (r) - stored_rects) && !is_nil (stored_rects)) {
-    // cout << "*"; cout.flush ();
-    win->new_shadow (shadow);
-    win->get_shadow (shadow, sr->x1, sr->y1, sr->x2, sr->y2);
-    shadow->put_shadow (stored, sr->x1, sr->y1, sr->x2, sr->y2);
-    draw_post (win, shadow, r);
-    win->put_shadow (shadow, sr->x1, sr->y1, sr->x2, sr->y2);
-  }
-  else {
-    // cout << "."; cout.flush ();
-    draw_with_shadow (win, r);
-    if (!gui_interrupted ()) {
-      if (inside_active_graphics ()) {
-        shadow->new_shadow (stored);
-        shadow->get_shadow (stored, sr->x1, sr->y1, sr->x2, sr->y2);
-        //stored_rects= /*stored_rects |*/ rectangles (r);
-        stored_rects= simplify (rectangles (r, stored_rects));
-        //cout << "Stored: " << stored_rects << "\n";
-        //cout << "M"; cout.flush ();
-      }
-      draw_post (win, shadow, r);
-      win->put_shadow (shadow, sr->x1, sr->y1, sr->x2, sr->y2);
-    }
-    else draw_post (win, win, r);
-  }
 }
 
 /******************************************************************************
@@ -382,11 +346,12 @@ edit_interface_rep::handle_clear (renderer win, SI x1, SI y1, SI x2, SI y2) {
 void
 edit_interface_rep::handle_repaint (renderer win, SI x1, SI y1, SI x2, SI y2) {
   if (is_nil (eb)) apply_changes ();
-  if (env_change != 0) {
+  //env_change = THE_TREE & THE_FOCUS & THE_SELECTION & THE_CURSOR & THE_EXTENTS;
+  /*if (env_change != 0) {
     std_warning << "Invalid situation (" << env_change << ")"
                 << " in edit_interface_rep::handle_repaint\n";
     return;
-  }
+  }*/
 
   /*
   // In the past, we used the code below in order to hide the trace of

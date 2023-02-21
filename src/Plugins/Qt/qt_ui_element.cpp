@@ -115,7 +115,7 @@ QTMPixmapOrImage
 qt_glue_widget_rep::render () {
   QSize s = to_qsize (w, h);
   QTMPixmapOrImage pxm (s);
-    //cout << "glue (" << s.width() << "," << s.height() << ")\n";
+ /* //cout << "glue (" << s.width() << "," << s.height() << ")\n";
   pxm.fill (Qt::transparent);
   QPaintDevice *pd;
   pd = static_cast<QPaintDevice*>(pxm.rep);
@@ -147,7 +147,7 @@ qt_glue_widget_rep::render () {
     }
     ren->end();
   }
-  
+  */
   return pxm;
 }
 

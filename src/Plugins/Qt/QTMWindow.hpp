@@ -15,6 +15,7 @@
 #include <QMainWindow>
 
 #include "qt_tm_widget.hpp"
+#include "Texmacs/Application.hpp"
 
 
 /*! The interface that any QWidget must implement to become a window in TeXmacs.
@@ -63,14 +64,14 @@ protected:
  \sa QTMPlainWindow
  
  */
-class QTMWindow: public QMainWindow {
+class QTMWindow: public texmacs::ThingyTabInnerWindow {
   Q_OBJECT
   
 public:
   
-  QTMWindow (QWidget* parent)
-  : QMainWindow (parent) { 
+  QTMWindow (QWidget* parent) : texmacs::ThingyTabInnerWindow (parent) {
     if (DEBUG_QT) debug_qt << "Creating QTMWindow" << LF;
+    texmacs::getApplication().addTab(this);
   }
   virtual ~QTMWindow () {
     if (DEBUG_QT) debug_qt << "Deleting QTMWindow" << LF;

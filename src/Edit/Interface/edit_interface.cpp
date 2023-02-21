@@ -71,7 +71,6 @@ edit_interface_rep::edit_interface_rep ():
   tremble_count (0), tremble_right (false),
   table_selection (false), mouse_adjusting (false),
   oc (0, 0), temp_invalid_cursor (false),
-  shadow (NULL), stored (NULL),
   cur_sb (2), cur_wb (2)
 {
   input_mode= INPUT_NORMAL;
@@ -79,10 +78,7 @@ edit_interface_rep::edit_interface_rep ():
 }
 
 edit_interface_rep::~edit_interface_rep () {
-  if (shadow != NULL) tm_delete (shadow);
-  if (stored != NULL) tm_delete (stored);
-  shadow = NULL;
-  stored = NULL;
+
 }
 
 edit_interface_rep::operator tree () {
@@ -99,10 +95,6 @@ edit_interface_rep::suspend () {
   got_focus= false;
   env_change= env_change & (~THE_FREEZE);
   notify_change (THE_FOCUS);
-  if (shadow != NULL) tm_delete (shadow);
-  if (stored != NULL) tm_delete (stored);
-  shadow = NULL;
-  stored = NULL;
 }
 
 void
@@ -296,14 +288,12 @@ edit_interface_rep::get_scroll_y () {
 
 void
 edit_interface_rep::scroll_to (SI x, SI y) {
-  stored_rects= rectangles ();
   copy_always = rectangles ();
   SERVER (scroll_to ((SI) (x * magf), ((SI) (y * magf))));
 }
 
 void
 edit_interface_rep::set_extents (SI x1, SI y1, SI x2, SI y2) {
-  stored_rects= rectangles ();
   copy_always = rectangles ();
   SERVER (set_extents ((SI) floor (x1*magf), (SI) floor (y1*magf),
                        (SI) ceil  (x2*magf), (SI) ceil  (y2*magf)));
@@ -1002,16 +992,12 @@ edit_interface_rep::apply_changes () {
   }
   
   // cout << "Handling backing store\n";
-  if (!is_nil (stored_rects)) {
-    if (env_change & (THE_TREE+THE_ENVIRONMENT+THE_SELECTION+THE_EXTENTS))
-      stored_rects= rectangles ();
-  }
   if (inside_active_graphics ()) {
     SI gx1, gy1, gx2, gy2;
     if (find_graphical_region (gx1, gy1, gx2, gy2)) {
       rectangle gr= rectangle (gx1, gy1, gx2, gy2);
-      if (!is_nil (gr - stored_rects))
-        invalidate (gx1, gy1, gx2, gy2);
+      //if (!is_nil (gr - stored_rects))
+      //  invalidate (gx1, gy1, gx2, gy2);
     }
   }
 
@@ -1050,7 +1036,7 @@ edit_interface_rep::animate () {
   if (((double) texmacs_time ()) >= anim_next) {
     rectangles rs= eb->anim_invalid ();
     invalidate (rs);
-    stored_rects= rectangles ();
+   // stored_rects= rectangles ();
   }
 }
 

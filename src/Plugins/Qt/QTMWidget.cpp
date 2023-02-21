@@ -249,7 +249,7 @@ QTMWidget::resizeEventBis (QResizeEvent *event) {
 */
 void
 QTMWidget::paintEvent (QPaintEvent* event) {
-  QPainter p (surface());
+  /*QPainter p (surface());
   for (auto qr : event->region()) {
     p.drawPixmap (QRect (qr.x(), qr.y(), qr.width(), qr.height()),
                   *(tm_widget()->backingPixmap),
@@ -257,7 +257,7 @@ QTMWidget::paintEvent (QPaintEvent* event) {
                          retina_factor * qr.y(),
                          retina_factor * qr.width(),
                          retina_factor * qr.height()));
-  }
+  }*/
 }
 
 void

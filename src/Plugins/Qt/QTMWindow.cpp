@@ -43,32 +43,32 @@ void QTMPlainWindow::resizeEvent (QResizeEvent* event)
 
 void QTMWindow::closeEvent (QCloseEvent* event)
 {
-  widget tmwid = qt_window_widget_rep::widget_from_qwidget(this);
+ /* widget tmwid = qt_window_widget_rep::widget_from_qwidget(this);
   string name= ( !is_nil(tmwid) ? concrete(tmwid)->get_nickname () : "QTMWindow");
   if (DEBUG_QT_WIDGETS) debug_widgets << "Close QTMWindow " << name << LF;
   event->ignore ();
   notify_window_destroy (name);
-  emit closed();
+  emit closed();*/
 }
 
 void QTMWindow::moveEvent (QMoveEvent * event)
 {
-  widget tmwid = qt_window_widget_rep::widget_from_qwidget(this);
+ /* widget tmwid = qt_window_widget_rep::widget_from_qwidget(this);
   string name= ( !is_nil(tmwid) ? concrete(tmwid)->get_nickname () : "QTMWindow");
   // FIXME: rather use a slot for this
   coord2 pt = from_qpoint (frameGeometry().topLeft());
   notify_window_move (name, pt.x1, pt.x2);
-  QMainWindow::moveEvent (event);
+  QMainWindow::moveEvent (event);*/
 }
 
 void QTMWindow::resizeEvent (QResizeEvent * event)
 {
-  widget tmwid = qt_window_widget_rep::widget_from_qwidget(this);
+  /*widget tmwid = qt_window_widget_rep::widget_from_qwidget(this);
   string name= ( !is_nil(tmwid) ? concrete(tmwid)->get_nickname () : "QTMWindow");
   // FIXME: rather use a slot for this
   coord2 sz = from_qsize (frameSize());
   notify_window_resize (name, sz.x1, sz.x2);
-  QMainWindow::resizeEvent (event);
+  QMainWindow::resizeEvent (event);*/
 }
 
   ////////////////////

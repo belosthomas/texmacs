@@ -38,12 +38,14 @@ extern const QX11Info *qt_x11Info (const QPaintDevice *pd);
 
 qt_simple_widget_rep::qt_simple_widget_rep ()
   : qt_widget_rep (simple_widget),  sequencer (0) {
-  backingPixmap= headless_mode ? NULL : new QPixmap ();
+    assert(last_created_widget == nullptr);
+    last_created_widget = this;
+  //backingPixmap= headless_mode ? NULL : new QPixmap ();
 }
 
 qt_simple_widget_rep::~qt_simple_widget_rep () {
   all_widgets->remove ((pointer) this);
-  if (backingPixmap != NULL) delete backingPixmap;
+  //if (backingPixmap != NULL) delete backingPixmap;
 }
 
 QWidget*
@@ -161,7 +163,7 @@ qt_simple_widget_rep::send (slot s, blackbox val) {
 
   switch (s) {
     case SLOT_INVALIDATE:
-    {
+   /*{
       check_type<coord4>(val, s);
       coord4 p= open_box<coord4> (val);
       
@@ -182,11 +184,11 @@ qt_simple_widget_rep::send (slot s, blackbox val) {
       }
     }
       break;
-      
+      */
     case SLOT_INVALIDATE_ALL:
     {
-      check_type_void (val, s);
-      invalidate_all ();
+      //check_type_void (val, s);
+      //invalidate_all ();
     }
       break;
       
@@ -368,7 +370,7 @@ impress (qt_simple_widget_rep* wid) {
   if (DEBUG_QT)
     debug_qt << "impress (" << s.width() << "," << s.height() << ")\n";
   pxm.fill (Qt::transparent);
-  {
+  /*{
     qt_renderer_rep *ren = the_qt_renderer();
     ren->begin (static_cast<QPaintDevice*>(&pxm));
     rectangle r = rectangle (0, 0,  phys_s.width(), phys_s.height());
@@ -383,7 +385,7 @@ impress (qt_simple_widget_rep* wid) {
       the_gui->set_check_events (true);
     }
     ren->end();
-  }
+  }*/
   return pxm;
 }
 
@@ -432,7 +434,7 @@ qt_simple_widget_rep::is_invalid () {
 
 
 
-
+/*
 basic_renderer
 qt_simple_widget_rep::get_renderer() {
   ASSERT (backingPixmap != NULL,
@@ -465,6 +467,7 @@ qt_simple_widget_rep::get_renderer() {
 #endif
   return ren;
 }
+ */
 
 /*
  This function is called by the qt_gui::update method (via repaint_all) to keep
@@ -478,95 +481,12 @@ qt_simple_widget_rep::get_renderer() {
  */
 
 void
-qt_simple_widget_rep::repaint_invalid_regions () {
-  
+qt_simple_widget_rep::repaint_invalid_regions (basic_renderer_rep *ren) {
+
   QRegion qrgn;
   QPoint origin = canvas()->origin();
   // qrgn is to keep track of the area on the screen which needs to be updated
-  
-  // update backing store origin wrt. TeXmacs document
-  if (backing_pos != origin) {
-    
-    int dx =  retina_factor * (origin.x() - backing_pos.x());
-    int dy =  retina_factor * (origin.y() - backing_pos.y());
-    backing_pos = origin;
-    
-    QPixmap newBackingPixmap (backingPixmap->size());
-    QPainter p (&newBackingPixmap);
-    //newBackingPixmap.fill (Qt::black);
-    p.drawPixmap (-dx,-dy,*backingPixmap);
-    p.end();
-    *backingPixmap = newBackingPixmap;
-    //cout << "SCROLL CONTENTS BY " << dx << " " << dy << LF;
-    
-    
-    rectangles invalid;
-    while (!is_nil (invalid_regions)) {
-      rectangle r = invalid_regions->item ;
-      //      rectangle q = rectangle (r->x1+dx,r->y1-dy,r->x2+dx,r->y2-dy);
-      rectangle q = rectangle (r->x1-dx,r->y1-dy,r->x2-dx,r->y2-dy);
-      invalid = rectangles (q, invalid);
-      //cout << r << " ---> " << q << LF;
-      invalid_regions = invalid_regions->next;
-    }
-    
-    QSize sz = backingPixmap->size();
-    
-    invalid_regions= invalid & rectangles (rectangle (0,0,
-                                                      sz.width(),sz.height()));
-    
-    if (dy<0)
-      invalidate_rect (0,0,sz.width(),min (sz.height(),-dy));
-    else if (dy>0)
-      invalidate_rect (0,max (0,sz.height()-dy),sz.width(),sz.height());
-    
-    if (dx<0)
-      invalidate_rect (0,0,min (-dx,sz.width()),sz.height());
-    else if (dx>0)
-      invalidate_rect (max (0,sz.width()-dx),0,sz.width(),sz.height());
-    
-    // we call update now to allow repainting of invalid regions
-    // this cannot be done directly since interpose_handler needs
-    // to be run at least once in some situations
-    // (for example when scrolling is initiated by TeXmacs itself)
-    //the_gui->update();
-    //  QAbstractScrollArea::viewport()->scroll (-dx,-dy);
-    // QAbstractScrollArea::viewport()->update();
-    qrgn += QRect (QPoint (0,0),sz);
-  }
-  
-  //cout << "   repaint QPixmap of size " << backingPixmap.width() << " x "
-  // << backingPixmap.height() << LF;
-  // update backing store size
-  {
-    QSize _oldSize = backingPixmap->size();
-    QSize _new_logical_Size = canvas()->surface()->size();
-    QSize _newSize = _new_logical_Size;
-    _newSize *= retina_factor;
-    
-    //cout << "      surface size of " << _newSize.width() << " x "
-    // << _newSize.height() << LF;
-    
-    
-    if (_newSize != _oldSize) {
-      // cout << "RESIZING BITMAP"<< LF;
-      QPixmap newBackingPixmap (_newSize);
-      QPainter p (&newBackingPixmap);
-      p.drawPixmap (0,0,*backingPixmap);
-      //p.fillRect (0, 0, _newSize.width(), _newSize.height(), Qt::red);
-      if (_newSize.width() >= _oldSize.width()) {
-        invalidate_rect (_oldSize.width(), 0, _newSize.width(), _newSize.height());
-        p.fillRect (QRect (_oldSize.width(), 0, _newSize.width()-_oldSize.width(), _newSize.height()), Qt::gray);
-      }
-      if (_newSize.height() >= _oldSize.height()) {
-        invalidate_rect (0,_oldSize.height(), _newSize.width(), _newSize.height());
-        p.fillRect (QRect (0,_oldSize.height(), _newSize.width(), _newSize.height()-_oldSize.height()), Qt::gray);
-      }
-      p.end();
-      *backingPixmap = newBackingPixmap;
-    }
-  }
-  
+
   // repaint invalid rectangles
   {
     rectangles new_regions;
@@ -574,9 +494,7 @@ qt_simple_widget_rep::repaint_invalid_regions () {
       rectangle lub= least_upper_bound (invalid_regions);
       if (area (lub) < 1.2 * area (invalid_regions))
         invalid_regions= rectangles (lub);
-      
-      basic_renderer_rep* ren = get_renderer();
-      
+
       coord2 pt_or = from_qpoint(backing_pos);
       SI ox = -pt_or.x1;
       SI oy = -pt_or.x2;
@@ -607,21 +525,21 @@ qt_simple_widget_rep::repaint_invalid_regions () {
         rects = rects->next;
       }
       
-      ren->end();
     } // !is_nil (invalid_regions)
   }
   
   // propagate immediately the changes to the screen
-  canvas()->surface()->repaint (qrgn);
+  // canvas()->surface()->repaint (qrgn);
 }
 
+qt_simple_widget_rep *qt_simple_widget_rep::last_created_widget;
 hashset<pointer> qt_simple_widget_rep::all_widgets;
 
 void
-qt_simple_widget_rep::repaint_all () {
+qt_simple_widget_rep::repaint_all (basic_renderer_rep *ren) {
   iterator<pointer> i = iterate(qt_simple_widget_rep::all_widgets);
   while (i->busy()) {
     qt_simple_widget_rep *w = static_cast<qt_simple_widget_rep*>(i->next());
-    if (w->canvas() && w->canvas()->isVisible()) w->repaint_invalid_regions();
+    if (w->canvas() && w->canvas()->isVisible()) w->repaint_invalid_regions(ren);
   }
 }

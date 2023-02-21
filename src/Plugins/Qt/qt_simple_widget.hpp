@@ -19,6 +19,9 @@
 #include "QTMScrollView.hpp"
 #include "QTMWidget.hpp"
 
+#include "Texmacs/ScrollableOpenGLWidget.hpp"
+
+
 /*! A widget containing a TeXmacs canvas.
  
  This canvas can be used both for input or output of typesetted documents. 
@@ -55,8 +58,11 @@ class qt_simple_widget_rep: public qt_widget_rep {
 public:
   qt_simple_widget_rep ();
   ~qt_simple_widget_rep ();
-  
-  virtual bool is_editor_widget ();
+
+    static qt_simple_widget_rep* last_created_widget;
+
+
+    virtual bool is_editor_widget ();
   virtual void handle_get_size_hint (SI& w, SI& h);
   virtual void handle_notify_resize (SI w, SI h);
   virtual void handle_keypress (string key, time_t t);
@@ -83,25 +89,25 @@ public:
     ////////////////////// Qt widget counterparts
 
   QTMWidget*         canvas () { return qobject_cast<QTMWidget*> (qwid); }
-  QTMScrollView* scrollarea () { return qobject_cast<QTMScrollView*> (qwid); }
+  texmacs::ScrollableOpenGLWidget* scrollarea () { return qobject_cast<texmacs::ScrollableOpenGLWidget*> (associatedDocumentWidget); }
 
     ////////////////////// backing store management
 
-  static void repaint_all (); // called by qt_gui_rep::update()
+  static void repaint_all (basic_renderer_rep *ren); // called by qt_gui_rep::update()
 
-protected:
+public:
   
   static hashset<pointer> all_widgets;
   rectangles   invalid_regions;
-  QPixmap*     backingPixmap;  
+  // QPixmap*     backingPixmap;
   QPoint       backing_pos;
 
 
   void invalidate_rect (int x1, int y1, int x2, int y2);
   void invalidate_all ();
   bool is_invalid ();
-  void repaint_invalid_regions ();
-  basic_renderer get_renderer();
+  void repaint_invalid_regions (basic_renderer_rep *renderer);
+  // basic_renderer get_renderer();
   
   
   friend class QTMWidget;
