@@ -504,7 +504,7 @@ edit_env_rep::exec (tree t) {
   case GET_ATTACHMENT:
     return exec_get_attachment (t);
 
-  case PATTERN:
+  case TM_PATTERN:
     return exec_pattern (t);
 
   case ANIM_STATIC:
@@ -2106,7 +2106,7 @@ edit_env_rep::exec_pattern (tree t) {
   else if ((!is_int (w) && !is_percentage (w) && !is_percentage (w, "@")) ||
 	   (!is_int (h) && !is_percentage (h) && !is_percentage (h, "@")))
     return "white";
-  tree r (PATTERN, as_string (image), w, h);
+  tree r (TM_PATTERN, as_string (image), w, h);
   if (N(t) == 4) r << exec (t[3]);
   return r;
 }
