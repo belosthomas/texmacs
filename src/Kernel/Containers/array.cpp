@@ -172,7 +172,7 @@ append (array<T> a, array<T> b) {
 template<class T> array<T>
 range (array<T> a, int i, int j) {
   int k;
-  ASSERT (i>=0 && j<=N(a), "out of range");
+  TM_ASSERT (i >= 0 && j <= N(a), "out of range");
   array<T> r (j-i);
   for (k=i; k<j; k++) r[k-i]= a[k];
   return r;

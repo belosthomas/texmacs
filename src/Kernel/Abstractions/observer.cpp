@@ -329,7 +329,7 @@ raw_set_cursor (tree& ref, int pos, tree data) {
 
 void
 raw_apply (tree& t, modification mod) {
-  ASSERT (is_applicable (t, mod), "invalid modification");
+  TM_ASSERT (is_applicable (t, mod), "invalid modification");
   switch (mod->k) {
   case MOD_ASSIGN:
     raw_assign (subtree (t, root (mod)), mod->t);
@@ -391,7 +391,7 @@ apply (tree& ref, modification mod) {
   if (!is_applicable (ref, mod)) {
     failed_error << "mod= " << mod << "\n";
     failed_error << "ref= " << ref << "\n";
-    FAILED ("invalid modification");
+    TM_FAILED ("invalid modification");
   }
   path ip= obtain_ip (ref);
   path rp= reverse (ip);

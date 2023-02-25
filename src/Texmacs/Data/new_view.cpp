@@ -117,7 +117,7 @@ set_current_view (url u) {
 
 url
 get_current_view () {
-  ASSERT (the_view != NULL, "no active view");
+  TM_ASSERT (the_view != NULL, "no active view");
   return abstract_view (the_view);
 }
 
@@ -134,11 +134,11 @@ get_current_editor () {
   url u= get_current_view();
   tm_view vw= concrete_view (u);
   if (vw == NULL) { // HACK: shouldn't happen!
-    FAILED ("Current view is NULL");
+    TM_FAILED ("Current view is NULL");
     notify_delete_view (u);
     array<url> history = get_all_views();
     if (history == NULL || N(history) == 0)
-      FAILED("View history is empty")
+      TM_FAILED("View history is empty")
     return view_to_editor (history[N(history)-1]);
   }
   return vw->ed;
@@ -174,7 +174,7 @@ view_to_editor (url u) {
   if (vw == NULL) {
     notify_delete_view (u); // HACK: returns to valid (?) state.
     failed_error << "View is " << u << "\n";
-    FAILED ("View admits no editor");
+    TM_FAILED ("View admits no editor");
   }
   return vw->ed;
 }
@@ -348,7 +348,7 @@ attach_view (url win_u, url u) {
   widget wid= win->wid;
   set_scrollable (wid, vw->ed);
   vw->ed->cvw= wid.rep;
-  ASSERT (is_attached (wid), "widget should be attached");
+  TM_ASSERT (is_attached (wid), "widget should be attached");
   vw->ed->resume ();
   win->set_window_name (vw->buf->buf->title);
   win->set_window_url (vw->buf->buf->name);
@@ -365,7 +365,7 @@ detach_view (url u) {
   // cout << "Detach view " << vw->buf->buf->name << "\n";
   vw->win= NULL;
   widget wid= win->wid;
-  ASSERT (is_attached (wid), "widget should be attached");
+  TM_ASSERT (is_attached (wid), "widget should be attached");
   vw->ed->suspend ();
   set_scrollable (wid, glue_widget ());
   win->set_window_name ("TeXmacs");
@@ -386,7 +386,7 @@ window_set_view (url win_u, url new_u, bool focus) {
   tm_view new_vw= concrete_view (new_u);
   if (new_vw == NULL || new_vw->win == win) return;
   //cout << "Found view\n";
-  ASSERT (new_vw->win == NULL, "view attached to other window");
+  TM_ASSERT (new_vw->win == NULL, "view attached to other window");
   url old_u= window_to_view (win_u);
   if (!is_none (old_u)) detach_view (old_u);
   attach_view (win_u, new_u);

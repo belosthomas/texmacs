@@ -536,7 +536,7 @@ export_tree (tree doc, url u, string fm) {
 bool
 buffer_export (url name, url dest, string fm) {
   tm_view vw= concrete_view (get_recent_view (name));
-  ASSERT (vw != NULL, "view expected");
+  TM_ASSERT (vw != NULL, "view expected");
 
   if (fm == "postscript" || fm == "pdf") {
     int old_stamp= last_modified (dest, false);

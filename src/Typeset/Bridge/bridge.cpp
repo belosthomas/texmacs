@@ -179,7 +179,7 @@ bridge_rep::notify_insert (path p, tree u) {
   int  l= last_item (p);
   tree t= subtree (st, q);
   if (is_atomic (t)) {
-    ASSERT (is_atomic (u), "two atoms expected");
+    TM_ASSERT (is_atomic (u), "two atoms expected");
     t= t->label (0, l) * u->label * t->label (l, N(t->label));
   }
   else t= (t (0, l) * u) * t (l, N(t));

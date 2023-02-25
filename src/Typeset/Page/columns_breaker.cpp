@@ -240,7 +240,7 @@ new_breaker_rep::break_columns_at (path b1, path b2, double fr) {
 array<path>
 new_breaker_rep::break_columns (path b1, path b2) {
   int cols= number_columns (b1, b2);
-  ASSERT (has_columns (b1, b2, cols), "non uniform number of columns");
+  TM_ASSERT (has_columns (b1, b2, cols), "non uniform number of columns");
   if (cols == 1) {
     array<path> r;
     r << b1 << b2;

@@ -65,7 +65,7 @@ bridge_compound (typesetter ttt, tree st, path ip) {
 void
 bridge_compound_rep::notify_assign (path p, tree u) {
   // cout << "Assign " << p << ", " << u << " in " << st << "\n";
-  ASSERT (!is_nil (p) || L(u) >= START_EXTENSIONS, "nil path");
+  TM_ASSERT (!is_nil (p) || L(u) >= START_EXTENSIONS, "nil path");
   if (is_nil (p) || (p->item == 0) || is_nil (body)) {
     st= substitute (st, p, u);
     valid= false;
@@ -85,7 +85,7 @@ bridge_compound_rep::notify_assign (path p, tree u) {
 void
 bridge_compound_rep::notify_insert (path p, tree u) {
   // cout << "Insert " << p << ", " << u << " in " << st << "\n";
-  ASSERT (!is_nil (p), "nil path");
+  TM_ASSERT (!is_nil (p), "nil path");
   if (is_atom (p) || is_nil (body)) bridge_rep::notify_insert (p, u);
   else {
     // bool mp_flag= is_multi_paragraph (st);
@@ -102,7 +102,7 @@ bridge_compound_rep::notify_insert (path p, tree u) {
 void
 bridge_compound_rep::notify_remove (path p, int nr) {
   // cout << "Remove " << p << ", " << nr << " in " << st << "\n";
-  ASSERT (!is_nil (p), "nil path");
+  TM_ASSERT (!is_nil (p), "nil path");
   if (is_atom (p) || is_nil (body)) bridge_rep::notify_remove (p, nr);
   else {
     // bool mp_flag= is_multi_paragraph (st);

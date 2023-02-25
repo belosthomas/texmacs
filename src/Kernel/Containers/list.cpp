@@ -33,7 +33,7 @@ operator << (tm_ostream& out, list<T> l) {
 
 template<class T> T&
 list<T>::operator [] (int i) {
-  ASSERT (rep != NULL, "list too short");
+  TM_ASSERT (rep != NULL, "list too short");
   if (i==0) return rep->item;
   return rep->next[i-1];
 }
@@ -79,21 +79,21 @@ operator << (T& item, list<T>& l) {
 
 template<class T> T
 last_item (list<T> l) {
-  ASSERT (!is_nil (l), "empty path");
+  TM_ASSERT (!is_nil (l), "empty path");
   if (is_nil (l->next)) return l->item;
   return last_item (l->next);
 }
 
 template<class T> T&
 access_last (list<T>& l) {
-  ASSERT (!is_nil (l), "empty path");
+  TM_ASSERT (!is_nil (l), "empty path");
   if (is_nil (l->next)) return l->item;
   return access_last (l->next);
 }
 
 template<class T> list<T>&
 suppress_last (list<T>& l) {
-  ASSERT (!is_nil (l), "empty path");
+  TM_ASSERT (!is_nil (l), "empty path");
   if (is_nil (l->next)) l= list<T> ();
   else suppress_last (l->next);
   return l;
@@ -163,14 +163,14 @@ operator * (list<T> l1, list<T> l2) {
 template<class T> list<T>
 head (list<T> l, int n) {
   if (n==0) return list<T> ();
-  ASSERT (!is_nil (l), "list too short to get the head");
+  TM_ASSERT (!is_nil (l), "list too short to get the head");
   return list<T> (l->item, head (l->next, n-1));
 }
 
 template<class T> list<T>
 tail (list<T> l, int n) {
   for (; n>0; n--) {
-    ASSERT (!is_nil (l), "list too short to get the tail");
+    TM_ASSERT (!is_nil (l), "list too short to get the tail");
     l=l->next;
   }
   return l;

@@ -588,15 +588,15 @@ packrat_parser_rep::highlight (tree t, path tp, path p1, path p2, int col) {
   if (p1 == p2);
   else if (is_atomic (t)) {
     string s= t->label;
-    ASSERT (is_atom (p1) && is_atom (p2), "invalid selection");
-    ASSERT (0 <= p1->item && p1->item <= p2->item && p2->item <= N(s),
-            "invalid selection");
+    TM_ASSERT (is_atom (p1) && is_atom (p2), "invalid selection");
+    TM_ASSERT (0 <= p1->item && p1->item <= p2->item && p2->item <= N(s),
+               "invalid selection");
     attach_highlight (t, current_hl_lan, col, p1->item, p2->item);
   }
   else if (N(t) == 0);
   else {
-    ASSERT (!is_nil (p1) && !is_nil (p2) && p1->item <= p2->item,
-            "invalid selection");
+    TM_ASSERT (!is_nil (p1) && !is_nil (p2) && p1->item <= p2->item,
+               "invalid selection");
     if (p1 == path (0)) p1= path (0, 0);
     if (p2 == path (1)) p2= path (N(t) - 1, right_index (t[N(t) -1]));
     for (int i= max (0, p1->item); i <= min (p2->item, N(t)-1); i++) {

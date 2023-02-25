@@ -102,7 +102,7 @@ xpm_size (url u, int& w, int& h) {
   ok= read_int (s, i, h) && ok;
   if (!ok) {
     failed_error << "File name= " << file_name << "\n";
-    FAILED ("invalid xpm");
+    TM_FAILED ("invalid xpm");
   }
 }
 
@@ -119,7 +119,7 @@ xpm_colors (tree t) {
   ok= read_int (s, i, c) && ok;
   skip_spaces (s, i);
   ok= read_int (s, i, b) && ok;
-  ASSERT (ok && N(t)>c && c>0, "invalid xpm tree");
+  TM_ASSERT (ok && N(t) > c && c > 0, "invalid xpm tree");
 
   for (k=0; k<c; k++) {
     string s   = as_string (t[k+1]);
@@ -158,7 +158,7 @@ xpm_hotspot (tree t) {
   ok= read_int (s, i, c) && ok;
   skip_spaces (s, i);
   ok= read_int (s, i, b) && ok;
-  ASSERT (ok && N(t)>c && c>0, "invalid xpm tree");
+  TM_ASSERT (ok && N(t) > c && c > 0, "invalid xpm tree");
 
   skip_spaces (s, i);
   ok= read_int (s, i, x) && ok;

@@ -216,7 +216,7 @@ edit_select_rep::select_enlarge_text () {
   path p= common (cur_sel);
   if (is_empty (cur_sel) && !is_nil (p)) p= path_up (p);
   tree st= subtree (et, p);
-  ASSERT (is_atomic (st), "non textual tree");
+  TM_ASSERT (is_atomic (st), "non textual tree");
   string s= st->label;
   string mode= get_env_string (MODE);
   int i1= last_item (start (cur_sel)), j1= i1;
@@ -381,7 +381,7 @@ edit_select_rep::selection_active_enlarging () {
 
 void
 edit_select_rep::selection_correct (path i1, path i2, path& o1, path& o2) {
-  ASSERT (rp <= i1 && rp <= i2, "paths not inside document");
+  TM_ASSERT (rp <= i1 && rp <= i2, "paths not inside document");
   int old_mode= get_access_mode ();
   if (in_source ()) set_access_mode (DRD_ACCESS_SOURCE);
   ::selection_correct (subtree (et, rp), i1 / rp, i2 / rp, o1, o2);
@@ -841,7 +841,7 @@ edit_select_rep::raw_cut (path p1, path p2) {
     failed_error << "p = " << p << "\n";
     failed_error << "p1= " << p1 << "\n";
     failed_error << "p2= " << p2 << "\n";
-    FAILED ("invalid cut");
+    TM_FAILED ("invalid cut");
   }
 
   if (is_atomic (t)) {
@@ -855,7 +855,7 @@ edit_select_rep::raw_cut (path p1, path p2) {
       failed_error << "p = " << p << "\n";
       failed_error << "p1= " << p1 << "\n";
       failed_error << "p2= " << p2 << "\n";
-      FAILED ("invalid object cut");
+      TM_FAILED ("invalid object cut");
     }
     assign (p, "");
   }

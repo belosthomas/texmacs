@@ -89,6 +89,7 @@ public:
     }
 
     tmscm eval_scheme_file(string name) {
+        std::cout << "Eval Scheme File " << std::string(name.data(), N(name)) << std::endl;
         c_string _file (name);
         s7_pointer r = s7_load_with_environment(mInstance, _file, mUserEnv);
         if (r == nullptr) {
@@ -101,6 +102,8 @@ public:
     }
 
     tmscm eval_scheme(string s) {
+        std::cout << "Eval Scheme " << std::string(s.data(), N(s)) << std::endl;
+
         c_string _s (s);
         s7_pointer result= s7_eval_c_string_with_environment(mInstance, _s, mUserEnv);
         return s7_tmscm::mk(mInstance, result);

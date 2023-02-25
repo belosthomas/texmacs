@@ -96,20 +96,20 @@ basic_renderer_rep::get_background () {
 
 void
 basic_renderer_rep::set_pencil (pencil p) {
-  ASSERT (!is_nil (p), "concrete pencil expected");
+  TM_ASSERT (!is_nil (p), "concrete pencil expected");
   pen= p;
 }
 
 void
 basic_renderer_rep::set_brush (brush b) {
-  ASSERT (!is_nil (b), "concrete brush expected");
+  TM_ASSERT (!is_nil (b), "concrete brush expected");
   fg_brush= b;
   pen= pencil (b);
 }
 
 void
 basic_renderer_rep::set_background (brush b) {
-  ASSERT (!is_nil (b), "concrete brush expected");
+  TM_ASSERT (!is_nil (b), "concrete brush expected");
   bg_brush= b;
 }
 

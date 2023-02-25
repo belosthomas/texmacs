@@ -69,7 +69,7 @@ public:
 
 unary_function<true_color,true_color>
 color_matrix_function (const array<double>& m) {
-  ASSERT (N(m) == 20, "5 x 4 matrix expected");
+  TM_ASSERT (N(m) == 20, "5 x 4 matrix expected");
   return tm_new<color_matrix_function_rep> (m); }
 
 class make_transparent_function_rep:

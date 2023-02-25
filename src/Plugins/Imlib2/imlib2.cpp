@@ -168,7 +168,7 @@ bool imlib2_supports (url u) { (void) u; return false; }
 void
 imlib2_image_size (url u, int& w, int& h) {
   (void) u; (void) w; (void) h;
-  FAILED ("imlib2 is not present");
+  TM_FAILED ("imlib2 is not present");
 }
 
 #ifdef X11TEXMACS

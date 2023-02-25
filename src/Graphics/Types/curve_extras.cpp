@@ -105,14 +105,14 @@ std_bezier_matrix (int segments, array<double> times) {
 
 array<point>
 std_bezier_fit (array<point> a, int segments, array<double> times) {
-  ASSERT (N(a) == N(times) && N(a) > 0, "invalid number of points");
+  TM_ASSERT (N(a) == N(times) && N(a) > 0, "invalid number of points");
   int dim= N(a[0]), nr= N(times);
   matrix<double> m  = std_bezier_matrix (segments, times);
   matrix<double> tm = transpose (m);
   matrix<double> cov= invert (tm * m);
   matrix<double> b (0.0, nr, dim);
   for (int i=0; i<nr; i++ ) {
-    ASSERT (N(a[i]) == dim, "dimension mismatch");
+    TM_ASSERT (N(a[i]) == dim, "dimension mismatch");
     for (int j=0; j<dim; j++) b (i, j)= a[i][j];
   }
   matrix<double> sol= cov * (tm * b);
@@ -127,8 +127,8 @@ std_bezier_fit (array<point> a, int segments, array<double> times) {
 
 array<point>
 std_bezier_fit (array<point> a, int pack_size) {
-  ASSERT (N(a) > 0, "invalid number of points");
-  ASSERT (pack_size >= 7, "invalid pack size");
+  TM_ASSERT (N(a) > 0, "invalid number of points");
+  TM_ASSERT (pack_size >= 7, "invalid pack size");
   if (N(a) <= 3) {
     array<point> r;
     r << a[0];
@@ -175,14 +175,14 @@ alt_bezier_matrix (int segments, array<double> times) {
 
 array<point>
 alt_bezier_fit (array<point> a, int segments, array<double> times) {
-  ASSERT (N(a) == N(times) && N(a) > 0, "invalid number of points");
+  TM_ASSERT (N(a) == N(times) && N(a) > 0, "invalid number of points");
   int dim= N(a[0]), nr= N(times);
   matrix<double> m  = alt_bezier_matrix (segments, times);
   matrix<double> tm = transpose (m);
   matrix<double> cov= invert (tm * m);
   matrix<double> b (0.0, nr, dim);
   for (int i=0; i<nr; i++ ) {
-    ASSERT (N(a[i]) == dim, "dimension mismatch");
+    TM_ASSERT (N(a[i]) == dim, "dimension mismatch");
     for (int j=0; j<dim; j++) b (i, j)= a[i][j];
   }
   matrix<double> sol= cov * (tm * b);
@@ -204,8 +204,8 @@ alt_bezier_fit (array<point> a, int segments, array<double> times) {
 
 array<point>
 alt_bezier_fit (array<point> a, int pack_size) {
-  ASSERT (N(a) > 0, "invalid number of points");
-  ASSERT (pack_size >= 5, "invalid pack size");
+  TM_ASSERT (N(a) > 0, "invalid number of points");
+  TM_ASSERT (pack_size >= 5, "invalid pack size");
   if (N(a) <= 3) {
     array<point> r;
     r << a[0];
@@ -326,8 +326,8 @@ bezier_fit (array<point> a, double eps, double advance) {
   // advance = 1.0 -> replace by equally spaced times
   // 0.0 < advance < 1.0 -> blend between two methods
   
-  ASSERT (N(a) > 0, "non-empty array expected");
-  ASSERT (N(a[0]) >= 0, "points should be at least two-dimensional");
+  TM_ASSERT (N(a) > 0, "non-empty array expected");
+  TM_ASSERT (N(a[0]) >= 0, "points should be at least two-dimensional");
   if (N(a) == 1) return a;
 
   // reduce to case when we have a time coordinate and a non-zero time elapse

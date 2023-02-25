@@ -234,7 +234,7 @@ QTMTreeModel::parse_roles (const tree& roles) {
       tree_label tag = L(r[i]);
       _roles[tag][NumberOfArguments] = N(r[i]);
       for (int j = 0; j < N(r[i]); ++j) {
-        ASSERT (is_atomic (r[i][j]), "QTMTreeModel: bad format declaration");
+        TM_ASSERT (is_atomic (r[i][j]), "QTMTreeModel: bad format declaration");
         string role = r[i][j]->label;
         if      (role == "DisplayRole")    _roles[tag][Qt::DisplayRole]    = j;
         else if (role == "EditRole")       _roles[tag][Qt::EditRole]       = j;

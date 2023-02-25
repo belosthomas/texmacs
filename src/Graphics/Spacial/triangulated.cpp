@@ -40,7 +40,7 @@ public:
 
 spacial
 triangulated (array<triangle> ts, array<color> cs) {
-  ASSERT (N(ts) == N(cs), "array lengths do not match");
+  TM_ASSERT (N(ts) == N(cs), "array lengths do not match");
   return tm_new<triangulated_rep> (ts, cs);
 }
 

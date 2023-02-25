@@ -83,7 +83,7 @@ rubber_unicode_font_rep::rubber_unicode_font_rep (string name, font base2):
 
 font
 rubber_unicode_font_rep::get_font (int nr) {
-  ASSERT (nr < N(subfn), "wrong font number");
+  TM_ASSERT (nr < N(subfn), "wrong font number");
   if (initialized[nr]) return subfn[nr];
   initialized[nr]= true;
   switch (nr) {

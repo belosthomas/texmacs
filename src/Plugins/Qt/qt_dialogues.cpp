@@ -102,7 +102,7 @@ qt_field_widget_rep::as_qwidget () {
     widget wid    = input_text_widget (command(), type,
                                        array<string>(0), 0, "20em");
     QLineEdit* le = qobject_cast<QTMLineEdit*> (concrete(wid)->as_qwidget());
-    ASSERT (le != NULL, "qt_field_widget_rep: expecting QTMLineEdit");
+    TM_ASSERT (le != NULL, "qt_field_widget_rep: expecting QTMLineEdit");
     le->setObjectName (to_qstring (type));
     lab->setBuddy (le);
     hl->addWidget (le);

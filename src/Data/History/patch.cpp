@@ -64,7 +64,7 @@ public:
   int get_type () { return PATCH_AUTHOR; }
   int get_arity () { return 1; }
   patch get_child (int i) {
-    ASSERT (i == 0, "out of range");
+    TM_ASSERT (i == 0, "out of range");
     return p; }
   double get_author () { return author; }
 };
@@ -111,7 +111,7 @@ nr_children (patch p) {
 
 patch
 child (patch p, int i) {
-  ASSERT (0 <= i && i < nr_children (p), "index out of range");
+  TM_ASSERT (0 <= i && i < nr_children (p), "index out of range");
   if (get_type (p) != PATCH_COMPOUND) return p;
   else return p[i];
 }
@@ -124,8 +124,8 @@ children (patch p) {
 
 array<patch>
 children (patch p, int i, int j) {
-  ASSERT (0 <= i && i <= nr_children (p), "index out of range");
-  ASSERT (i <= j && j <= nr_children (p), "index out of range");
+  TM_ASSERT (0 <= i && i <= nr_children (p), "index out of range");
+  TM_ASSERT (i <= j && j <= nr_children (p), "index out of range");
   return range (children (p), i, j);
 }
 
@@ -137,7 +137,7 @@ nr_branches (patch p) {
 
 patch
 branch (patch p, int i) {
-  ASSERT (0 <= i && i < nr_branches (p), "index out of range");
+  TM_ASSERT (0 <= i && i < nr_branches (p), "index out of range");
   if (get_type (p) != PATCH_BRANCH) return p;
   else return p[i];
 }
@@ -150,8 +150,8 @@ branches (patch p) {
 
 array<patch>
 branches (patch p, int i, int j) {
-  ASSERT (0 <= i && i <= nr_branches (p), "index out of range");
-  ASSERT (i <= j && j <= nr_branches (p), "index out of range");
+  TM_ASSERT (0 <= i && i <= nr_branches (p), "index out of range");
+  TM_ASSERT (i <= j && j <= nr_branches (p), "index out of range");
   return range (branches (p), i, j);
 }
 
@@ -208,7 +208,7 @@ operator == (patch p1, patch p2) {
   case PATCH_AUTHOR:
     return get_author (p1) == get_author (p2) && p1[0] == p2[0];
   default:
-    FAILED ("unsupported patch type");
+    TM_FAILED ("unsupported patch type");
   }
   return false;
 }
@@ -251,7 +251,7 @@ operator << (tm_ostream& out, patch p) {
     out << UNINDENT;
     break;
   default:
-    FAILED ("unsupported patch type");
+    TM_FAILED ("unsupported patch type");
   }
   return out;
 }
@@ -274,7 +274,7 @@ copy (patch p) {
   case PATCH_AUTHOR:
     return patch (get_author (p), copy (p[0]));
   default:
-    FAILED ("unsupported patch type");
+    TM_FAILED ("unsupported patch type");
   }
   return p;
 }
@@ -303,7 +303,7 @@ is_applicable (patch p, tree t) {
   case PATCH_BIRTH:
     return true;
   default:
-    FAILED ("unsupported patch type");
+    TM_FAILED ("unsupported patch type");
     return false;
   }
 }
@@ -314,7 +314,7 @@ clean_apply (patch p, tree t) {
   case PATCH_MODIFICATION:
     return clean_apply (t, get_modification (p));
   case PATCH_BRANCH:
-    ASSERT (N(p) <= 1, "ambiguous application");
+    TM_ASSERT (N(p) <= 1, "ambiguous application");
   case PATCH_COMPOUND:
   case PATCH_AUTHOR:
     for (int i=0; i<N(p); i++)
@@ -323,7 +323,7 @@ clean_apply (patch p, tree t) {
   case PATCH_BIRTH:
     return t;
   default:
-    FAILED ("unsupported patch type");
+    TM_FAILED ("unsupported patch type");
     return t;
   }
 }
@@ -335,7 +335,7 @@ apply (patch p, tree& t) {
     apply (t, get_modification (p));
     break;
   case PATCH_BRANCH:
-    ASSERT (N(p) <= 1, "ambiguous application");
+    TM_ASSERT (N(p) <= 1, "ambiguous application");
   case PATCH_COMPOUND:
   case PATCH_AUTHOR:
     for (int i=0; i<N(p); i++)
@@ -344,7 +344,7 @@ apply (patch p, tree& t) {
   case PATCH_BIRTH:
     break;
   default:
-    FAILED ("unsupported patch type");
+    TM_FAILED ("unsupported patch type");
   }
 }
 
@@ -358,7 +358,7 @@ invert (patch p, tree t) {
   case PATCH_MODIFICATION:
     return patch (get_inverse (p), get_modification (p));
   case PATCH_BRANCH:
-    ASSERT (N(p) <= 1, "ambiguous application");
+    TM_ASSERT (N(p) <= 1, "ambiguous application");
   case PATCH_COMPOUND:
     {
       int i, n=N(p);
@@ -374,7 +374,7 @@ invert (patch p, tree t) {
   case PATCH_AUTHOR:
     return patch (get_author (p), invert (p[0], t));
   default:
-    FAILED ("unsupported patch type");
+    TM_FAILED ("unsupported patch type");
     return patch ();
   }
 }
@@ -408,7 +408,7 @@ possible_inverse (modification m1, modification m2) {
   case MOD_SET_CURSOR:
     return m1 == m2;
   default:
-    FAILED ("invalid situation");
+    TM_FAILED ("invalid situation");
     return false;
   }
 }
@@ -491,7 +491,7 @@ swap (patch& p1, patch& p2, double a1, double a2) {
       p2= patch (m2, i2);
       return r && v && possible_inverse (m1, i1) && possible_inverse (m2, i2);
     }
-  FAILED ("invalid situation");
+  TM_FAILED ("invalid situation");
   return false;
 }
 
@@ -526,7 +526,7 @@ pull (patch p1, patch p2) {
   // for a suitable patch p1* (assuming that p1* and p2* exist).
   patch s1= p2;
   patch s2= p1;
-  ASSERT (swap (s1, s2), "patch cannot be pulled");
+  TM_ASSERT (swap (s1, s2), "patch cannot be pulled");
   return s1;
 }
 
@@ -535,7 +535,7 @@ co_pull (patch p1, patch p2) {
   // Same as pull, but return p2* instead of p1*
   patch s1= p2;
   patch s2= p1;
-  ASSERT (swap (s1, s2), "patch cannot be pulled");
+  TM_ASSERT (swap (s1, s2), "patch cannot be pulled");
   return s2;
 }
 
@@ -676,7 +676,7 @@ compactify (patch p) {
 
 path
 cursor_hint (modification m, tree t) {
-  ASSERT (is_applicable (t, m), "modification not applicable");
+  TM_ASSERT (is_applicable (t, m), "modification not applicable");
   path rp= root (m);
   tree st= subtree (t, rp);
   switch (m->k) {
@@ -706,7 +706,7 @@ cursor_hint (modification m, tree t) {
   case MOD_SET_CURSOR:
     return path ();
   default:
-    FAILED ("unexpected situation");
+    TM_FAILED ("unexpected situation");
     return path ();
   }
 }
@@ -729,7 +729,7 @@ cursor_hint (patch p, tree t) {
   case PATCH_BIRTH:
     return path ();
   default:
-    FAILED ("unsupported patch type");
+    TM_FAILED ("unsupported patch type");
   }
   return path ();
 }
@@ -760,7 +760,7 @@ remove_set_cursor (patch p) {
       else return patch (get_author (p), q);
     }
   default:
-    FAILED ("unsupported patch type");
+    TM_FAILED ("unsupported patch type");
   }
   return p;
 }

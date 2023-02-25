@@ -38,7 +38,7 @@ dup (modification m) {
 
 modification
 invert (modification m, tree t) {
-  ASSERT (is_applicable (t, m), "modification not applicable");
+  TM_ASSERT (is_applicable (t, m), "modification not applicable");
   path rp= root (m);
   switch (m->k) {
   case MOD_ASSIGN:
@@ -71,7 +71,7 @@ invert (modification m, tree t) {
   case MOD_SET_CURSOR:
     return m;
   default:
-    FAILED ("unexpected situation");
+    TM_FAILED ("unexpected situation");
   }
   return m;
 }
@@ -307,7 +307,7 @@ swap (modification& m1, modification& m2) {
     return r;
   }
   else return swap_basic (m1, m2);
-  FAILED ("unexpected situation");
+  TM_FAILED ("unexpected situation");
   return false;
 }
 
@@ -333,7 +333,7 @@ pull (modification m1, modification m2) {
   // for a suitable modification m1* (assuming that m1* and m2* exist).
   modification s1= m2;
   modification s2= m1;
-  ASSERT (swap (s1, s2), "modification cannot be pulled");
+  TM_ASSERT (swap (s1, s2), "modification cannot be pulled");
   return s1;
 }
 
@@ -342,7 +342,7 @@ co_pull (modification m1, modification m2) {
   // Same as pull, but return m2* instead of m1*
   modification s1= m2;
   modification s2= m1;
-  ASSERT (swap (s1, s2), "modification cannot be pulled");
+  TM_ASSERT (swap (s1, s2), "modification cannot be pulled");
   return s2;
 }
 

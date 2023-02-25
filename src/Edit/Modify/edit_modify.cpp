@@ -148,21 +148,21 @@ edit_modify_rep::post_notify (path p) {
 void
 edit_assign (editor_rep* ed, path pp, tree u) {
   path p= copy (pp);
-  ASSERT (ed->the_buffer_path() <= p, "invalid modification");
+  TM_ASSERT (ed->the_buffer_path() <= p, "invalid modification");
   ed->notify_assign (p, u);
 }
 
 void
 edit_insert (editor_rep* ed, path pp, tree u) {
   path p= copy (pp);
-  ASSERT (ed->the_buffer_path() <= p, "invalid modification");
+  TM_ASSERT (ed->the_buffer_path() <= p, "invalid modification");
   ed->notify_insert (p, u);
 }
 
 void
 edit_remove (editor_rep* ed, path pp, int nr) {
   path p= copy (pp);
-  ASSERT (ed->the_buffer_path() <= p, "invalid modification");
+  TM_ASSERT (ed->the_buffer_path() <= p, "invalid modification");
   if (nr <= 0) return;
   ed->notify_remove (p, nr);
 }
@@ -170,43 +170,43 @@ edit_remove (editor_rep* ed, path pp, int nr) {
 void
 edit_split (editor_rep* ed, path pp) {
   path p= copy (pp);
-  ASSERT (ed->the_buffer_path() <= p, "invalid modification");
+  TM_ASSERT (ed->the_buffer_path() <= p, "invalid modification");
   ed->notify_split (p);
 }
 
 void
 edit_join (editor_rep* ed, path pp) {
   path p= copy (pp);
-  ASSERT (ed->the_buffer_path() <= p, "invalid modification");
-  if (N(p)<1) FAILED ("path too short in join");
+  TM_ASSERT (ed->the_buffer_path() <= p, "invalid modification");
+  if (N(p)<1) TM_FAILED ("path too short in join");
   ed->notify_join (p);
 }
 
 void
 edit_assign_node (editor_rep* ed, path pp, tree_label op) {
   path p= copy (pp);
-  ASSERT (ed->the_buffer_path() <= p, "invalid modification");
+  TM_ASSERT (ed->the_buffer_path() <= p, "invalid modification");
   ed->notify_assign_node (p, op);
 }
 
 void
 edit_insert_node (editor_rep* ed, path pp, tree t) {
   path p= copy (pp);
-  ASSERT (ed->the_buffer_path() <= p, "invalid modification");
+  TM_ASSERT (ed->the_buffer_path() <= p, "invalid modification");
   ed->notify_insert_node (p, t);
 }
 
 void
 edit_remove_node (editor_rep* ed, path pp) {
   path p= copy (pp);
-  ASSERT (ed->the_buffer_path() <= p, "invalid modification");
+  TM_ASSERT (ed->the_buffer_path() <= p, "invalid modification");
   ed->notify_remove_node (p);
 }
 
 void
 edit_set_cursor (editor_rep* ed, path pp, tree data) {
   path p= copy (pp);
-  ASSERT (ed->the_buffer_path() <= p, "invalid modification");
+  TM_ASSERT (ed->the_buffer_path() <= p, "invalid modification");
   ed->notify_set_cursor (p, data);
 }
 
@@ -240,14 +240,14 @@ edit_announce (editor_rep* ed, modification mod) {
   case MOD_SET_CURSOR:
     edit_set_cursor (ed, mod->p, mod->t);
     break;
-  default: FAILED ("invalid modification type");
+  default: TM_FAILED ("invalid modification type");
   }
 }
 
 void
 edit_done (editor_rep* ed, modification mod) {
   path p= copy (mod->p);
-  ASSERT (ed->the_buffer_path() <= p, "invalid modification");
+  TM_ASSERT (ed->the_buffer_path() <= p, "invalid modification");
   if (mod->k != MOD_SET_CURSOR)
     ed->post_notify (p);
 #ifdef EXPERIMENTAL
@@ -258,7 +258,7 @@ edit_done (editor_rep* ed, modification mod) {
 void
 edit_touch (editor_rep* ed, path p) {
   //cout << "Touch " << p << "\n";
-  ASSERT (ed->the_buffer_path() <= p, "invalid touch");
+  TM_ASSERT (ed->the_buffer_path() <= p, "invalid touch");
   ed -> typeset_invalidate (p);
 }
 
@@ -374,7 +374,7 @@ edit_modify_rep::unredoable_undo () {
 
 void
 edit_modify_rep::undo (int i) {
-  ASSERT (i == 0, "invalid undo");
+  TM_ASSERT (i == 0, "invalid undo");
   undo (true);
 }
 

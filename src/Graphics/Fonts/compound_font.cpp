@@ -84,7 +84,7 @@ compound_font_rep::advance (string s, int& pos, string& r, int& ch) {
                             (int) tm_round (as_int (t[3]) * vzf), false);
     else
       fn[ch]= find_magnified_font (t, hzf, vzf);
-    ASSERT (!is_nil (fn[ch]), "font not found");
+    TM_ASSERT (!is_nil (fn[ch]), "font not found");
     //fn[ch]->copy_math_pars (fn[0]);
   }
 }

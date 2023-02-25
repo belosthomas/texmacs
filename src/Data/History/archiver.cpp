@@ -74,7 +74,7 @@ archive_announce (archiver_rep* arch, modification mod) {
   //cout << "Archive " << mod << "\n";
   ////stretched_print (the_et, true);
   if (DEBUG_HISTORY) debug_history << "Archive " << mod << "\n";
-  ASSERT (arch->rp <= mod->p, "invalid modification");
+  TM_ASSERT (arch->rp <= mod->p, "invalid modification");
   if (!arch->versioning) {
     arch->add (mod);
     pending_archs->insert ((pointer) arch);
@@ -153,7 +153,7 @@ nr_redo (patch p) {
 
 static patch
 get_undo (patch p) {
-  ASSERT (nr_branches (p) > 0, "undo part unavailable");
+  TM_ASSERT (nr_branches (p) > 0, "undo part unavailable");
   return branch (p, 0);
 }
 
@@ -165,13 +165,13 @@ get_redo (patch p) {
 
 static patch
 car (patch p) {
-  ASSERT (nr_children (branch (p, 0)) == 2, "car unavailable")
+  TM_ASSERT (nr_children (branch (p, 0)) == 2, "car unavailable")
   return child (p, 0);
 }
 
 static patch
 cdr (patch p) {
-  ASSERT (nr_children (branch (p, 0)) == 2, "cdr unavailable")
+  TM_ASSERT (nr_children (branch (p, 0)) == 2, "cdr unavailable")
   return child (p, 1);
 }
 
@@ -183,7 +183,7 @@ void
 archiver_rep::apply (patch p) {
   // apply a patch, while disabling versioning during the modifications
   // cout << "Apply " << p << "\n";
-  ASSERT (is_applicable (p, the_et), "invalid history");
+  TM_ASSERT (is_applicable (p, the_et), "invalid history");
   bool old= versioning;
   bool global_old= busy_versioning;
   versioning= true;
@@ -429,9 +429,9 @@ path
 archiver_rep::undo_one (int i) {
   if (active ()) return path ();
   if (undo_possibilities () != 0) {
-    ASSERT (i == 0, "index out of range");
+    TM_ASSERT (i == 0, "index out of range");
     patch p= car (get_undo (archive));
-    ASSERT (is_applicable (p, the_et), "history corrupted");
+    TM_ASSERT (is_applicable (p, the_et), "history corrupted");
     patch q= invert (p, the_et);
     apply (p);
     patch re1= patch (q, get_redo (archive));
@@ -452,12 +452,12 @@ archiver_rep::redo_one (int i) {
   if (active ()) return path ();
   int n= redo_possibilities ();
   if (n != 0) {
-    ASSERT (i >= 0 && i < n, "index out of range");
+    TM_ASSERT (i >= 0 && i < n, "index out of range");
     patch un= get_undo (archive);
     patch re= get_redo (archive);
     patch p= car (branch (re, i));
     //cout << "p= " << p << "\n";
-    ASSERT (is_applicable (p, the_et), "future corrupted");
+    TM_ASSERT (is_applicable (p, the_et), "future corrupted");
     patch q= invert (p, the_et);
     //cout << "q= " << q << "\n";
     apply (p);
@@ -481,7 +481,7 @@ archiver_rep::undo (int i) {
   if (active ()) return path ();
   path r;
   while (undo_possibilities () != 0) {
-    ASSERT (i == 0, "index out of range");
+    TM_ASSERT (i == 0, "index out of range");
     expose ();
     if (get_author (car (get_undo (archive))) == the_author)
       return undo_one (i);
@@ -499,7 +499,7 @@ archiver_rep::redo (int i) {
   path r;
   bool first= true;
   while (redo_possibilities () != 0) {
-    ASSERT (i >= 0 && i < redo_possibilities (), "index out of range");
+    TM_ASSERT (i >= 0 && i < redo_possibilities (), "index out of range");
     patch re= branch (get_redo (archive), i);
     bool done= (get_author (car (re)) == the_author);
     r= redo_one (i);
@@ -562,9 +562,9 @@ has_marker (patch archive, double m) {
 
 static patch
 remove_marker_bis (patch archive, double m) {
-  ASSERT (nr_undo (archive) != 0, "marker not found");
+  TM_ASSERT (nr_undo (archive) != 0, "marker not found");
   if (is_marker (car (get_undo (archive)), m, false)) {
-    ASSERT (nr_redo (archive) == 0, "cannot remove marker");
+    TM_ASSERT (nr_redo (archive) == 0, "cannot remove marker");
     return cdr (get_undo (archive));
   }
   else {

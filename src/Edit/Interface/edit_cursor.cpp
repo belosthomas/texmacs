@@ -74,7 +74,7 @@ edit_cursor_rep::make_cursor_accessible (path p, bool forwards) {
   if (get_init_string (MODE) == "src")
     set_access_mode (DRD_ACCESS_SOURCE);
   while (!is_accessible_cursor (et, p) && !in_source ()) {
-    ASSERT (rp <= p, "path outside document");
+    TM_ASSERT (rp <= p, "path outside document");
     tree st = subtree (et, rp);
     path sp = p / rp;
     path pp = sp;
@@ -159,7 +159,7 @@ edit_cursor_rep::cursor_move_sub (SI& x0, SI& y0, SI& d0, SI dx, SI dy) {
       for (i=1; i<DELTA; i=i<<1)
         if (ref_p != tree_path (sp, x0, y0, d0+ dx*i)) break;
       if (i>=DELTA)
-        FAILED ("inconsistent cursor handling");
+        TM_FAILED ("inconsistent cursor handling");
       for (d=i>>2; d>=1; d=d>>1)
         if (ref_p != tree_path (sp, x0, y0, d0+ dx*(i-d))) i-=d;
       d0 += dx*i;

@@ -234,7 +234,7 @@ interactive_command_rep::apply () {
 
 void
 tm_frame_rep::interactive (object fun, scheme_tree p) {
-  ASSERT (is_tuple (p), "tuple expected");
+  TM_ASSERT (is_tuple (p), "tuple expected");
   if (N(p) == 0) {
     string ret= object_to_string (call (fun));
     if (ret != "" && ret != "<unspecified>" && ret != "#<unspecified>")

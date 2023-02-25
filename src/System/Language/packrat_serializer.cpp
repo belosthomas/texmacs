@@ -19,7 +19,7 @@
 
 static path
 as_path (tree t) {
-  ASSERT (is_tuple (t), "invalid path");
+  TM_ASSERT (is_tuple (t), "invalid path");
   path p;
   int i, n= N(t);
   for (i=n-1; i>=0; i--)

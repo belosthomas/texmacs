@@ -119,7 +119,7 @@ anim_compose_box_rep::anim_compose_box_rep (path ip, array<box> b2, player pl):
   anim_box_rep (ip, pl, 0.0),
   bs (b2), offsets (N(bs))
 {
-  ASSERT (N(bs) != 0, "empty animation");
+  TM_ASSERT (N(bs) != 0, "empty animation");
 
   current   = 0;
   cur_delay = 0.0;

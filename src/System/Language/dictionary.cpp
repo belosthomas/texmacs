@@ -127,7 +127,7 @@ dictionary_rep::translate (string s, bool guess) {
   int end= i;
   if (start >= n || end <= 0) return s;
   if (start != 0 || end != n) {
-    ASSERT (start < end, "invalid situation");
+    TM_ASSERT (start < end, "invalid situation");
     string s1= translate (s (0, start));
     string s2= translate (s (start, end));
     string s3= translate (s (end, n));

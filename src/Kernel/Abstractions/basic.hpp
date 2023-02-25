@@ -91,8 +91,8 @@ void tm_failure (const char* msg);
 extern string the_exception;
 void tm_throw (const char* msg);
 void handle_exceptions ();
-#define ASSERT(cond,msg) { if (!(cond)) tm_throw (msg); }
-#define FAILED(msg) { tm_throw (msg); }
+#define TM_ASSERT(cond,msg) { if (!(cond)) tm_throw (msg); }
+#define TM_FAILED(msg) { tm_throw (msg); }
 #else
 #ifdef DEBUG_ASSERT
 #include <assert.h>

@@ -157,7 +157,7 @@ array<int>
 get_hyphens (string s,
              hashmap<string,string> patterns,
              hashmap<string,string> hyphenations, bool utf8) {
-  ASSERT (N(s) != 0, "hyphenation of empty string");
+  TM_ASSERT (N(s) != 0, "hyphenation of empty string");
 
   if (utf8) s= cork_to_utf8 (uni_locase_all(s));
   else s= uni_locase_all(s);

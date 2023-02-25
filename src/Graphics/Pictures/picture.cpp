@@ -29,7 +29,7 @@ unique_picture_id () {
   n++;
   if (n == (-((unsigned long long int) 1))) {
     failed_error << "Unique id overflow for pictures" << LF;
-    FAILED ("Unique id overflow for pictures");
+    TM_FAILED ("Unique id overflow for pictures");
   }
   return n;
 }

@@ -72,7 +72,7 @@ load_virtual (string name) {
   url u ("$TEXMACS_HOME_PATH/fonts/virtual:$TEXMACS_PATH/fonts/virtual", name);
   load_string (u, s, true);
   tree t= string_to_scheme_tree (s);
-  ASSERT (is_tuple (t, "virtual-font"), "bad virtual font format");
+  TM_ASSERT (is_tuple (t, "virtual-font"), "bad virtual font format");
 
   int i, n= N(t);
   trl->virt_def= array<tree> (n);

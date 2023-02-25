@@ -96,7 +96,7 @@ bib_break (string s) {
     start= i;
     (void) bib_skip (s, i);
     bib_rewind (s, i);
-    ASSERT (i > start, "strange entry in bib_break");
+    TM_ASSERT (i > start, "strange entry in bib_break");
     a << s (start, i);
     //cout << "---------------------------------------------------------\n";
     //cout << s (start, i);

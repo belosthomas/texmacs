@@ -59,7 +59,7 @@ public:
 case_box_rep::case_box_rep (path ip, array<tree> c2, array<box> b2):
   box_rep (ip), conds (c2), bs (b2), current (N(b2) - 1), entered (false)
 {
-  ASSERT (N(bs) != 0, "no cases");
+  TM_ASSERT (N(bs) != 0, "no cases");
   int i, n= N(bs);
   x1= y1= x3= y3= MAX_SI;
   x2= y2= x4= y4= -MAX_SI;

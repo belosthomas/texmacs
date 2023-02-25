@@ -385,7 +385,7 @@ END_SLOT
 QTMInputTextWidgetHelper::QTMInputTextWidgetHelper (qt_widget _wid, bool _cac): QObject (), p_wid (_wid), can_autocommit (_cac) {
   QTMLineEdit* le = qobject_cast<QTMLineEdit*>(wid()->qwid);
   setParent(le);
-  ASSERT (le != NULL, "QTMInputTextWidgetHelper: expecting valid QTMLineEdit");
+  TM_ASSERT (le != NULL, "QTMInputTextWidgetHelper: expecting valid QTMLineEdit");
   QObject::connect (le, SIGNAL (returnPressed ()), this, SLOT (commit ()));
   QObject::connect (le, SIGNAL (focusOut (Qt::FocusReason)),
                     this, SLOT (leave (Qt::FocusReason)));
@@ -416,13 +416,13 @@ END_SLOT
 
 QTMFieldWidgetHelper::QTMFieldWidgetHelper (qt_widget _wid, QComboBox* cb)
 : QObject (cb), wid (_wid), done (false) {
-  ASSERT (cb != NULL, "QTMFieldWidgetHelper: expecting valid QComboBox");
+  TM_ASSERT (cb != NULL, "QTMFieldWidgetHelper: expecting valid QComboBox");
   QObject::connect (cb, SIGNAL (editTextChanged (const QString&)),
                     this, SLOT (commit (const QString&)));
 }
 QTMFieldWidgetHelper::QTMFieldWidgetHelper (qt_widget _wid, QLineEdit* cb)
 : QObject (cb), wid (_wid), done (false) {
-  ASSERT (cb != NULL, "QTMFieldWidgetHelper: expecting valid QLineEdit");
+  TM_ASSERT (cb != NULL, "QTMFieldWidgetHelper: expecting valid QLineEdit");
   QObject::connect (cb, SIGNAL (textChanged (const QString&)),
                     this, SLOT (commit (const QString&)));
 }

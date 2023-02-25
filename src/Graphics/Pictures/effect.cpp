@@ -396,7 +396,7 @@ class compose_effect_rep: public effect_rep {
 public:
   compose_effect_rep (array<effect> e, composition_mode m):
     effs (e), mode (m) {
-      ASSERT (N (effs) > 0, "at least one effect expected"); }
+      TM_ASSERT (N (effs) > 0, "at least one effect expected"); }
   rectangle get_logical_extents (array<rectangle> rs) {
     array<rectangle> xrs (N(effs));
     for (int i=0; i<N(effs); i++)

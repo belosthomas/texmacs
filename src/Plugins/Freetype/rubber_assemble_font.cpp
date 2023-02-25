@@ -64,7 +64,7 @@ rubber_assemble_font_rep::rubber_assemble_font_rep (string name, font base2):
 
 font
 rubber_assemble_font_rep::get_font (int nr) {
-  ASSERT (nr < N(larger), "wrong font number");
+  TM_ASSERT (nr < N(larger), "wrong font number");
   if (initialized[nr]) return larger[nr];
   initialized[nr]= true;
   larger[nr]= base->magnify (pow (2.0, ((double) nr) / 4.0));

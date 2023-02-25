@@ -529,7 +529,7 @@ gui_start_loop () {
 void
 gui_close () {
     // cleanly close the gui
-  ASSERT (the_gui != NULL, "gui not yet open");
+  TM_ASSERT (the_gui != NULL, "gui not yet open");
   tm_delete (the_gui);
   the_gui = NULL;
   
@@ -658,7 +658,7 @@ qt_gui_rep::process_queued_events (int max) {
         break;
         
       default:
-        FAILED ("Unexpected queued event");
+        TM_FAILED ("Unexpected queued event");
     }
     switch (ev.x1) {
       case qp_type::QP_COMMAND:
@@ -1193,7 +1193,7 @@ event_queue::next () {
 
 bool
 event_queue::is_empty() const {
-  ASSERT (!(n!=0 && is_nil(q)), "WTF?");
+  TM_ASSERT (!(n != 0 && is_nil(q)), "WTF?");
   return n == 0;
 }
 

@@ -27,7 +27,7 @@ drd_encode (tree t) {
   if (encode_table->contains (t))
     return encode_table[t];
   int n= N(decode_table);
-  ASSERT (n < (1 << 16), "drd_encode overflow");
+  TM_ASSERT (n < (1 << 16), "drd_encode overflow");
   encode_table (t) = n;
   decode_table << t;
   return n;
@@ -35,7 +35,7 @@ drd_encode (tree t) {
 
 tree
 drd_decode (int i) {
-  ASSERT (i >= 0 && i < N (decode_table), "out of range");
+  TM_ASSERT (i >= 0 && i < N (decode_table), "out of range");
   return decode_table[i];
 }
 
@@ -293,7 +293,7 @@ tag_info::tag_info (int a, int x, int am, int cm, bool frozen) {
 tag_info::tag_info (tree t) {
   if ((!is_func (t, TUPLE)) || (N(t)<2) || (L(t[1]) != TUPLE)) {
     failed_error << "t= " << t << "\n";
-    FAILED ("bad tag_info");
+    TM_FAILED ("bad tag_info");
   }
   parent_info pi (t[0]);
   int i, n= N(t[1]);
@@ -351,7 +351,7 @@ tag_info_rep::type (int tp) {
 tag_info
 tag_info_rep::type (int i, int tp) {
   if (i < 0 || i >= N(ci)) cout << i << " out of " << N(ci) << "\n";
-  ASSERT (i >= 0 && i<N(ci), "index out of range");
+  TM_ASSERT (i >= 0 && i < N(ci), "index out of range");
   ci[i].type= tp;
   return tag_info (pi, ci, extra);
 }
@@ -359,7 +359,7 @@ tag_info_rep::type (int i, int tp) {
 tag_info
 tag_info_rep::accessible (int i) {
   if (i < 0 || i >= N(ci)) cout << i << " out of " << N(ci) << "\n";
-  ASSERT (i >= 0 && i<N(ci), "index out of range");
+  TM_ASSERT (i >= 0 && i < N(ci), "index out of range");
   ci[i].type= TYPE_REGULAR;
   ci[i].accessible= ACCESSIBLE_ALWAYS;
   return tag_info (pi, ci, extra);
@@ -368,7 +368,7 @@ tag_info_rep::accessible (int i) {
 tag_info
 tag_info_rep::hidden (int i) {
   if (i < 0 || i >= N(ci)) cout << i << " out of " << N(ci) << "\n";
-  ASSERT (i >= 0 && i<N(ci), "index out of range");
+  TM_ASSERT (i >= 0 && i < N(ci), "index out of range");
   ci[i].type= TYPE_REGULAR;
   ci[i].accessible= ACCESSIBLE_HIDDEN;
   return tag_info (pi, ci, extra);
@@ -377,7 +377,7 @@ tag_info_rep::hidden (int i) {
 tag_info
 tag_info_rep::disable_writable (int i) {
   if (i < 0 || i >= N(ci)) cout << i << " out of " << N(ci) << "\n";
-  ASSERT (i >= 0 && i<N(ci), "index out of range");
+  TM_ASSERT (i >= 0 && i < N(ci), "index out of range");
   ci[i].writability= WRITABILITY_DISABLE;
   return tag_info (pi, ci, extra);
 }
@@ -385,7 +385,7 @@ tag_info_rep::disable_writable (int i) {
 tag_info
 tag_info_rep::enable_writable (int i) {
   if (i < 0 || i >= N(ci)) cout << i << " out of " << N(ci) << "\n";
-  ASSERT (i >= 0 && i<N(ci), "index out of range");
+  TM_ASSERT (i >= 0 && i < N(ci), "index out of range");
   ci[i].writability= WRITABILITY_ENABLE;
   return tag_info (pi, ci, extra);
 }
@@ -393,7 +393,7 @@ tag_info_rep::enable_writable (int i) {
 tag_info
 tag_info_rep::locals (int i, string var, string val) {
   if (i < 0 || i >= N(ci)) cout << i << " out of " << N(ci) << "\n";
-  ASSERT (i >= 0 && i<N(ci), "index out of range");
+  TM_ASSERT (i >= 0 && i < N(ci), "index out of range");
   ci[i].env= drd_encode (tree (ATTR, var, val));
   return tag_info (pi, ci, extra);
 }
@@ -434,7 +434,7 @@ tag_info_rep::long_name (string s) {
 tag_info
 tag_info_rep::name (int i, string s) {
   if (i < 0 || i >= N(ci)) cout << i << " out of " << N(ci) << "\n";
-  ASSERT (i >= 0 && i<N(ci), "index out of range");
+  TM_ASSERT (i >= 0 && i < N(ci), "index out of range");
   set_attribute ("name-" * as_string (i), s);
   return tag_info (pi, ci, extra);
 }
@@ -442,7 +442,7 @@ tag_info_rep::name (int i, string s) {
 tag_info
 tag_info_rep::long_name (int i, string s) {
   if (i < 0 || i >= N(ci)) cout << i << " out of " << N(ci) << "\n";
-  ASSERT (i >= 0 && i<N(ci), "index out of range");
+  TM_ASSERT (i >= 0 && i < N(ci), "index out of range");
   set_attribute ("long-name-" * as_string (i), s);
   return tag_info (pi, ci, extra);
 }
@@ -491,7 +491,7 @@ tag_info::operator () (int child, int n) {
     failed_error << "arity_base  = " << rep->pi.arity_base << "\n";
     failed_error << "arity_extra = " << rep->pi.arity_extra << "\n";
     failed_error << "N(ci)       = " << N(rep->ci) << "\n";
-    FAILED ("index out of range");
+    TM_FAILED ("index out of range");
   }
   return rep->ci [index];
 }

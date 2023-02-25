@@ -44,21 +44,21 @@
 
 #else
 
-#define CONNECT wsoc::connect
-#define CLOSE(a) wsoc::closesocket(a)
-#define WRITE(a, b, c) wsoc::send(a, b, c, 0) 
-#define ERRNO wsoc::WSAGetLastError()
+#define CONNECT ::connect
+#define CLOSE(a) closesocket(a)
+#define WRITE(a, b, c) send(a, b, c, 0) 
+#define ERRNO WSAGetLastError()
 #define ERRSOC(a) WSA##a 
-#define GETADDRINFO wsoc::getaddrinfo 
-#define FREEADDRINFO wsoc::freeaddrinfo
-#define ADDRINFO wsoc::addrinfo
-#define SOCKET wsoc::socket
-#define RECV wsoc::recv
-#define GAI_STRERROR wsoc::gai_strerror
-#define BIND wsoc::bind
-#define LISTEN wsoc::listen
-#define ACCEPT wsoc::accept
-#define INET_NTOP wsoc::inet_ntop
+#define GETADDRINFO getaddrinfo 
+#define FREEADDRINFO freeaddrinfo
+#define ADDRINFO addrinfo
+#define SOCKET socket
+#define RECV recv
+#define GAI_STRERROR gai_strerror
+#define BIND bind
+#define LISTEN listen
+#define ACCEPT accept
+#define INET_NTOP inet_ntop
 
 #endif
 
@@ -67,7 +67,7 @@ unsigned qtmsocket_debug_count;
 int socket_basic::count= 0;
 
 #ifdef OS_MINGW
-wsoc::WSADATA socket_basic::wsadata;
+WSADATA socket_basic::wsadata;
 #endif
 
 static string
@@ -75,7 +75,7 @@ string_from_socket_address (SOCKADDR_STORAGE* sock) {
   static char tmp[128];
   if (sock->ss_family == AF_INET) {
 #ifdef WIN32
-    return wsoc::inet_ntoa (((SOCKADDR_IN*) sock)->sin_addr);
+    return inet_ntoa (((SOCKADDR_IN*) sock)->sin_addr);
 #else
     if (inet_ntop (AF_INET, &(((sockaddr_in*) sock)->sin_addr),
 		   tmp, sizeof(tmp)) == NULL)
@@ -99,7 +99,6 @@ string_from_socket_address (SOCKADDR_STORAGE* sock) {
 socket_basic::socket_basic (): st (ST_VOID) {
 #ifdef OS_MINGW
   if (!count) {
-    using namespace wsoc;
     err= WSAStartup (MAKEWORD (2,0), &wsadata);
     if (err) {st= ST_WSA; return;}
   }
@@ -110,7 +109,7 @@ socket_basic::socket_basic (): st (ST_VOID) {
 socket_basic::~socket_basic () {
   if (count > 0) --count;
 #ifdef OS_MINGW
-  if (!count) wsoc::WSACleanup ();
+  if (!count) WSACleanup ();
 #endif
 };
 
@@ -165,7 +164,6 @@ socket_link::socket_link (string host, unsigned short port) {
     err= errno; st= ST_FCNTL; return; }
 #else
   {
-    using namespace wsoc;
     u_long flags = -1;
     if (ioctlsocket (sock, FIONBIO, &flags) == SOCKET_ERROR) {
       err= ERRNO; st= ST_FCNTL; return; }
@@ -270,9 +268,6 @@ socket_link::data_set_ready (int s) {
 
 void
 socket_link::ready_to_send (int s) {
-#ifdef OS_MINGW
-  using namespace wsoc;
-#endif
   qsnw->setEnabled (false);
   int sz= N(outbuf);
   if (sz) {
@@ -294,9 +289,6 @@ socket_link::ready_to_send (int s) {
 
 void
 socket_link::listen (int msecs) {
-#ifdef WIN32
-  using namespace wsoc;
-#endif
   if (!alive ()) return;
   ready_to_send (sock);
   fd_set rfds;
@@ -351,7 +343,7 @@ socket_server::socket_server (string host, unsigned short port) {
     if (fcntl (sock, F_SETFL, O_NONBLOCK) == -1) 
       continue;
 #else 
-    { using namespace wsoc;
+    {
       u_long flags = -1;
       if (ioctlsocket (sock, FIONBIO, &flags) == SOCKET_ERROR)
 	continue;

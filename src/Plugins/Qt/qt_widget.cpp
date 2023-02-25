@@ -203,7 +203,7 @@ qt_widget_rep::plain_window_widget (string name, command quit, int border) {
       win->setLayout (l); // And the QLayout to the QTMPlainWindow.
       l->addWidget (qw);  // qw now belongs to the QWidget with the layout (win)
     } else {
-      FAILED ("attempt to create a window around a nil QWidget");
+      TM_FAILED ("attempt to create a window around a nil QWidget");
     }
   }
   
@@ -235,14 +235,14 @@ qt_widget_rep::make_popup_widget () {
 widget
 qt_widget_rep::popup_window_widget (string s) {
   widget wid= make_popup_widget();
-  ASSERT(concrete(wid) != this, "Loop in call to popup_window_widget()");
+  TM_ASSERT(concrete(wid) != this, "Loop in call to popup_window_widget()");
   return concrete(wid)->popup_window_widget(s);
 }
 
 widget
 qt_widget_rep::tooltip_window_widget (string s) {
   widget wid= make_popup_widget();
-  ASSERT(concrete(wid) != this, "Loop in call to tooltip_window_widget()");
+  TM_ASSERT(concrete(wid) != this, "Loop in call to tooltip_window_widget()");
   return concrete(wid)->tooltip_window_widget(s);
 }
 

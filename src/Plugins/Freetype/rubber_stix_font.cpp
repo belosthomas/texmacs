@@ -120,7 +120,7 @@ rubber_stix_font_rep::get_font_sub (int nr) {
 
 font
 rubber_stix_font_rep::get_font (int nr) {
-  ASSERT (nr < N(subfn), "wrong font number");
+  TM_ASSERT (nr < N(subfn), "wrong font number");
   if (initialized[nr]) return subfn[nr];
   subfn[nr]= get_font_sub (nr);
   initialized[nr]= true;

@@ -75,11 +75,11 @@ struct QTMPixmapOrImage {
       ((QImage*) rep)->isNull () : ((QPixmap*) rep)->isNull ();
   }
   QImage* QImage_ptr () {
-    ASSERT (headless_mode, "internal bug in QTMPixmapOrImage::QImage_ptr");
+    TM_ASSERT (headless_mode, "internal bug in QTMPixmapOrImage::QImage_ptr");
     return (QImage*) rep;
   }
   QPixmap* QPixmap_ptr () {
-    ASSERT (!headless_mode, "internal bug in QTMPixmapOrImage::QPixmap_ptr");
+    TM_ASSERT (!headless_mode, "internal bug in QTMPixmapOrImage::QPixmap_ptr");
     return (QPixmap*) rep;
   }
   void* void_ptr () {

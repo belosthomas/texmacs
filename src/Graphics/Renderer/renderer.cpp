@@ -496,20 +496,20 @@ renderer_rep::shadow (picture& pic, SI x1, SI y1, SI x2, SI y2) {
 renderer
 renderer_rep::shadow (scalable& im , SI x1, SI y1, SI x2, SI y2) {
   (void) im; (void) x1; (void) y1; (void) x2; (void) y2;
-  FAILED ("shadowing is not supported");
+  TM_FAILED ("shadowing is not supported");
   return NULL;
 }
 
 void
 renderer_rep::draw_picture (picture p, SI x, SI y, int alpha) {
   (void) p; (void) x; (void) y; (void) alpha;
-  FAILED ("rendering pictures is not supported");
+  TM_FAILED ("rendering pictures is not supported");
 }
 
 renderer
 scalable_renderer (scalable im) {
   (void) im;
-  FAILED ("not yet implemented");
+  TM_FAILED ("not yet implemented");
   return NULL;
 }
 

@@ -131,7 +131,7 @@ unary (vector<T> v) {
 template<typename T, typename Op> vector<T>
 binary (vector<T> v, vector<T> w) {
   int i, n= N(v);
-  ASSERT (N(w) == n, "vector lengths don't match");
+  TM_ASSERT (N(w) == n, "vector lengths don't match");
   T* a= A(v);
   T* b= A(w);
   T* r= tm_new_array<T> (n);

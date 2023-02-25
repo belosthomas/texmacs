@@ -33,7 +33,7 @@ inline tm_ostream& operator << (tm_ostream& out, object obj) {
     out.flush ();
     if (out == cout) scheme().call ("write", obj);
     else if (out == cerr) scheme().call ("write-err", obj);
-    else FAILED ("not yet implemented");
+    else TM_FAILED ("not yet implemented");
     scheme().call ("force-output");
     return out;
 }

@@ -190,7 +190,7 @@ get_transformation (tree t) {
     return linear_2D (m);
   }
   failed_error << "t= " << t << LF;
-  FAILED ("transformation expected");
+  TM_FAILED ("transformation expected");
   return frame ();
 }
 
@@ -720,7 +720,7 @@ has_graphical_value (tree var) {
 
 tree
 get_graphical_value (tree var) {
-  ASSERT (has_graphical_value (var), "invalid graphical id");
+  TM_ASSERT (has_graphical_value (var), "invalid graphical id");
   //cout << "Get " << var << " = " << graphical_values [var->label] << "\n";
   return graphical_values [var->label];
 }

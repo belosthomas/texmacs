@@ -201,6 +201,7 @@ tm_throw (const char* msg) {
   cout << "-------------------------------------------------\n";
   cout << the_report << LF;
   cout << "-------------------------------------------------\n";
+  abort();
   throw string (msg);
 }
 

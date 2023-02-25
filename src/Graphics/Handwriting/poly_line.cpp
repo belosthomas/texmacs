@@ -27,7 +27,7 @@ l2_norm (point p) {
 
 double
 distance (point p, point q) {
-  ASSERT (N(p) == N(q), "unequal lengths");
+  TM_ASSERT (N(p) == N(q), "unequal lengths");
   double s= 0.0;
   for (int i=0; i<N(p); i++)
     s += square (q[i] - p[i]);
@@ -36,7 +36,7 @@ distance (point p, point q) {
 
 point
 project (point p, point q1, point q2) {
-  ASSERT (N(p) == N(q1) && N(p) == N(q2), "unequal lengths");
+  TM_ASSERT (N(p) == N(q1) && N(p) == N(q2), "unequal lengths");
   int i, n= N(p);
   double s= 0.0, t= 0.0;
   for (i=0; i<n; i++) {
@@ -57,7 +57,7 @@ distance (point p, point q1, point q2) {
 
 point
 inf (point p, point q) {
-  ASSERT (N(p) == N(q), "unequal lengths");
+  TM_ASSERT (N(p) == N(q), "unequal lengths");
   point r (N(p));
   for (int i=0; i<N(p); i++)
     r[i]= min (p[i], q[i]);
@@ -66,7 +66,7 @@ inf (point p, point q) {
 
 point
 sup (point p, point q) {
-  ASSERT (N(p) == N(q), "unequal lengths");
+  TM_ASSERT (N(p) == N(q), "unequal lengths");
   point r (N(p));
   for (int i=0; i<N(p); i++)
     r[i]= max (p[i], q[i]);
@@ -94,7 +94,7 @@ nearby (point p, poly_line pl) {
 
 point
 inf (poly_line pl) {
-  ASSERT (N(pl) > 0, "non zero length expected");
+  TM_ASSERT (N(pl) > 0, "non zero length expected");
   point p= pl[0];
   for (int i=1; i<N(pl); i++)
     p= inf (p, pl[i]);
@@ -103,7 +103,7 @@ inf (poly_line pl) {
 
 point
 sup (poly_line pl) {
-  ASSERT (N(pl) > 0, "non zero length expected");
+  TM_ASSERT (N(pl) > 0, "non zero length expected");
   point p= pl[0];
   for (int i=1; i<N(pl); i++)
     p= sup (p, pl[i]);
@@ -186,7 +186,7 @@ nearby (point p, contours gl) {
 
 point
 inf (contours gl) {
-  ASSERT (N(gl) > 0, "non zero length expected");
+  TM_ASSERT (N(gl) > 0, "non zero length expected");
   point p= inf (gl[0]);
   for (int i=1; i<N(gl); i++)
     p= inf (p, inf (gl[i]));
@@ -195,7 +195,7 @@ inf (contours gl) {
 
 point
 sup (contours gl) {
-  ASSERT (N(gl) > 0, "non zero length expected");
+  TM_ASSERT (N(gl) > 0, "non zero length expected");
   point p= sup (gl[0]);
   for (int i=1; i<N(gl); i++)
     p= sup (p, sup (gl[i]));

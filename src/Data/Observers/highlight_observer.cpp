@@ -46,7 +46,7 @@ highlight_observer_rep::announce (tree& ref, modification mod) {
 bool
 highlight_observer_rep::set_highlight (int l, int col, int start, int end) {
   if (l != lan) return false;
-  ASSERT (0 <= start && start <= end && end <= N(cols), "out of range");
+  TM_ASSERT (0 <= start && start <= end && end <= N(cols), "out of range");
   for (int i=start; i<end; i++) cols[i]= col;
   return true;
 }
@@ -95,7 +95,7 @@ attach_highlight (tree& ref, int lan) {
 void
 attach_highlight (tree& ref, int lan, int col, int start, int end) {
   int n= (is_atomic (ref)? N(ref->label): 1);
-  ASSERT (0 <= start && start <= end && end <= n, "out of range");
+  TM_ASSERT (0 <= start && start <= end && end <= n, "out of range");
   if (is_nil (ref->obs) || !ref->obs->set_highlight (lan, col, start, end)) {
     array<int> cols (n);
     for (int i=0; n>i; i++) cols[i]= 0;

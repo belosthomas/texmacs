@@ -174,8 +174,8 @@ map (unary_function<C,S> fun, raster<S> r) {
 template<typename Op, typename C, typename S> raster<C>
 map (raster<C> r1, raster<S> r2) {
     int w= r1->w, h= r1->h, n= w*h;
-    ASSERT (r2->w == w && r2->h == h, "sizes don't match");
-    ASSERT (r2->ox == r1->ox && r2->oy == r1->oy, "offsets don't match");
+    TM_ASSERT (r2->w == w && r2->h == h, "sizes don't match");
+    TM_ASSERT (r2->ox == r1->ox && r2->oy == r1->oy, "offsets don't match");
     raster<C> ret (w, h, r1->ox, r1->oy);
     for (int i=0; i<n; i++)
         ret->a[i]= Op::op (r1->a[i], r2->a[i]);
@@ -450,7 +450,7 @@ compose (raster<C> r1, raster<S> r2, composition_mode mode) {
 
 template<typename C> raster<C>
 empty_join (array<raster<C> > rs, composition_mode mode) {
-    ASSERT (0 < N(rs), "at least one raster expected");
+    TM_ASSERT (0 < N(rs), "at least one raster expected");
     if (N(rs) == 1) return rs[0];
     if (N(rs) == 2) return empty_join (rs[0], rs[1], mode);
     int m= N(rs) / 2;
@@ -460,7 +460,7 @@ empty_join (array<raster<C> > rs, composition_mode mode) {
 
 template<typename C> raster<C>
 compose (array<raster<C> > rs, composition_mode mode) {
-    ASSERT (0 < N(rs), "at least one raster expected");
+    TM_ASSERT (0 < N(rs), "at least one raster expected");
     if (N(rs) == 1) return rs[0];
     raster<C> ret= empty_join (rs, mode);
     draw_on (ret, rs[0], 0, 0, compose_source);
@@ -725,7 +725,7 @@ gaussian_pen (double rx, double ry, double phi, double order= 2.5) {
 template<typename C, typename S> raster<C>
 convolute (raster<C> s1, raster<S> s2) {
     if (s1->w * s1->h == 0) return s1;
-    ASSERT (s2->w * s2->h != 0, "empty convolution argument");
+    TM_ASSERT (s2->w * s2->h != 0, "empty convolution argument");
     int s1w= s1->w, s1h= s1->h, s2w= s2->w, s2h= s2->h;
     int dw= s1w + s2w - 1, dh= s1h + s2h - 1;
     raster<C> d (dw, dh, s1->ox + s2->ox, s1->oy + s2->oy);
@@ -764,7 +764,7 @@ can_be_factored (raster<C> s) {
 template<typename C, typename S> raster<C>
 factored_convolute (raster<C> s1, raster<S> s2) {
     if (s1->w * s1->h == 0) return s1;
-    ASSERT (s2->w * s2->h != 0, "empty convolution argument");
+    TM_ASSERT (s2->w * s2->h != 0, "empty convolution argument");
     int s1w= s1->w, s1h= s1->h, s2w= s2->w, s2h= s2->h;
     raster<S> xs (s2w, 1, s2->ox, 0);
     raster<S> ys (1, s2h, 0, s2->oy);
@@ -830,7 +830,7 @@ template<typename C, typename S> raster<C>
 thicken (raster<C> s1, raster<S> s2) {
     typedef typename C::scalar_type F;
     if (s1->w * s1->h == 0) return s1;
-    ASSERT (s2->w * s2->h != 0, "empty pen");
+    TM_ASSERT (s2->w * s2->h != 0, "empty pen");
     raster<C> d= convolute (s1, s2);
     int s1w= s1->w, s1h= s1->h, s2w= s2->w, s2h= s2->h, dw= d->w;
     raster<F> temp= get_alpha (s1);
@@ -873,7 +873,7 @@ template<typename C, typename S> raster<C>
 erode (raster<C> s1, raster<S> s2) {
     typedef typename C::scalar_type F;
     if (s1->w * s1->h == 0) return s1;
-    ASSERT (s2->w * s2->h != 0, "empty pen");
+    TM_ASSERT (s2->w * s2->h != 0, "empty pen");
     raster<C> d= copy (s1);
     int s1w= s1->w, s1h= s1->h, s2w= s2->w, s2h= s2->h, dw= d->w;//, dh= d->h;
     raster<F> temp= get_alpha (s1);
@@ -902,7 +902,7 @@ template<typename C, typename S> raster<C>
 variation (raster<C> s1, raster<S> s2) {
     typedef typename C::scalar_type F;
     if (s1->w * s1->h == 0) return s1;
-    ASSERT (s2->w * s2->h != 0, "empty pen");
+    TM_ASSERT (s2->w * s2->h != 0, "empty pen");
     raster<C> d= convolute (s1, s2);
     int s2w= s2->w, s2h= s2->h, dw= d->w, dh= d->h;
     int s2ox= s2->ox, s2oy= s2->oy;
@@ -1124,8 +1124,8 @@ degrade (raster<C> r, double wlx, double wly, double th, double sh) {
 template<typename C> raster<C>
 translate (raster<C> r, raster<double> rdx, raster<double> rdy,
            double rx, double ry, bool tiled= false) {
-    ASSERT (rdx->w == r->w && rdx->h == r->h, "incompatible dx dimensions");
-    ASSERT (rdy->w == r->w && rdy->h == r->h, "incompatible dy dimensions");
+    TM_ASSERT (rdx->w == r->w && rdx->h == r->h, "incompatible dx dimensions");
+    TM_ASSERT (rdy->w == r->w && rdy->h == r->h, "incompatible dy dimensions");
     int w= r->w, h= r->h;
     raster<C> ret (w, h, r->ox, r->oy);
     for (int y=0; y<h; y++)

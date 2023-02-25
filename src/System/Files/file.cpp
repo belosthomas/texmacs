@@ -129,7 +129,7 @@ load_string (url u, string& s, bool fatal) {
     string err_msg = string("Failed to load file: ") * as_string (u);
     if (fatal) {
       failed_error << err_msg << LF;
-      FAILED ("file not readable");
+      TM_FAILED ("file not readable");
     }
     //else debug_io << err_msg << LF;
   }
@@ -142,7 +142,7 @@ save_string (url u, string s, bool fatal) {
     bool err= save_to_server (u, s);
     if (err && fatal) {
       failed_error << "File name= " << as_string (u) << "\n";
-      FAILED ("file not writeable");
+      TM_FAILED ("file not writeable");
     }
     return err;
   }
@@ -200,14 +200,14 @@ save_string (url u, string s, bool fatal) {
 
   if (err && fatal) {
     failed_error << "File name= " << as_string (u) << "\n";
-    FAILED ("file not writeable");
+    TM_FAILED ("file not writeable");
   }
   return err;
 }
 
 bool
 append_string (url u, string s, bool fatal) {
-  if (is_rooted_tmfs (u)) FAILED ("file not appendable");
+  if (is_rooted_tmfs (u)) TM_FAILED ("file not appendable");
 
   // cout << "Save " << u << LF;
   url r= u;
@@ -253,7 +253,7 @@ append_string (url u, string s, bool fatal) {
 
   if (err && fatal) {
     failed_error << "File name= " << as_string (u) << "\n";
-    FAILED ("file not appendable");
+    TM_FAILED ("file not appendable");
   }
   return err;
 }
@@ -530,11 +530,21 @@ read_directory (url u, bool& error_flag) {
   // End caching
 
   QDir qtdir (QString::fromStdString(std::string(name.data(), N(name))));
+  QDir tmhome = QDir::homePath() + "/.TeXmacs";
+
+  if (!qtdir.absolutePath().startsWith(tmhome.absolutePath())) {
+      qDebug() << "ERROR, You DON'T have the permission to list " << qtdir.absolutePath() << " which is not in " << tmhome.absolutePath();
+      array<string> dir;
+      return dir;
+  }
+
+
+
   QStringList list = qtdir.entryList(QDir::AllEntries | QDir::NoDotAndDotDot);
 
   array<string> dir;
   for (int i=0; i<list.size(); i++) {
-    string s = string(list.at(i).toUtf8().constData(), list.at(i).toUtf8().size());
+    string s = string(list.at(i).toLocal8Bit().constData(), list.at(i).toLocal8Bit().size());
     dir << s;
   }
 

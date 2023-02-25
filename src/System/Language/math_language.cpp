@@ -64,7 +64,7 @@ math_language_rep::set_type (string cl, string s) {
   else if (s == "closing-bracket") ot= OP_CLOSING_BRACKET;
   else {
     failed_error << "Attempt to associate type " << s << " to " << cl << "\n";
-    FAILED ("invalid type");
+    TM_FAILED ("invalid type");
   }
 }
 
@@ -76,7 +76,7 @@ math_language_rep::set_left_penalty (string cl, string s) {
   else {
     failed_error << "Attempt to associate left penalty " << s
                  << " to " << cl << "\n";
-    FAILED ("invalid penalty");
+    TM_FAILED ("invalid penalty");
   }
 }
 
@@ -88,7 +88,7 @@ math_language_rep::set_right_penalty (string cl, string s) {
   else {
     failed_error << "Attempt to associate right penalty " << s
                  << " to " << cl << "\n";
-    FAILED ("invalid penalty");
+    TM_FAILED ("invalid penalty");
   }
 }
 
@@ -104,7 +104,7 @@ math_language_rep::set_left_spacing (string cl, string s) {
   else {
     failed_error << "Attempt to associate left spacing " << s
                  << " to " << cl << "\n";
-    FAILED ("invalid spacing");
+    TM_FAILED ("invalid spacing");
   }
 }
 
@@ -120,7 +120,7 @@ math_language_rep::set_right_spacing (string cl, string s) {
   else {
     failed_error << "Attempt to associate right spacing " << s
                  << " to " << cl << "\n";
-    FAILED ("invalid spacing");
+    TM_FAILED ("invalid spacing");
   }
 }
 
@@ -132,7 +132,7 @@ math_language_rep::set_limits (string cl, string s) {
   else {
     failed_error << "Attempt to associate limits " << s
                  << " to " << cl << "\n";
-    FAILED ("invalid limits");
+    TM_FAILED ("invalid limits");
   }
 }
 
@@ -160,9 +160,9 @@ math_language_rep::math_language_rep (string name):
     D key = it->next ();
     C prop= ((C) (key >> 32));
     C sym = ((C) (key & 0xffffffff)) ^ prop;
-    ASSERT (is_compound (packrat_decode[sym], "symbol", 1) &&
-            is_compound (packrat_decode[prop], "property", 1),
-            "invalid symbol or property");
+    TM_ASSERT (is_compound (packrat_decode[sym], "symbol", 1) &&
+               is_compound (packrat_decode[prop], "property", 1),
+               "invalid symbol or property");
     string cl = packrat_decode[sym ][0]->label;
     string var= packrat_decode[prop][0]->label;
     string val= props[key];
@@ -257,7 +257,7 @@ math_language_rep::advance (tree t, int& pos) {
 
 array<int>
 math_language_rep::get_hyphens (string s) {
-  ASSERT (N(s) != 0, "hyphenation of empty string");
+  TM_ASSERT (N(s) != 0, "hyphenation of empty string");
   int i, n= N(s)-1;
   bool flag= is_numeric (s);
   array<int> penalty (n);

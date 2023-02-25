@@ -157,8 +157,8 @@ tex_rubber_font_rep::get_partial_extents (int c, metric& ex) {
 
 void
 tex_rubber_font_rep::get_extents (string s, metric& ex) {
-  ASSERT ((N(s)>=2) && (s[0]=='<') && (s[N(s)-1]=='>'),
-	  "invalid rubber character");
+  TM_ASSERT ((N(s) >= 2) && (s[0] == '<') && (s[N(s) - 1] == '>'),
+             "invalid rubber character");
 
   // determining base character and serial number
   int i;

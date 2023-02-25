@@ -104,7 +104,7 @@ database_rep::as_atom (string s) {
 
 string
 database_rep::from_atom (db_atom a) {
-  ASSERT (a < N(atom_decode), "Invalid atom");
+  TM_ASSERT (a < N(atom_decode), "Invalid atom");
   return atom_decode[a];
 }
 

@@ -337,7 +337,7 @@ hyphenless_language_rep::advance (tree t, int& pos) {
 
 array<int>
 hyphenless_language_rep::get_hyphens (string s) {
-  ASSERT (N(s) != 0, "hyphenation of empty string");
+  TM_ASSERT (N(s) != 0, "hyphenation of empty string");
   int i, n= N(s)-1;
   array<int> penalty (n);
   for (i=0; i<n; i++) penalty[i]= HYPH_INVALID;

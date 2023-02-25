@@ -426,7 +426,7 @@ static string pfb_to_pfa (url file) {
     parse (pfb, pos, magic);
     //cout << "magic:" << as_hexadecimal(magic,2) << LF ;
     if (magic != 128) {
-      FAILED ("Not a pfb file");
+      TM_FAILED ("Not a pfb file");
     }
     parse (pfb, pos, type);
     //cout << "type:" << as_hexadecimal(type,2) << LF;
@@ -464,7 +464,7 @@ static string pfb_to_pfa (url file) {
         break;
         
       default : 
-        FAILED ("Unknown field type while reading PFB file");
+        TM_FAILED ("Unknown field type while reading PFB file");
         break;
         
     }
@@ -565,7 +565,7 @@ printer_rep::generate_tex_fonts () {
 
 void
 printer_rep::set_transformation (frame fr) {
-  ASSERT (fr->linear, "only linear transformations have been implemented");
+  TM_ASSERT (fr->linear, "only linear transformations have been implemented");
 
   SI cx1, cy1, cx2, cy2;
   get_clipping (cx1, cy1, cx2, cy2);

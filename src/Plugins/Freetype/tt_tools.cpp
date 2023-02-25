@@ -93,7 +93,7 @@ tt_nr_fonts (string tt) {
 
 int
 tt_header_index (string tt, int i) {
-  ASSERT (i >= 0 && i < tt_nr_fonts (tt), "index out of range");
+  TM_ASSERT (i >= 0 && i < tt_nr_fonts (tt), "index out of range");
   if (!tt_is_collection (tt)) return 0;
   else return get_U32 (tt, 12 + 4*i);
 }
@@ -114,31 +114,31 @@ tt_correct_version (string tt, int i) {
 
 int
 tt_nr_tables (string tt, int i) {
-  ASSERT (tt_correct_version (tt, i), "true type font expected");
+  TM_ASSERT (tt_correct_version (tt, i), "true type font expected");
   int h= tt_header_index (tt, i);
   return get_U16 (tt, h + 4);
 }
 
 string
 tt_table_tag (string tt, int i, int k) {
-  ASSERT (tt_correct_version (tt, i), "true type font expected");
-  ASSERT (k >= 0 && k < tt_nr_tables (tt, i), "index out of range");
+  TM_ASSERT (tt_correct_version (tt, i), "true type font expected");
+  TM_ASSERT (k >= 0 && k < tt_nr_tables (tt, i), "index out of range");
   int h= tt_header_index (tt, i);
   return get_tag (tt, h + 12 + 16 * k);
 }
 
 U32
 tt_table_start (string tt, int i, int k) {
-  ASSERT (tt_correct_version (tt, i), "true type font expected");
-  ASSERT (k >= 0 && k < tt_nr_tables (tt, i), "index out of range");
+  TM_ASSERT (tt_correct_version (tt, i), "true type font expected");
+  TM_ASSERT (k >= 0 && k < tt_nr_tables (tt, i), "index out of range");
   int h= tt_header_index (tt, i);
   return get_U32 (tt, h + 20 + 16 * k);
 }
 
 string
 tt_table (string tt, int i, int k) {
-  ASSERT (tt_correct_version (tt, i), "true type font expected");
-  ASSERT (k >= 0 && k < tt_nr_tables (tt, i), "index out of range");
+  TM_ASSERT (tt_correct_version (tt, i), "true type font expected");
+  TM_ASSERT (k >= 0 && k < tt_nr_tables (tt, i), "index out of range");
   int h= tt_header_index (tt, i);
   int start= get_U32 (tt, h + 20 + 16 * k);
   int len  = get_U32 (tt, h + 24 + 16 * k);
@@ -162,7 +162,7 @@ tt_extract_subfont (string tt, int i) {
   if (i < 0 || i >= tt_nr_fonts (tt))
     cout << "TeXmacs] error, invalid TrueType subfont " << i
          << " out of " << tt_nr_fonts (tt) << "\n";
-  ASSERT (i >= 0 && i < tt_nr_fonts (tt), "index out of range");
+  TM_ASSERT (i >= 0 && i < tt_nr_fonts (tt), "index out of range");
   if (!tt_is_collection (tt)) return tt;
   string r;
   int h= tt_header_index (tt, i);
@@ -208,7 +208,7 @@ name_storage_offset (string nt) {
 
 string
 name_record (string nt, int i) {
-  ASSERT (i >= 0 && i < name_nr_records (nt), "index out of range");
+  TM_ASSERT (i >= 0 && i < name_nr_records (nt), "index out of range");
   return get_sub (nt, 6 + 12*i, 18 + 12*i);
 }
 

@@ -96,7 +96,7 @@ abs (point p) {
 double
 min (point p) {
   int i, n= N(p);
-  ASSERT (N(p)>0, "non empty point expected");
+  TM_ASSERT (N(p) > 0, "non empty point expected");
   double r= p[0];
   for (i=1; i<n; i++)
     r= min (r, p[i]);
@@ -106,7 +106,7 @@ min (point p) {
 double
 max (point p) {
   int i, n= N(p);
-  ASSERT (N(p)>0, "non empty point expected");
+  TM_ASSERT (N(p) > 0, "non empty point expected");
   double r= p[0];
   for (i=1; i<n; i++)
     r= max (r, p[i]);

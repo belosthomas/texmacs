@@ -54,7 +54,7 @@ highlight_box_rep::highlight_box_rep (path ip, box b, box xb,
   lcor (ps->lcor), bcor (ps->bcor), rcor (ps->rcor), tcor (ps->tcor),
   bg (ps->bg), xc (ps->xc), bc (ps->border)
 {
-  ASSERT (N(bc) == 4 || N(bc) == 8, "invalid number of border colors");
+  TM_ASSERT (N(bc) == 4 || N(bc) == 8, "invalid number of border colors");
   if (shape == "ring" || shape == "band") {
     lpad= lpad + rpad;
     rpad= 0;

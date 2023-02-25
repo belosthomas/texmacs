@@ -91,7 +91,7 @@ math_font_rep::init_font (int fn_nr, font& fn) {
                       (int) tm_round (as_int (t[3]) * vzf), false);
   else
     fn= find_magnified_font (t, hzf, vzf);
-  ASSERT (!is_nil (fn), "font not found");
+  TM_ASSERT (!is_nil (fn), "font not found");
   fn->copy_math_pars (base_fn);
   font_table [fn_nr]= fn;
 }
@@ -115,7 +115,7 @@ math_font_rep::search_font (string& s, font& fn) {
         int fn_nr= c/256;
         if (is_nil (rubber_table [fn_nr])) {
           fn= find_magnified_font (rubber_name [fn_nr], hzf, vzf);
-          ASSERT (!is_nil (fn), "font not found");
+          TM_ASSERT (!is_nil (fn), "font not found");
           fn->yfrac= base_fn->yfrac;
           // fn->copy_math_pars (base_fn);
           rubber_table [fn_nr]= fn;

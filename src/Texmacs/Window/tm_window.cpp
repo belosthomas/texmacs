@@ -215,18 +215,18 @@ public:
 void
 close_embedded_command_rep::apply () {
   //cout << "Destroy " << vw->buf->buf->name << "\n";
-  ASSERT (!is_nil(vw->ed), "embedded command acting on deleted editor");
+  TM_ASSERT (!is_nil(vw->ed), "embedded command acting on deleted editor");
   url foc= abstract_window (vw->ed->mvw->win);
   if (is_none (foc)) {
     array<url> a= windows_list ();
-    ASSERT (N(a) != 0, "no remaining windows");
+    TM_ASSERT (N(a) != 0, "no remaining windows");
     foc= a[0];
   }
   window_focus (foc);
   //cout << "Changed focus\n";
   tm_window win= vw->win;
-  ASSERT (N (buffer_to_views (vw->buf->buf->name)) == 1,
-          "invalid cloned embedded TeXmacs widget");
+  TM_ASSERT (N (buffer_to_views (vw->buf->buf->name)) == 1,
+             "invalid cloned embedded TeXmacs widget");
   window_by_name(name->t)= remove<int> (window_by_name[name->t], win_id);
   remove_buffer (vw->buf->buf->name);
   //cout << "Deleted buffer\n";
@@ -650,7 +650,7 @@ window_delete (int win) {
   static hashmap<int,bool> busy (false);
   if (busy->contains (win)) return;
   busy (win)= true;
-  ASSERT (window_table->contains (win), "window does not exist");
+  TM_ASSERT (window_table->contains (win), "window does not exist");
   widget pww= window_table [win];
   window_table->reset (win);
   send_destroy (pww);
@@ -660,21 +660,21 @@ window_delete (int win) {
 
 void
 window_show (int win) {
-  ASSERT (window_table->contains (win), "window does not exist");
+  TM_ASSERT (window_table->contains (win), "window does not exist");
   widget pww= window_table [win];
   set_visibility (pww, true);
 }
 
 void
 window_hide (int win) {
-  ASSERT (window_table->contains (win), "window does not exist");
+  TM_ASSERT (window_table->contains (win), "window does not exist");
   widget pww= window_table [win];
   set_visibility (pww, false);
 }
 
 scheme_tree
 window_get_size (int win) {
-  ASSERT (window_table->contains (win), "window does not exist");
+  TM_ASSERT (window_table->contains (win), "window does not exist");
   widget pww= window_table [win];
   int w, h;
   get_size(pww, w, h);
@@ -683,14 +683,14 @@ window_get_size (int win) {
 
 void
 window_set_size (int win, int w, int h) {
-  ASSERT (window_table->contains (win), "window does not exist");
+  TM_ASSERT (window_table->contains (win), "window does not exist");
   widget pww= window_table [win];
   set_size (pww, w*PIXEL, h*PIXEL);
 }
 
 scheme_tree
 window_get_position (int win) {
-  ASSERT (window_table->contains (win), "window does not exist");
+  TM_ASSERT (window_table->contains (win), "window does not exist");
   widget pww= window_table [win];
   int x, y;
   get_position(pww, x, y);
@@ -699,7 +699,7 @@ window_get_position (int win) {
 
 void
 window_set_position (int win, int x, int y) {
-  ASSERT (window_table->contains (win), "window does not exist");
+  TM_ASSERT (window_table->contains (win), "window does not exist");
   widget pww= window_table [win];
   set_position (pww, x*PIXEL, y*PIXEL);
 }

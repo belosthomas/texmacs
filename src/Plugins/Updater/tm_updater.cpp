@@ -34,7 +34,7 @@ tm_updater* tm_updater::instance ()
     #endif
   }
 
-  ASSERT (_instance != NULL, "Unable to instantiate updater.");
+  TM_ASSERT (_instance != NULL, "Unable to instantiate updater.");
   return _instance;
 }
 

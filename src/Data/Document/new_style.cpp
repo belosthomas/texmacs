@@ -153,7 +153,7 @@ style_get_cache (tree style, hashmap<string,tree>& H, tree& t, bool& f) {
 bool
 compute_env_and_drd (tree style) {
   init_style_data ();
-  ASSERT (is_tuple (style), "style tuple expected");
+  TM_ASSERT (is_tuple (style), "style tuple expected");
   bool busy= false;
   for (int i=0; i<N(style); i++)
     busy= busy || sd->style_busy->contains (as_string (style[i]));

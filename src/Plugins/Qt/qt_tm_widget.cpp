@@ -49,7 +49,7 @@ replaceActions (QWidget* dest,  QList<QAction*>* src) {
   //      the menu in the GUI (see qt_menu.hpp for this memory management
   //      policy)
   if (src == NULL || dest == NULL)
-    FAILED ("replaceActions expects valid objects");
+    TM_FAILED ("replaceActions expects valid objects");
   dest->setUpdatesEnabled (false);
   QList<QAction *> list = dest->actions();
   for (int i = 0; i < list.count(); i++) {
@@ -66,7 +66,7 @@ replaceActions (QWidget* dest,  QList<QAction*>* src) {
 static void
 replaceButtons (QToolBar* dest, QList<QAction*>* src) {
   if (src == NULL || dest == NULL)
-    FAILED ("replaceButtons expects valid objects");
+    TM_FAILED ("replaceButtons expects valid objects");
   dest->setUpdatesEnabled (false);
   bool visible = dest->isVisible();
   if (visible) dest->hide(); //TRICK: to avoid flicker of the dest widget
@@ -746,7 +746,7 @@ qt_tm_widget_rep::send (slot s, blackbox val) {
       break;
     case SLOT_DESTROY:
     {
-      ASSERT (is_nil (val), "type mismatch");
+      TM_ASSERT (is_nil (val), "type mismatch");
       if (!is_nil (quit))
         quit ();
       the_gui->need_update ();
@@ -1116,7 +1116,7 @@ qt_tm_embedded_widget_rep::send (slot s, blackbox val) {
  
     case SLOT_DESTROY:
     {
-      ASSERT (is_nil (val), "type mismatch");
+      TM_ASSERT (is_nil (val), "type mismatch");
       if (!is_nil (quit))
         quit ();
       the_gui->need_update ();

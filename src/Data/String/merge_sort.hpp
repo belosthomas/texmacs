@@ -101,7 +101,7 @@ merge_sort_sub (array<T>& a, array<U>& b, int start, int end,
 
 template<class T, class U, class LEQ> void
 merge_sort_leq (array<T>& a, array<U>& b) {
-  ASSERT (N(a) == N(b), "arrays of the same length expected");
+  TM_ASSERT (N(a) == N(b), "arrays of the same length expected");
   array<T> ma (N(a));
   array<U> mb (N(b));
   merge_sort_sub<T,U,LEQ> (a, b, 0, N(a), ma, mb);
@@ -122,7 +122,7 @@ merge_sort_leq_permutation (array<T>& a) {
 
 template<class T> array<T>
 permute (array<T>& a, array<int> b) {
-  ASSERT (N(a) == N(b), "arrays of the same length expected");
+  TM_ASSERT (N(a) == N(b), "arrays of the same length expected");
   array<T> r (N(a));
   for (int i=0; i<N(a); i++) r[i]= a[b[i]];
   return r;

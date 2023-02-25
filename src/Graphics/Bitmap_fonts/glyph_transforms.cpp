@@ -783,7 +783,7 @@ rotate (metric& ey, metric ex, double angle, double ox, double oy) {
 template<typename T> matrix<T>
 invert2 (matrix<T> m) {
   int rows= NR (m), cols= NC (m);
-  ASSERT (rows == 2 && cols == 2, "only dimension two has been implemented");
+  TM_ASSERT (rows == 2 && cols == 2, "only dimension two has been implemented");
   T det= m (0, 0) * m (1, 1) - m (0, 1) * m (1, 0);
   matrix<T> inv (T(0), rows, cols);
   inv (0, 0)=  m (1, 1) / det;

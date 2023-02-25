@@ -390,8 +390,8 @@ get_number (string s, int& pos) {
 static string
 get_delimiter (string s, font fn, SI height) {
   int ns= N(s);
-  ASSERT (ns >= 2 && s[0] == '<' && s[ns-1] == '>',
-	  "invalid rubber character");
+  TM_ASSERT (ns >= 2 && s[0] == '<' && s[ns - 1] == '>',
+             "invalid rubber character");
   if (is_digit (s[ns-2])) {
     int pos;
     int plus= get_number (s, pos);
@@ -455,8 +455,8 @@ get_delimiter (string s, font fn, SI height) {
 
 static string
 get_wide (string s, font fn, SI width) {
-  ASSERT (N(s) >= 2 && s[0] == '<' && s[N(s)-1] == '>',
-	  "invalid rubber character");
+  TM_ASSERT (N(s) >= 2 && s[0] == '<' && s[N(s) - 1] == '>',
+             "invalid rubber character");
   string radical= s (0, N(s)-1) * "-";
   string first  = radical * "0>";
   metric ex;
@@ -485,8 +485,8 @@ get_wide (string s, font fn, SI width) {
 
 static string
 get_wide_stix (string s, font fn, SI width) {
-  ASSERT (N(s) >= 2 && s[0] == '<' && s[N(s)-1] == '>',
-	  "invalid rubber character");
+  TM_ASSERT (N(s) >= 2 && s[0] == '<' && s[N(s) - 1] == '>',
+             "invalid rubber character");
   string radical= s (0, N(s)-1) * "-";
   metric ex;
   int n= 0;
@@ -558,8 +558,8 @@ delimiter_box (path ip, string s, font fn, pencil pen,
 
 box
 big_operator_box (path ip, string s, font fn, pencil pen, int n) {
-  ASSERT (N(s) >= 2 && s[0] == '<' && s[N(s)-1] == '>',
-	  "invalid rubber character");
+  TM_ASSERT (N(s) >= 2 && s[0] == '<' && s[N(s) - 1] == '>',
+             "invalid rubber character");
   string r= s (0, N(s)-1) * "-" * as_string (n) * ">";
   metric ex;
   fn->get_extents (r, ex);

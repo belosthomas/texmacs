@@ -68,7 +68,7 @@ bool is_server_started () {
 
 server
 get_server () {
-  ASSERT (is_server_started (), "TeXmacs server not yet started");
+  TM_ASSERT (is_server_started (), "TeXmacs server not yet started");
   return *the_server;
 }
 

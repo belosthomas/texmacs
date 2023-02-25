@@ -29,7 +29,7 @@ public:
 
   inline virtual int arity () { return 1; }
   inline virtual charmap child (int i) {
-    ASSERT (i == 0, "bad child");
+    TM_ASSERT (i == 0, "bad child");
     return this; }
   inline virtual void lookup (string s, int& ch, string& r) { ch= 0; r= s; }
   inline void cached_lookup (string s, int& ch, string& r) {

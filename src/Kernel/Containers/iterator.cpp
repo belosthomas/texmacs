@@ -77,7 +77,7 @@ hashset_iterator_rep<T>::busy () {
 
 template<class T> T
 hashset_iterator_rep<T>::next () {
-  ASSERT (busy (), "end of iterator");
+  TM_ASSERT (busy (), "end of iterator");
   T x (l->item);
   l= l->next;
   return x;
@@ -124,7 +124,7 @@ hashmap_iterator_rep<T,U>::busy () {
 
 template<class T, class U> T
 hashmap_iterator_rep<T,U>::next () {
-  ASSERT (busy (), "end of iterator");
+  TM_ASSERT (busy (), "end of iterator");
   T x (l->item.key);
   l= l->next;
   return x;

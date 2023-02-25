@@ -13,6 +13,7 @@
 #include "editor.hpp"
 #include "boot.hpp"
 
+#include <iostream>
 #include <unordered_map>
 
 
@@ -46,6 +47,7 @@ void abstract_scheme::notify_preference (string var) {
 }
 
 string abstract_scheme::get_preference (string var, string def) {
+    std::cout << "get_preference: " << std::string(var.data(), N(var)) << " " << std::string(def.data(), N(def)) << std::endl;
     if (!preferences_ok)
         return get_user_preference (var, def);
     else {

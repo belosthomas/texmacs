@@ -83,13 +83,13 @@ with_body (tree w) {
 
 bool
 with_same_type (tree w1, tree w2) {
-  ASSERT (is_with_like (w1) && is_with_like (w2), "with-like trees expected");
+  TM_ASSERT (is_with_like (w1) && is_with_like (w2), "with-like trees expected");
   return w1 (0, N(w1)-1) == w2 (0, N(w2)-1);
 }
 
 bool
 with_similar_type (tree w1, tree w2) {
-  ASSERT (is_with_like (w1) && is_with_like (w2), "with-like trees expected");
+  TM_ASSERT (is_with_like (w1) && is_with_like (w2), "with-like trees expected");
   if (is_compound (w1, "math") || is_compound (w1, "text"))
     return is_compound (w2, "math") || is_compound (w2, "text");
   if (!is_func (w1, WITH) || !is_func (w2, WITH))

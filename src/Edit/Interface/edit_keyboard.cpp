@@ -208,7 +208,7 @@ edit_interface_rep::key_press (string gkey) {
       speech_pre_edit &&
       ends (key, ":" * current_speech)) return;
   if (pre_edit_mark != 0) {
-    ASSERT (sh_mark == 0, "invalid shortcut during pre-edit");
+    TM_ASSERT (sh_mark == 0, "invalid shortcut during pre-edit");
     mark_cancel (pre_edit_mark);
     pre_edit_s= "";
     pre_edit_mark= 0;

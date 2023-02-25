@@ -17,7 +17,7 @@ public:
         tmscm result= scheme().call_scheme(obj.to_tmscm());
         if (result->is_widget()) return result->to_widget();
         else {
-            FAILED ("widget expected");
+            TM_FAILED ("widget expected");
             return glue_widget ();
         }
     }

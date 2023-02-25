@@ -9,16 +9,9 @@
 * in the root directory or <http://www.gnu.org/licenses/gpl-3.0.html>.
 ******************************************************************************/
 
-#include <stdint.h>
-#include <QApplication>
-#include <QObject>
-#include <QThread>
-#include <QSocketNotifier>
-
-
-
 #ifndef WIN32
 
+#include <cstdint>
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
@@ -30,18 +23,23 @@
 
 #else
 
-namespace wsoc {
+#include <cstdint>
 #include <winsock2.h>
 #include <ws2tcpip.h>
-}
+
 typedef uint32_t in_addr_t;
 typedef int socklen_t;
-#define SOCKADDR_IN wsoc::sockaddr_in
-#define SOCKADDR_IN6 wsoc::sockaddr_in6
-#define SOCKADDR wsoc::sockaddr
-#define SOCKADDR_STORAGE wsoc::sockaddr_storage
+#define SOCKADDR_IN sockaddr_in
+#define SOCKADDR_IN6 sockaddr_in6
+#define SOCKADDR sockaddr
+#define SOCKADDR_STORAGE sockaddr_storage
 
 #endif
+
+#include <QApplication>
+#include <QObject>
+#include <QThread>
+#include <QSocketNotifier>
 
 #include "hashset.hpp"
 #include "string.hpp"
@@ -75,7 +73,7 @@ protected:
 private:
   static int count;
 #ifdef OS_MINGW
-  static wsoc::WSADATA wsadata;
+  static WSADATA wsadata;
 #endif
 };
 

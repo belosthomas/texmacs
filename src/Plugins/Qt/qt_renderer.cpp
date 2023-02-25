@@ -146,7 +146,7 @@ qt_renderer_rep::set_zoom_factor (double zoom) {
 
 void
 qt_renderer_rep::set_transformation (frame fr) {
-  ASSERT (fr->linear, "only linear transformations have been implemented");
+  TM_ASSERT (fr->linear, "only linear transformations have been implemented");
 
   SI cx1, cy1, cx2, cy2;
   get_clipping (cx1, cy1, cx2, cy2);
@@ -451,10 +451,6 @@ qt_renderer_rep::draw_clipped (QImage *im, int w, int h, SI x, SI y) {
     float sx = (float) w / im->width();
     float sy = (float) h / im->height();
 
-    // Scale the image down to an integer size using bicubic interpolation
-    //QImage scaledImage = im->scaled(w * 2);
-    //scaledImage = scaledImage.convertToFormat(QImage::Format_ARGB32_Premultiplied);
-
     painter->save();
 
     QTransform transform;
@@ -692,7 +688,7 @@ qt_renderer_rep::delete_shadow (renderer& ren)  {
 void 
 qt_renderer_rep::get_shadow (renderer ren, SI x1, SI y1, SI x2, SI y2) {
   // FIXME: we should use the routine fetch later
-  ASSERT (ren != NULL, "invalid renderer");
+  TM_ASSERT (ren != NULL, "invalid renderer");
   if (ren->is_printer ()) return;
   qt_renderer_rep* shadow= static_cast<qt_renderer_rep*>(ren);
   outer_round (x1, y1, x2, y2);
@@ -726,7 +722,7 @@ qt_renderer_rep::get_shadow (renderer ren, SI x1, SI y1, SI x2, SI y2) {
 void 
 qt_renderer_rep::put_shadow (renderer ren, SI x1, SI y1, SI x2, SI y2) {
   // FIXME: we should use the routine fetch later
-  ASSERT (ren != NULL, "invalid renderer");
+  TM_ASSERT (ren != NULL, "invalid renderer");
   if (ren->is_printer ()) return;
   if (painter == static_cast<qt_renderer_rep*>(ren)->painter) return;
   qt_shadow_renderer_rep* shadow= static_cast<qt_shadow_renderer_rep*>(ren);
@@ -792,7 +788,7 @@ qt_proxy_renderer_rep::new_shadow (renderer& ren) {
 void 
 qt_proxy_renderer_rep::get_shadow (renderer ren, SI x1, SI y1, SI x2, SI y2) {
   // FIXME: we should use the routine fetch later
-  ASSERT (ren != NULL, "invalid renderer");
+  TM_ASSERT (ren != NULL, "invalid renderer");
   if (ren->is_printer ()) return;
   qt_renderer_rep* shadow= static_cast<qt_renderer_rep*>(ren);
   outer_round (x1, y1, x2, y2);
@@ -856,7 +852,7 @@ qt_shadow_renderer_rep::~qt_shadow_renderer_rep ()
 void 
 qt_shadow_renderer_rep::get_shadow (renderer ren, SI x1, SI y1, SI x2, SI y2) {
   // FIXME: we should use the routine fetch later
-  ASSERT (ren != NULL, "invalid renderer");
+  TM_ASSERT (ren != NULL, "invalid renderer");
   if (ren->is_printer ()) return;
   qt_shadow_renderer_rep* shadow= static_cast<qt_shadow_renderer_rep*>(ren);
   outer_round (x1, y1, x2, y2);

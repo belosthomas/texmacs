@@ -81,7 +81,7 @@ poor_rubber_font_rep::poor_rubber_font_rep (string name, font base2):
 
 font
 poor_rubber_font_rep::get_font (int nr) {
-  ASSERT (nr < N(larger), "wrong font number");
+  TM_ASSERT (nr < N(larger), "wrong font number");
   if (initialized[nr]) return larger[nr];
   initialized[nr]= true;
   if (nr <= 2*MAGNIFIED_NUMBER + 1) {

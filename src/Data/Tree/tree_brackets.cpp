@@ -456,7 +456,7 @@ upgrade_brackets (array<tree> a, int level) {
     if (r != a) return upgrade_brackets (r, level);
     r= postfix_split (a, tp, level);
     if (r != a) return upgrade_brackets (r, level);
-    ASSERT (tp[0] == SYMBOL_OPEN_BIG, "invalid situation");
+    TM_ASSERT (tp[0] == SYMBOL_OPEN_BIG, "invalid situation");
     r= upgrade_brackets (range (a, 1, N(a)), level + 1);
     tree body= concat_recompose (r);
     r= array<tree> ();

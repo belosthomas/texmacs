@@ -119,7 +119,7 @@ operator << (tm_ostream& out, matrix<T> m) {
 
 TMPL void
 parse (tree t, matrix<T>& m) {
-  ASSERT (is_tuple (t) && N(t)>0 && is_tuple (t[0]), "not a matrix");
+  TM_ASSERT (is_tuple (t) && N(t) > 0 && is_tuple (t[0]), "not a matrix");
   int i, j, rows= N(t), cols= N(t[0]);
   m= matrix<T> (T(0), rows, cols);
   for (i=0; i<rows; i++)
@@ -159,7 +159,7 @@ operator - (matrix<T> m) {
 template<typename T, typename Op> matrix<T>
 binary (matrix<T> m1, matrix<T> m2) {
   int i, n= NR(m1) * NC(m1);
-  ASSERT (NR(m1) == NR(m2) && NC(m1) == NC(m2), "matrix sizes don't match");
+  TM_ASSERT (NR(m1) == NR(m2) && NC(m1) == NC(m2), "matrix sizes don't match");
   T* a= A(m1);
   T* b= A(m2);
   T* r= tm_new_array<T> (n);
@@ -183,7 +183,7 @@ operator - (matrix<T> m1, matrix<T> m2) {
 TMPL inline matrix<T>
 operator * (matrix<T> m1, matrix<T> m2) {
   int i, j, k, rows= NR (m1), aux= NC (m1), cols= NC (m2);
-  ASSERT (NR (m2) == aux, "dimensions don't match");
+  TM_ASSERT (NR (m2) == aux, "dimensions don't match");
   matrix<T> prod (T(0), rows, cols);
   for (i=0; i<rows; i++)
     for (j=0; j<cols; j++)
@@ -195,7 +195,7 @@ operator * (matrix<T> m1, matrix<T> m2) {
 TMPL inline vector<T>
 operator * (matrix<T> m, vector<T> v) {
   int i, j, rows= NR (m), cols= NC (m);
-  ASSERT (N (v) == cols, "dimensions don't match");
+  TM_ASSERT (N (v) == cols, "dimensions don't match");
   vector<T> prod (rows);
   for (j=0; j<cols; j++)
     prod[j]= T(0);
@@ -208,7 +208,7 @@ operator * (matrix<T> m, vector<T> v) {
 TMPL inline array<T>
 operator * (matrix<T> m, array<T> v) {
   int i, j, rows= NR (m), cols= NC (m);
-  ASSERT (N (v) == cols, "dimensions don't match");
+  TM_ASSERT (N (v) == cols, "dimensions don't match");
   array<T> prod (rows);
   for (j=0; j<cols; j++)
     prod[j]= T(0);
@@ -244,7 +244,7 @@ el_swap (T& a, T& b) { T x= a; a= b; b= x; }
 TMPL matrix<T>
 invert (matrix<T> m) {
   int rows= NR (m), cols= NC (m);
-  ASSERT (rows == cols, "invalid matrix dimensions");
+  TM_ASSERT (rows == cols, "invalid matrix dimensions");
   if (rows == 2) {
     T det= m (0, 0) * m (1, 1) - m (0, 1) * m (1, 0);
     matrix<T> inv (T(0), rows, cols);
@@ -265,7 +265,7 @@ invert (matrix<T> m) {
           best_i = i;
           best_a = abs (mat (i, j));
         }
-      ASSERT (mat (best_i, j) != T(0), "matrix is not invertible");
+      TM_ASSERT (mat (best_i, j) != T(0), "matrix is not invertible");
       if (best_i != j) {
         for (int k=0; k<cols; k++) {
           el_swap (mat (j, k), mat (best_i, k));
@@ -293,7 +293,7 @@ invert (matrix<T> m) {
 TMPL array<T>
 projective_apply (matrix<T> m, array<T> v) {
   int n= NR (m);
-  ASSERT (NC (m) == n && N(v) + 1 == n, "dimensions don't match");
+  TM_ASSERT (NC (m) == n && N(v) + 1 == n, "dimensions don't match");
   array<T> pv= copy (v);
   pv << T (1.0);
   array<T> pr= m * pv;

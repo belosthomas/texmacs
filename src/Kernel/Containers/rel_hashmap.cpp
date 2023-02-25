@@ -20,14 +20,14 @@
 
 template <class T, class U> U
 rel_hashmap<T,U>::operator [] (T x) {
-  ASSERT (rep != NULL, "invalid relative hashmap");
+  TM_ASSERT (rep != NULL, "invalid relative hashmap");
   if (rep->item->contains (x) || is_nil (rep->next)) return rep->item [x];
   return rep->next [x];
 }
 
 template <class T, class U> U&
 rel_hashmap<T,U>::operator () (T x) {
-  ASSERT (rep != NULL, "invalid relative hashmap");
+  TM_ASSERT (rep != NULL, "invalid relative hashmap");
   if (rep->item->contains (x)) return rep->item (x);
   if ((!is_nil (rep->next)) && rep->next->contains (x))
     rep->item(x)= copy (rep->next[x]);
@@ -49,14 +49,14 @@ rel_hashmap_rep<T,U>::extend () {
 
 template <class T, class U> void
 rel_hashmap_rep<T,U>::shorten () {
-  ASSERT (!is_nil (next), "relative hashmap cannot be shortened");
+  TM_ASSERT (!is_nil (next), "relative hashmap cannot be shortened");
   item= next->item;
   next= next->next;
 }
 
 template <class T, class U> void
 rel_hashmap_rep<T,U>::merge () {
-  ASSERT (!is_nil (next), "relative hashmap cannot be merged");
+  TM_ASSERT (!is_nil (next), "relative hashmap cannot be merged");
   next->change (item);
   shorten ();
 }

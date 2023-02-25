@@ -95,7 +95,7 @@ public:
     }
     
     virtual array<object> as_array_object () {
-        ASSERT (handle->is_list(), "list expected");
+        TM_ASSERT (handle->is_list(), "list expected");
         object obj = *this;
         array<object> ret;
         while (!obj.is_null()) {
@@ -113,7 +113,7 @@ public:
     
     virtual array<double> as_array_double () {
         tmscm t= to_tmscm();
-        ASSERT (t->is_array_double(), "array<double> expected");
+        TM_ASSERT (t->is_array_double(), "array<double> expected");
         return t->to_array_double();    
     }
     

@@ -64,7 +64,7 @@ close_box (const T& data) {
 
 template<class T> T
 open_box (blackbox bb) {
-  ASSERT (type_box (bb) == type_helper<T>::id, "type mismatch");
+  TM_ASSERT (type_box (bb) == type_helper<T>::id, "type mismatch");
   return ((whitebox_rep<T>*) bb.rep) -> data;
 }
 

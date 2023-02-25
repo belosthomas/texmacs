@@ -70,10 +70,10 @@ array_as_tuple (array<string> a) {
 
 array<string>
 tuple_as_array (tree t) {
-  ASSERT (is_func (t, TUPLE), "tuple expected");
+  TM_ASSERT (is_func (t, TUPLE), "tuple expected");
   array<string> r;
   for (int i=0; i<N(t); i++) {
-    ASSERT (is_atomic (t[i]), "string expected");
+    TM_ASSERT (is_atomic (t[i]), "string expected");
     r << t[i]->label;
   }
   return r;

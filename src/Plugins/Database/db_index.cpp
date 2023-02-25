@@ -75,7 +75,7 @@ database_rep::as_key (string s) {
 
 string
 database_rep::from_key (db_key a) {
-  ASSERT (a < N(key_decode), "Invalid key");
+  TM_ASSERT (a < N(key_decode), "Invalid key");
   return key_decode[a];
 }
 

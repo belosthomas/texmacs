@@ -81,7 +81,7 @@ path_add (path p, int plus, int pos) {
 
 path
 path_up (path p) {
-  ASSERT (!is_nil (p), "path is too short");
+  TM_ASSERT (!is_nil (p), "path is too short");
   if (is_nil (p->next)) return path ();
   return path (p->item, path_up (p->next));
 }
@@ -130,7 +130,7 @@ path
 operator / (path p, path q) {
   if (is_nil (q)) return p;
   else if (is_nil (p) || (p->item != q->item)) {
-    FAILED ("path did not start with required path"); }
+    TM_FAILED ("path did not start with required path"); }
   else return p->next / q->next;
   return path (); // NOT REACHED
 }
@@ -166,7 +166,7 @@ subtree (tree& t, path p) {
 
 tree&
 parent_subtree (tree& t, path p) {
-  ASSERT (!is_nil (p), "path too short");
+  TM_ASSERT (!is_nil (p), "path too short");
   if (is_nil (p->next)) return t;
   else return parent_subtree (t[p->item], p->next);
 }

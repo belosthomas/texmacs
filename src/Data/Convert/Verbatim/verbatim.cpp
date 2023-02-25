@@ -191,7 +191,7 @@ as_verbatim (tree t, bool wrap) {
         if (mid<N(a)) {
           //cout << "  mid= " << mid << "\n";
           pos += N(tm_recompose (range (a, start, mid)));
-          ASSERT (buf[pos] == ' ', "error in space synchronization");
+          TM_ASSERT (buf[pos] == ' ', "error in space synchronization");
           buf[pos]= '\n';
           start= mid+1;
           pos++;
