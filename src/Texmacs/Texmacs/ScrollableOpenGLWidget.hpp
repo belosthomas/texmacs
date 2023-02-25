@@ -12,13 +12,14 @@
 #include <QScrollBar>
 #include <QPainter>
 #include <QAbstractScrollArea>
+#include <QWheelEvent>
 
 namespace texmacs {
 
     class ScrollableOpenGLWidget : public QScrollArea {
         Q_OBJECT
 
-    protected:
+    public:
         class InnerOpenGLWidget : public QOpenGLWidget {
 
             friend class ScrollableOpenGLWidget;
@@ -52,6 +53,13 @@ namespace texmacs {
                 mParent.paintGL(painter);
             }
 
+            // forward events to parent
+            void wheelEvent(QWheelEvent *event) override {
+                mParent.wheelEvent(event);
+            }
+
+
+
         private:
             ScrollableOpenGLWidget &mParent;
 
@@ -82,6 +90,14 @@ namespace texmacs {
             mOpenGLWidget.paintEvent(event);
         }
 
+        QPoint origin () {
+            return p_origin;
+        }
+
+        QRect extents () {
+            return p_extents;
+        }
+
         void setOrigin(QPoint newOrigin);
 
         void setExtents(QRect newExtents);
@@ -90,7 +106,12 @@ namespace texmacs {
 
         void updateScrollBars();
 
-        void scrollContentsBy ( int dx, int dy );
+        void scrollContentsBy(int dx, int dy) override;
+
+        void wheelEvent(QWheelEvent *event) {
+            scrollContentsBy(0, event->angleDelta().y() / 8);
+        }
+
 
     private:
         InnerOpenGLWidget mOpenGLWidget;

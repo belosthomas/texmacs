@@ -55,7 +55,7 @@ qt_simple_widget_rep::as_qwidget () {
   SI width, height;
   handle_get_size_hint (width, height);
   QSize sz = to_qsize (width, height);
-  scrollarea()->editor_flag= is_editor_widget ();
+  //scrollarea()->editor_flag= is_editor_widget ();
   scrollarea()->setExtents (QRect (QPoint(0,0), sz));
   canvas()->resize (sz);
   
@@ -213,7 +213,7 @@ qt_simple_widget_rep::send (slot s, blackbox val) {
       check_type<coord2>(val, s);
       coord2  p = open_box<coord2> (val);
       QPoint qp = to_qpoint (p);
-      QSize  sz = canvas()->surface()->size();
+      QSize  sz = canvas()->surface().size();
       qp -= QPoint (sz.width() / 2, sz.height() / 2);
         // NOTE: adjust because child is centered
       scrollarea()->setOrigin (qp);
@@ -224,7 +224,7 @@ qt_simple_widget_rep::send (slot s, blackbox val) {
     {
       check_type<double> (val, s);
       double new_zoom = open_box<double> (val);
-      canvas()->tm_widget()->handle_set_zoom_factor (new_zoom);
+     // canvas()->tm_widget()->handle_set_zoom_factor (new_zoom); // todo : uncomment this
     }
       break;
       
@@ -256,7 +256,7 @@ qt_simple_widget_rep::send (slot s, blackbox val) {
     {
       check_type<coord2>(val, s);
       coord2 p = open_box<coord2> (val);
-      canvas()->setCursorPos(to_qpoint(p));
+      // canvas()->setCursorPos(to_qpoint(p));  // todo : uncomment this
     }
       break;
       
@@ -297,7 +297,7 @@ qt_simple_widget_rep::query (slot s, int type_id) {
       check_type_id<coord2> (type_id, s);
         // HACK: mapTo() does not work as we expect on the Mac, so we manually
         // calculate the global screen cordinates and substract
-      QPoint sg = scrollarea()->surface()->mapToGlobal (QPoint (0,0));
+      QPoint sg = scrollarea()->surface().mapToGlobal (QPoint (0,0));
       QRect  wg = scrollarea()->window()->frameGeometry();
       sg.ry() -= wg.y();
       sg.rx() -= wg.x();
@@ -326,7 +326,7 @@ qt_simple_widget_rep::query (slot s, int type_id) {
     {
       check_type_id<coord4> (type_id, s);
       if (canvas()) {
-        QSize sz = canvas()->surface()->size();     // sz.setWidth(sz.width()-2);
+        QSize sz = canvas()->surface().size();     // sz.setWidth(sz.width()-2);
         QPoint pos = backing_pos;
         return close_box<coord4> (from_qrect(QRect(pos, sz)));
       } else {
@@ -419,7 +419,7 @@ qt_simple_widget_rep::invalidate_rect (int x1, int y1, int x2, int y2) {
 
 void
 qt_simple_widget_rep::invalidate_all () {
-  QSize sz = canvas()->surface()->size();
+  QSize sz = canvas()->surface().size();
   // QPoint pt = QAbstractScrollArea::viewport()->pos();
   //cout << "invalidate all " << LF;
   invalid_regions = rectangles();
@@ -485,6 +485,7 @@ qt_simple_widget_rep::repaint_invalid_regions (basic_renderer_rep *ren) {
 
   QRegion qrgn;
   QPoint origin = canvas()->origin();
+    backing_pos = origin;
   // qrgn is to keep track of the area on the screen which needs to be updated
 
   // repaint invalid rectangles

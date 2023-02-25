@@ -18,6 +18,9 @@
 #include "qt_utilities.hpp"
 #include <QPointer>
 
+#include "TeXmacs/ScrollableOpenGLWidget.hpp"
+
+
 class QWidget;
 class QLayoutItem;
 class QAction;
@@ -90,7 +93,7 @@ protected:
 public:
   long                id;
   QPointer<QWidget> qwid;
-  QWidget *associatedDocumentWidget;
+  texmacs::ScrollableOpenGLWidget *associatedDocumentWidget;
 
   /*! A list of all supported widget types.
    FIXME: This enum breaks the basic inheritance rules, since we have to 

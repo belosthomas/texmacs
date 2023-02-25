@@ -19,9 +19,6 @@
 #include "QTMScrollView.hpp"
 #include "QTMWidget.hpp"
 
-#include "Texmacs/ScrollableOpenGLWidget.hpp"
-
-
 /*! A widget containing a TeXmacs canvas.
  
  This canvas can be used both for input or output of typesetted documents. 
@@ -88,8 +85,8 @@ public:
   
     ////////////////////// Qt widget counterparts
 
-  QTMWidget*         canvas () { return qobject_cast<QTMWidget*> (qwid); }
-  texmacs::ScrollableOpenGLWidget* scrollarea () { return qobject_cast<texmacs::ScrollableOpenGLWidget*> (associatedDocumentWidget); }
+  texmacs::ScrollableOpenGLWidget*         canvas () { return associatedDocumentWidget; }
+  texmacs::ScrollableOpenGLWidget* scrollarea () { return associatedDocumentWidget; }
 
     ////////////////////// backing store management
 

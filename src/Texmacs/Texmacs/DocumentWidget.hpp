@@ -41,14 +41,14 @@ namespace texmacs {
             QOpenGLFunctions *f = QOpenGLContext::currentContext()->functions();
             f->initializeOpenGLFunctions();
 
-            f->glEnable(GL_MULTISAMPLE);
+       /*     f->glEnable(GL_MULTISAMPLE);
             f->glEnable(GL_POINT_SMOOTH);
             f->glEnable(GL_LINE_SMOOTH);
             f->glEnable(GL_POLYGON_SMOOTH);
             f->glHint(GL_POINT_SMOOTH_HINT, GL_NICEST);
             f->glHint(GL_LINE_SMOOTH_HINT, GL_NICEST);
             f->glHint(GL_POLYGON_SMOOTH_HINT, GL_NICEST);
-
+*/
             f->glViewport(0, 0, width(), height());
         }
 

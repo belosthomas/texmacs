@@ -32,6 +32,7 @@ void texmacs::Application::loadSplashScreen() {
     mSlpashScreen.setPixmap(QPixmap(":/TeXmacs/misc/images/splash.png").scaledToWidth(primaryScreen()->size().width() / 4, Qt::SmoothTransformation));
     mSlpashScreen.show();
     connect(this, &Application::initializationMessage, this, [this](const QString& message) {
+        qDebug() << message;
         mSlpashScreen.showMessage(message, Qt::AlignBottom | Qt::AlignCenter, Qt::black);
     });
     connect(this, &Application::initialized, this, [this]() {
@@ -121,7 +122,7 @@ void texmacs::Application::initializeScheme() {
 }
 
 void texmacs::Application::onApplicationStarted() {
-    // resetTeXmacs();
+    resetTeXmacs();
     extractResources();
     initializeEnvironmentVariables();
 
