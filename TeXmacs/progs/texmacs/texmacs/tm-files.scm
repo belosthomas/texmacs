@@ -3,7 +3,7 @@
 ;;
 ;; MODULE      : files.scm
 ;; DESCRIPTION : file handling
-;; COPYRIGHT   : (C) 2001-2021  Joris van der Hoeven
+;; COPYRIGHT   : (C) 2001-2022  Joris van der Hoeven
 ;;
 ;; This software falls under the GNU general public license version 3 or later.
 ;; It comes WITHOUT ANY WARRANTY WHATSOEVER. For details, see the file LICENSE
@@ -139,7 +139,7 @@
   (cond ((== buf (current-buffer)) (noop))
         ((nnull? (buffer->windows buf))
          (switch-to-window (car (buffer->windows buf))))
-        (else (switch-to-buffer buf))))
+        (else (smart-switch-to-buffer buf))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Saving buffers
@@ -151,8 +151,11 @@
 (define (buffer-notify-recent name)
   (learn-interactive 'recent-buffer (list (cons "0" (url->unix name)))))
 
+
 (define (has-faithful-format? name)
-  (in? (url-suffix name) '("tm" "ts" "tp" "stm" "tmml" "scm" "")))
+  (cond ((url-rooted-tmfs? name)
+         (list-any (lambda (x) (== x "database-bib")) (get-style-list)))
+        (else (!= (format-from-suffix (url-suffix name)) "generic"))))
 
 (define (save-buffer-post name opts)
   ;;(display* "save-buffer-post " name "\n")
@@ -439,6 +442,18 @@
 ;; Loading buffers
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
+(define (toggle-toolbars-for-coding name)
+  (if (has-style-package? "code")
+      (show-icon-bar 0 #f)
+      (show-icon-bar 0 (get-boolean-preference "main icon bar")))
+  (if (has-style-package? "code")
+      (show-icon-bar 1 #f)
+      (show-icon-bar 1 (get-boolean-preference "mode dependent icons"))))
+
+(define (smart-switch-to-buffer name)
+  (switch-to-buffer name)
+  (toggle-toolbars-for-coding name))
+
 (define (load-buffer-open name opts)
   ;;(display* "load-buffer-open " name ", " opts "\n")
   (cond ((in? :background opts) (noop))
@@ -453,6 +468,7 @@
   (and-with master (and (url-rooted-tmfs? name) (tmfs-master name))
     (when (!= master name)
       (buffer-set-master name master)))
+  (toggle-toolbars-for-coding name)
   (noop))
 
 (define (load-buffer-load name opts)
@@ -529,9 +545,9 @@
 
 (tm-define (load-browse-buffer name)
   (:synopsis "Load a buffer or switch to it if already open")
-  (cond ((buffer-exists? name) (switch-to-buffer name))
-        ((url-rooted-web? (current-buffer)) (load-buffer name))
+  (cond ((buffer-exists? name) (smart-switch-to-buffer name))
         ((buffer-external? name) (load-external name))
+        ((url-rooted-web? (current-buffer)) (load-buffer name))
         (else (load-buffer name))))
 
 (tm-define (open-buffer)

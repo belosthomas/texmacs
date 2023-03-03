@@ -677,6 +677,14 @@
   (selection-set-end)
   (clipboard-cut "primary"))
 
+(tm-define (backward-kill-word)
+  (kbd-select traverse-left)
+  (kbd-delete))
+
+(tm-define (kill-word)
+  (kbd-select traverse-right)
+  (kbd-delete))
+
 (tm-define (yank-paragraph)
   (selection-set-start)
   (go-end-paragraph)
@@ -772,7 +780,7 @@
       (insert-go-to `(inactive (specific ,s "")) '(0 1 0))))
 
 (tm-define (make-include u)
-  (insert `(include ,(url->delta-unix u))))
+  (insert `(include ,(utf8->cork (url->delta-unix u)))))
 
 (tm-define (make-inline-image l)
   (apply make-image (cons* (url->delta-unix (car l)) #f (cdr l))))
@@ -792,7 +800,14 @@
         (with selection (selection-tree)
           (clipboard-cut "graphics background")
           (insert-go-to `(draw-over ,selection ,g "2cm") '(1 2 1))))
-      (with g `(with "gr-mode" (tuple "hand-edit" "line") (graphics))
+      (with g `(with
+                "gr-mode" (tuple "hand-edit" "line")
+                "gr-grid" (tuple "cartesian" (point "0" "0") "2")
+                "gr-edit-grid-aspect" (tuple (tuple "axes" "none")
+                                              (tuple "1" "none")
+                                              (tuple "10" "none"))
+                "gr-edit-grid" (tuple "cartesian" (point "0" "0") "1")
+                (graphics))
         (insert-go-to `(draw-over "" ,g "2cm") '(1 2 1)))))
 
 (tm-define (make-anim l)

@@ -2577,7 +2577,6 @@
 ((TeXmacs\ Computer\ Modern ItalicUpright) ((ecui10.tfm 3072)))
 ((TeXmacs\ Computer\ Modern Long) ((ecdh10.tfm 0 3152)))
 ((TeXmacs\ Computer\ Modern Oblique) ((ecsl10.tfm 0 3372)))
-((TeXmacs\ Computer\ Modern Regular) ((ecrm10.tfm 0 3148)))
 ((TeXmacs\ Computer\ Modern SmallCaps) ((eccc10.tfm 0 2788)))
 ((TeXmacs\ Computer\ Modern\ Mono Flat) ((ecltt10.tfm 0 1536)))
 ((TeXmacs\ Computer\ Modern\ Mono Italic\ Proportional) ((ecvi10.tfm 0 2752)))

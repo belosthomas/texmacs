@@ -35,7 +35,7 @@
           (focus-tag-name (string->symbol ns)))
         (if (symbol-unnumbered? l)
             (focus-tag-name (symbol-drop-right l 1))
-            (with r (upcase-first (tree-name (tree l)))
+            (with r (tree-name (tree l))
               (string-replace r "-" " "))))))
 
 (tm-menu (focus-variant-menu t)
@@ -648,6 +648,16 @@
   (dynamic (focus-label-menu t)))
 
 (tm-menu (focus-menu)
+  (when (or (selection-active-any?)
+  	    (and (in-graphics?)
+  		 (graphics-selection-active?)))
+    ("Copy" (kbd-copy))
+    ("Cut" (kbd-cut)))
+  ("Paste" (kbd-paste))
+  (when (selection-active-any?)
+      (=> "Export selection as image"
+          (link export-as-image-menu)))
+  ---
   (dynamic (standard-focus-menu (focus-tree))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;

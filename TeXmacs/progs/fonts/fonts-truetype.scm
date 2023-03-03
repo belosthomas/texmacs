@@ -164,6 +164,4 @@
     ((sys-japanese $v $a $b $s $d)
      (,(string->symbol (default-japanese-font)) $v $a $b $s $d))
     ((sys-korean $v $a $b $s $d)
-     (,(string->symbol (default-korean-font)) $v $a $b $s $d))
-     )
-)
+     (,(string->symbol (default-korean-font)) $v $a $b $s $d))))

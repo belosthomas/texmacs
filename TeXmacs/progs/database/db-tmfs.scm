@@ -30,12 +30,19 @@
   (let* ((key (string-append attr "," file)))
     (set-preference key val)))
 
+(define (db-current-search file)
+  (let* ((search (db-get-query-preference file "search" ""))
+         (e-search (db-get-query-preference (current-buffer) "exact-search" "")))
+        (if (== (string-length search) 0)
+            e-search
+            search)))
+
 (tm-define (db-get-current-query file)
-  (list (cons "search" (db-get-query-preference file "search" ""))
+  (list (cons "search" (db-current-search file))
         (cons "order" (db-get-query-preference file "order" "name"))
         (cons "direction" (db-get-query-preference file "direction" "ascend"))
-        (cons "limit" (db-get-query-preference file "limit" "10"))
-        (cons "present" (db-get-query-preference file "present" "detailed"))))
+        (cons "limit" (db-get-query-preference file "limit" "20"))
+        (cons "present" (db-get-query-preference file "present" "pretty"))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Retrieving the database queries

@@ -13,8 +13,10 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (texmacs-module (check check-master)
-  (:use (kernel texmacs tm-define-test)
+  (:use (check system-test)
+        (kernel texmacs tm-define-test)
         (kernel texmacs tm-dialogue-test)
+        (kernel texmacs tm-convert-test)
         (convert html htmltm-test)
         (convert html tmhtml-test)
         (convert tools xmltm-test)
@@ -22,7 +24,9 @@
         (convert tools environment-test)
         (convert mathml mathtm-test)
         (convert tmml tmmltm-test)
-        (prog prog-format-test)))
+        (prog prog-format-test)
+        (generic generic-test)
+        (fonts fonts-test)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Test LaTeX export
@@ -82,6 +86,7 @@
   (check-latex-export "$TEXMACS_CHECKS/latex-export"))
 
 (tm-define (run-all-tests)
+  (regtest-src-system)
   (regtest-htmltm)
   (regtest-xmltm)
   (regtest-tmlength)
@@ -92,4 +97,7 @@
   (regtest-prog-format)
   (regtest-tm-define)
   (regtest-tm-dialogue)
+  (regtest-tm-convert)
+  (regtest-generic)
+  (regtest-fonts)
 )

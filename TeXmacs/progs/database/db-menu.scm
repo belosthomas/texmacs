@@ -23,7 +23,8 @@
   (db-get-query-preference (current-buffer) "exact-search" ""))
 
 (define (db-toolbar-search search)
-  (let* ((keys (compute-keys-string search "verbatim"))
+  (let* ((u-search (cork->utf8 search))
+         (keys (compute-keys-string u-search "verbatim"))
          (s (string-recompose keys ",")))
     (db-set-query-preference (current-buffer) "exact-search" search)
     (db-set-query-preference (current-buffer) "search" s)
@@ -47,14 +48,14 @@
   (revert-buffer-revert))
 
 (define (db-toolbar-current-limit)
-  (db-get-query-preference (current-buffer) "limit" "10"))
+  (db-get-query-preference (current-buffer) "limit" "20"))
 
 (define (db-toolbar-limit limit)
   (db-set-query-preference (current-buffer) "limit" limit)
   (revert-buffer-revert))
 
 (define (db-toolbar-current-present)
-  (with p (db-get-query-preference (current-buffer) "present" "detailed")
+  (with p (db-get-query-preference (current-buffer) "present" "pretty")
     (upcase-first p)))
 
 (define (db-toolbar-present present)

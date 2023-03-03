@@ -30,6 +30,9 @@
        (load-help-article (string-append name))))))
 
 (menu-bind help-menu
+  ("Mogan" (mogan-welcome))
+  ("Planet" (xmacs-planet))
+  ---
   (when (url-exists-in-help? "about/welcome/new-welcome.en.tm")
 	("Welcome" (load-help-article "about/welcome/new-welcome"))
 	("Getting started" (load-help-article "about/welcome/start"))
@@ -99,6 +102,7 @@
       (link help-plugins-menu))
   (when (url-exists-in-help? "about/about.en.tm")
 	(-> "About"
+	    (if (qt-gui?) ("About Qt" (show-about-qt)))
 	    ("Browse" (load-help-buffer "about/about"))
 	    ---
 	    ("Summary"

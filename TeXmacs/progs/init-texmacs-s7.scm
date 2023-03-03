@@ -13,38 +13,39 @@
 
 
 (define (display-to-string obj)
-              (call-with-output-string
-                (lambda (port) (display obj port))))
-            (define (object->string obj)
-              (call-with-output-string
-                (lambda (port) (write obj port))))
+  (call-with-output-string
+    (lambda (port) (display obj port))))
+(define (object->string obj)
+  (call-with-output-string
+    (lambda (port) (write obj port))))
 
-            (define (texmacs-version) "TEXMACS_VERSION")
-                                       (define object-stack '(()))
+(define (texmacs-version) "TEXMACS_VERSION")
+  (define object-stack '(()))
 
-                           ;; S7 macros are not usual macros...
-                           (define define-macro define-expansion)
 
-                           (define primitive-symbol? symbol?)
-                           (set! symbol? (lambda (s) (and (not (keyword? s)) (primitive-symbol? s))))
+;; S7 macros are not usual macros...
+(define define-macro define-expansion)
 
-                           ;; S7 loads by default in rootlet and eval in curlet
-                           ;; but we prefer to load and eval into *texmacs-user-module*
-                           ;; (the current toplevel)
-                           ;; FIXME: we have to clarify the situation with *current-module* when evaluating
-                           ;; in a different environment. In Guile *current-module* is set/reset.
+(define primitive-symbol? symbol?)
+(set! symbol? (lambda (s) (and (not (keyword? s)) (primitive-symbol? s))))
 
-                           (varlet (rootlet) '*current-module* (curlet))
-                           (let ()
-                             (define primitive-load load)
-                             (define primitive-eval eval)
-                             (define primitive-catch catch)
+;; S7 loads by default in rootlet and eval in curlet
+;; but we prefer to load and eval into *texmacs-user-module*
+;; (the current toplevel)
+;; FIXME: we have to clarify the situation with *current-module* when evaluating
+;; in a different environment. In Guile *current-module* is set/reset.
 
-                             (varlet (rootlet) 'tm-eval (lambda (obj) (eval obj *texmacs-user-module*)))
-                             (set! load (lambda (file . env) (primitive-load file (if (null? env) *current-module* (car env)))))
-                             (set! eval (lambda (obj . env)
-                               (let ((res (primitive-eval obj (if (null? env) *current-module* (car env)))))
-                               ;;(format #t "Eval: ~A -> ~A\n" obj res)
+(varlet (rootlet) '*current-module* (curlet))
+(let ()
+  (define primitive-load load)
+  (define primitive-eval eval)
+  (define primitive-catch catch)
+  
+  (varlet (rootlet) 'tm-eval (lambda (obj) (eval obj *texmacs-user-module*)))
+  (set! load (lambda (file . env) (primitive-load file (if (null? env) *current-module* (car env)))))
+  (set! eval (lambda (obj . env)
+    (let ((res (primitive-eval obj (if (null? env) *current-module* (car env)))))
+    ;;(format #t "Eval: ~A -> ~A\n" obj res)
     res)
     ))
     
@@ -197,6 +198,7 @@
 
 ;;(display "Booting text mode\n")
 (lazy-keyboard (text text-kbd) in-text?)
+(lazy-keyboard (text chinese chinese) in-chinese?)
 (lazy-menu (text text-menu) text-format-menu text-format-icons
 	   text-menu text-block-menu text-inline-menu
            text-icons text-block-icons text-inline-icons)
@@ -317,8 +319,7 @@
 (lazy-menu (doc help-menu) help-menu)
 (lazy-define (doc tmdoc) tmdoc-expand-help tmdoc-expand-help-manual
              tmdoc-expand-this tmdoc-include)
-(lazy-define (doc docgrep) docgrep-in-doc docgrep-in-src
-             docgrep-in-texts docgrep-in-recent)
+(use-modules (doc docgrep) (doc help-funcs))
 (lazy-define (doc tmdoc-search) tmdoc-search-style tmdoc-search-tag
              tmdoc-search-parameter tmdoc-search-scheme)
 (lazy-define (doc tmweb) youtube-select
@@ -343,7 +344,7 @@
 (lazy-format (convert html init-html) html)
 (lazy-format (convert bibtex init-bibtex) bibtex)
 (lazy-format (convert images init-images)
-             postscript pdf xfig xmgrace svg xpm jpeg ppm gif png pnm)
+             postscript pdf xmgrace svg xpm jpeg ppm gif png pnm)
 (lazy-define (convert images tmimage)
              export-selection-as-graphics clipboard-copy-image)
 (lazy-define (convert rewrite init-rewrite) texmacs->code texmacs->verbatim)
@@ -511,7 +512,7 @@
   (display "------------------------------------------------------\n")
 )
 
-(delayed (:idle 1000) (benchmark-menu-expand))
+;; (delayed (:idle 1000) (benchmark-menu-expand))
 
 ;; you can run
 ;;   texmacs.bin -x "(benchmark-manual)"
