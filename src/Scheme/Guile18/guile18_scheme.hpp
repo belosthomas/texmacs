@@ -1,29 +1,158 @@
 #ifndef SCHEME_GUILE30_GUILETM_HPP
 #define SCHEME_GUILE30_GUILETM_HPP
 
+#include <mutex>
+#include <thread>
+#include <deque>
+#include <functional>
+#include <future>
+
 #include "Scheme/abstract_scheme.hpp"
 #include "guile18_tmscm.hpp"
 
-#include <libguile.h>
+#include <libguile.hpp>
+#include <utility>
 
 SCM &guile_blackbox_tag();
 
 #define SET_SMOB(smob,data,type)   \
 SCM_NEWSMOB (smob, SCM_UNPACK (type), data);
 
+template <typename T, int C> class thread_safe_queue
+{
+public:
+    thread_safe_queue() {
+        mSize = 0;
+        mPushIndex = 0;
+        mPopIndex = 0;
+    }
+
+    inline T *getPushElement() {
+        if (mIsDestroyed) {
+            return &mElements[mPushIndex];
+        }
+        std::unique_lock lock(mMutex);
+        while (mSize == C) {
+            mConditionVariable.wait_for(lock, std::chrono::milliseconds(10));
+            if (mIsDestroyed) {
+                return &mElements[mPushIndex];
+            }
+        }
+        T *element = &mElements[mPushIndex];
+        return element;
+    }
+
+    inline void notifyPush() {
+        mPushIndex = (mPushIndex + 1) % C;
+        mSize++;
+        mConditionVariable.notify_all();
+    }
+
+    inline T *getPopElement()
+    {
+        if (mIsDestroyed) {
+            mElements[mPopIndex] = T();
+            return &mElements[mPopIndex];
+        }
+        std::unique_lock lock(mMutex);
+        while (mSize == 0) {
+            mConditionVariable.wait_for(lock, std::chrono::milliseconds(10));
+            if (mIsDestroyed) {
+                mElements[mPopIndex] = T();
+                return &mElements[mPopIndex];
+            }
+        }
+        T *element = &mElements[mPopIndex];
+        return element;
+    }
+
+    inline void notifyPop() {
+        mPopIndex = (mPopIndex + 1) % C;
+        mSize--;
+        mConditionVariable.notify_all();
+    }
+
+    inline void destroy() {
+        mIsDestroyed = true;
+        mConditionVariable.notify_all();
+    }
+
+    inline bool isDestroyed() {
+        return mIsDestroyed;
+    }
+
+    inline int getCurrentSize() {
+        return mSize;
+    }
+
+private:
+    T mElements[C];
+    std::atomic<int> mSize;
+    int mPushIndex, mPopIndex;
+    std::mutex mMutex;
+    std::condition_variable mConditionVariable;
+    std::atomic<bool> mIsDestroyed = false;
+};
+
+class guile_thread {
+public:
+    guile_thread() {
+        mThread = std::thread(&guile_thread::init, this);
+    }
+
+    void init() {
+        guile_init_mutex.lock();
+        guile_init_self = this;
+        scm_use_embedded_ice9();
+        scm_with_guile (guile_thread::c_run, nullptr);
+    }
+
+    static void* c_run(void* data) {
+        return guile_init_self->run();
+    }
+
+    void *run() {
+        guile_init_mutex.unlock();
+        while (mRunning) {
+            std::function<void()> f = *mQueue.getPopElement();
+            if (mQueue.isDestroyed()) {
+                break;
+            }
+            mQueue.notifyPop();
+            f();
+        }
+        return nullptr;
+    }
+
+    void run(std::function<void()> f) {
+        *mQueue.getPushElement() = std::move(f);
+        mQueue.notifyPush();
+    }
+
+private:
+    std::thread mThread;
+    thread_safe_queue<std::function<void()>, 10> mQueue;
+    std::atomic<bool> mRunning;
+
+    static guile_thread *guile_init_self;
+    static std::mutex guile_init_mutex;
+};
+
 class guile_scheme : public abstract_scheme {
     
 public:
-    guile_scheme() {
-        scm_init_guile();
+    guile_scheme() : mThread() {
+
     }
 
-    /// TSCM Methods ///////////////////////////////////////////////////
-
     tmscm blackbox_to_tmscm(blackbox b) final {
-        SCM blackbox_smob;
-        SET_SMOB (blackbox_smob, (void*) (tm_new<blackbox> (b)), (SCM) guile_blackbox_tag());
-        return guile_tmscm::mk(blackbox_smob);
+        std::promise<tmscm> promise;
+        mThread.run([&promise, b]() {
+            SCM blackbox_smob;
+            SET_SMOB (blackbox_smob, (void*) (tm_new<blackbox> (b)), (SCM) guile_blackbox_tag());
+            promise.set_value(guile_tmscm::mk(blackbox_smob));
+        });
+        return promise.get_future().get();
     }
 
     tmscm tmscm_null() final {
@@ -42,12 +171,12 @@ public:
         return guile_tmscm::mk(scm_from_bool(b));
     }
 
-    tmscm int_to_tmscm(int64_t i) final {
-        return guile_tmscm::mk(scm_from_int64((int64_t)i));
+    tmscm int_to_tmscm(int i) final {
+        return guile_tmscm::mk(scm_from_int32((int32_t)i));
     }
 
     tmscm long_to_tmscm(long l) final {
-        return guile_tmscm::mk(scm_from_int64((int64_t)l));
+        return guile_tmscm::mk(scm_from_int32((int32_t)l));
     }
 
     tmscm double_to_tmscm(double i) final {
@@ -76,24 +205,22 @@ public:
         return guile_tmscm::mk(SCM_UNSPECIFIED, false);
     }
 
-    tmscm eval_scheme_file(string name) {
+    tmscm eval_scheme_file(string name) final {
         c_string _file (name);
         return guile_tmscm::mk(scm_c_primitive_load (_file));
     }
 
-    tmscm eval_scheme(string s) {
-#ifdef DEBUG_ON
-        if (!scm_busy) {
-#endif
-        c_string _s (s);
-        SCM result= scm_c_eval_string(_s);
-        return guile_tmscm::mk(result);
-#ifdef DEBUG_ON
-        } else return SCM_BOOL_F;
-#endif
+    tmscm eval_scheme(string s) final {
+        std::promise<tmscm> promise;
+        mThread.run([&promise, s]() {
+            c_string _s(s);
+            SCM result = scm_c_eval_string(_s);
+            promise.set_value(guile_tmscm::mk(result));
+        });
+        return promise.get_future().get();
     }
 
-    SCM _call_scheme_args(SCM fun, std::vector<SCM> args) {
+    static SCM _call_scheme_args(SCM fun, std::vector<SCM> args) {
         switch (args.size()) {
             case 0: return scm_call_0(fun);
             case 1: return scm_call_1(fun, args[0]);
@@ -110,28 +237,40 @@ public:
         }
     }
 
-    tmscm call_scheme_args(tmscm fun, std::vector<tmscm> _args) {
-        SCM fun_scm = tmscm_cast<guile_tmscm>(fun)->getSCM();
-        std::vector<SCM> args;
-        for (auto& arg : _args) {
-            args.push_back(tmscm_cast<guile_tmscm>(arg)->getSCM());
-        }
-        return guile_tmscm::mk(_call_scheme_args(fun_scm, args));
+    tmscm call_scheme_args(tmscm fun, std::vector<tmscm> _args) final {
+        std::promise<tmscm> promise;
+        mThread.run([&promise, fun, _args]() {
+            SCM fun_scm = tmscm_cast<guile_tmscm>(fun)->getSCM();
+            std::vector<SCM> args;
+            for (auto& arg : _args) {
+                args.push_back(tmscm_cast<guile_tmscm>(arg)->getSCM());
+            }
+            return guile_tmscm::mk(_call_scheme_args(fun_scm, args));
+        });
+        return promise.get_future().get();
     }
 
-    void tmscm_install_procedure_impl(string name, void *func, int args, int p0, int p1) final {
-        c_string _name(name);
-        scm_c_define_gsubr (_name, args, p0, p1, (scm_t_subr)func);
+    void install_procedure(string name, std::function<tmscm(abstract_scheme*,tmscm)> fun, int numArgs, int numOptional) final {
+        assert(numOptional == 0); // not implemented
+        mThread.run([this, name, fun, numArgs]() {
+            c_string _name(name);
+            register_callback(&*_name, [this, fun](SCM args) {
+                return tmscm_cast<guile_tmscm>(fun(this, guile_tmscm::mk(args)))->getSCM();
+            }, numArgs);
+        });
     }
 
     string scheme_dialect() {
-        return "guile-d";
+        return "guile";
     }
+
+private:
+    guile_thread mThread;
 
 
 };
 
-class Guile30Factory : public SchemeFactory {
+class Guile18Factory : public SchemeFactory {
 
 public:
     abstract_scheme *make_scheme() final {
@@ -139,12 +278,12 @@ public:
     }
 
     virtual std::string name() {
-        return "Guile 3.0";
+        return "Guile++";
     }
 
 };
 
-void registerGuile30();
+void registerGuile18();
 
 #endif
 

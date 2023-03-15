@@ -2,10 +2,7 @@
 #define SCHEME_GUILE30_TMSCM_HPP
 
 #include "Scheme/tmscm.hpp"
-
-extern "C" {
-#include <libguile.h>
-}
+#include <libguile.hpp>
 
 SCM &guile_blackbox_tag();
 
@@ -43,7 +40,7 @@ public:
     }
 
     bool is_equal(tmscm o2) override {
-        return SCM_NFALSEP (scm_equal_p(mSCM, tmscm_cast<guile_tmscm>(o2)->getSCM()));
+        return scm_is_true (scm_equal_p(mSCM, tmscm_cast<guile_tmscm>(o2)->getSCM()));
     }
 
     bool is_null() override {
@@ -148,6 +145,10 @@ public:
         string r (_r, len_r);
         free (_r);
         return r;
+    }
+
+    int hash() {
+        return scm_ihash(mSCM, std::numeric_limits<int>::max());
     }
 
 private:
