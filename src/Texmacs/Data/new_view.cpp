@@ -9,6 +9,9 @@
 * in the root directory or <http://www.gnu.org/licenses/gpl-3.0.html>.
 ******************************************************************************/
 
+#include <mutex>
+#include <condition_variable>
+
 #include "tm_data.hpp"
 #include "convert.hpp"
 #include "file.hpp"
@@ -98,6 +101,8 @@ concrete_view (url u) {
 ******************************************************************************/
 
 tm_view the_view= NULL;
+std::mutex the_view_mutex;
+std::condition_variable the_view_cv;
 
 bool
 has_current_view () {
@@ -106,19 +111,25 @@ has_current_view () {
 
 void
 set_current_view (url u) {
+    std::unique_lock<std::mutex> lk(the_view_mutex);
   tm_view vw= concrete_view (u);
   //ASSERT (is_none (u) || starts (as_string (tail (u)), "no_name") || vw != NULL, "bad view");
   the_view= vw;
   if (vw != NULL) {
     the_drd = vw->ed->drd;
     vw->buf->buf->last_visit= texmacs_time ();
+    the_view_cv.notify_all();
   }
 }
 
 url
 get_current_view () {
-  TM_ASSERT (the_view != NULL, "no active view");
-  return abstract_view (the_view);
+    std::unique_lock<std::mutex> lk(the_view_mutex);
+    while (the_view == nullptr) {
+        the_view_cv.wait(lk);
+        //TM_ASSERT (the_view != NULL, "no active view");
+    }
+    return abstract_view (the_view);
 }
 
 url

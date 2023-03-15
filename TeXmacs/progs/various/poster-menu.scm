@@ -127,9 +127,9 @@
 
 (tm-menu (focus-insert-icons t)
   (:require (poster-block-context? t))
-  ((balloon (icon "tm_insert_up.xpm") "Insert similar block above")
+  ((balloon (icon "tm_insert_up") "Insert similar block above")
    (structured-insert-up))
-  ((balloon (icon "tm_insert_down.xpm") "Insert similar block below")
+  ((balloon (icon "tm_insert_down") "Insert similar block below")
    (structured-insert-down)))
 
 (tm-menu (focus-toggle-menu t)
@@ -139,10 +139,10 @@
 
 (tm-menu (focus-toggle-icons t)
   (:require (poster-block-context? t))
-  ((check (balloon (icon "tm_small_textual.xpm") "Toggle titled") "v"
+  ((check (balloon (icon "tm_small_textual") "Toggle titled") "v"
           (titled-block-context? (focus-tree)))
    (block-toggle-titled (focus-tree)))
-  ((check (balloon (icon "tm_wide_float.xpm") "Make block wide") "v"
+  ((check (balloon (icon "tm_wide_float") "Make block wide") "v"
           (block-wide? (focus-tree)))
    (block-toggle-wide (focus-tree))))
   

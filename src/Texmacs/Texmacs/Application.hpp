@@ -23,6 +23,7 @@
 #include <QThread>
 
 #include "Window.hpp"
+#include "PixmapManager.hpp"
 
 #include "server.hpp"
 #include "string.hpp"
@@ -44,7 +45,7 @@ extern bool texmacs_started;
 namespace texmacs {
 
     /**
-     * @brief The TeXMavs Application class
+     * @brief The TeXMacs Application class
      * This class is the main class of the application, responsible for the initialization of the application.
      */
     class Application : public QApplication {
@@ -58,6 +59,13 @@ namespace texmacs {
          * @param centralWidget The central widget of the tab.
          */
         void addTab(ThingyTabInnerWindow *centralWidget);
+
+        /**
+         * @brief Get the pixmap manager.
+         */
+        const PixmapManager &pixmapManager() const {
+            return mPixmapManager;
+        }
 
     signals:
         /**
@@ -108,6 +116,7 @@ namespace texmacs {
         QSplashScreen mSlpashScreen;
         server *mServer = nullptr;
         std::list<Window> mWindows;
+        PixmapManager mPixmapManager;
 
     };
 

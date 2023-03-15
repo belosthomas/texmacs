@@ -234,7 +234,7 @@
 			   (with key (get-user-info "gpg-key-fingerprint")
 			     (text (if (== key "") ""
 				       (string-take-right key 8))))
-			   >> ((icon "tm_add.xpm") (open-gpg-key-manager))))))
+			   >> ((icon "tm_add") (open-gpg-key-manager))))))
               (glue #f #t 0 0)
               (hlist
                 (explicit-buttons
@@ -243,11 +243,11 @@
     ===
     (refreshable "identity-buttons"
       (hlist
-        ((icon "tm_add_2.xpm")
+        ((icon "tm_add_2")
          (set! adding-user? #t)
          (refresh-identities #f))
         (if (or adding-user? (> (length (get-users-list)) 1))
-            ((icon "tm_close_tool.xpm")
+            ((icon "tm_close_tool")
              (if adding-user?
                  (begin
                    (set! adding-user? #f)

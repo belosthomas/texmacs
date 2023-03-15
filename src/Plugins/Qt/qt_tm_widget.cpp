@@ -20,7 +20,7 @@
 #include <QLayoutItem>
 #include <Texmacs/DocumentWidget.hpp>
 
-#include "config.h"
+#include "tm_config.h"
 #include "analyze.hpp"
 #include "scheme.hpp"
 
@@ -42,6 +42,8 @@
 
 int menu_count = 0;  // zero if no menu is currently being displayed
 list<qt_tm_widget_rep*> waiting_widgets;
+
+extern edit_interface_rep *last_editor;
 
 static void
 replaceActions (QWidget* dest,  QList<QAction*>* src) {
@@ -69,18 +71,16 @@ replaceButtons (QToolBar* dest, QList<QAction*>* src) {
     TM_FAILED ("replaceButtons expects valid objects");
   dest->setUpdatesEnabled (false);
   bool visible = dest->isVisible();
-  if (visible) dest->hide(); //TRICK: to avoid flicker of the dest widget
+ // if (visible) dest->hide(); //TRICK: to avoid flicker of the dest widget
   replaceActions (dest, src);
   QList<QObject*> list = dest->children();
   for (int i = 0; i < list.count(); ++i) {
     QToolButton* button = qobject_cast<QToolButton*> (list[i]);
     if (button) {
       button->setPopupMode (QToolButton::InstantPopup);
-      if (tm_style_sheet == "")
-        button->setStyle (qtmstyle());
     }
   }
-  if (visible) dest->show(); //TRICK: see above
+ // if (visible) dest->show(); //TRICK: see above
   dest->setUpdatesEnabled (true);
 }
 
@@ -123,25 +123,6 @@ qt_tm_widget_rep::qt_tm_widget_rep(int mask, command _quit)
   // general setup for main window
   
   auto* mw= mainwindow ();
-  if (tm_style_sheet == "") {
-    mw->setStyle (qtmstyle ());
-    mw->menuBar()->setStyle (qtmstyle ());
-  }
-
-#ifdef Q_OS_MAC
-  if (!use_native_menubar) {
-    mw->menuBar()->setNativeMenuBar(false);
-    if (tm_style_sheet != "") {
-      int min_h= (int) floor (28 * retina_scale);
-      mw->menuBar()->setMinimumHeight (min_h);
-    }
-  }
-#else
-  if (tm_style_sheet != "") {
-    int min_h= (int) floor (28 * retina_scale);
-    mw->menuBar()->setMinimumHeight (min_h);
-  }
-#endif
 
 
   // status bar
@@ -154,41 +135,7 @@ qt_tm_widget_rep::qt_tm_widget_rep(int mask, command _quit)
   leftLabel->setIndent (8);
   bar->addWidget (leftLabel, 1);
   bar->addPermanentWidget (rightLabel);
-  if (tm_style_sheet == "")
-    bar->setStyle (qtmstyle ());
-  
-  // NOTE (mg): the following setMinimumWidth command disable automatic 
-  // enlarging of the status bar and consequently of the main window due to 
-  // long messages in the left label. I found this strange solution here
-  // http://www.archivum.info/qt-interest@trolltech.com/2007-05/01453/Re:-QStatusBar-size.html
-  // The solution if due to Martin Petricek. He adds:
-  //    The docs says: If minimumSize() is set, the minimum size hint will be ignored.
-  //    Probably the minimum size hint was size of the lengthy message and
-  //    internal layout was enlarging the satusbar and the main window
-  //    Maybe the notice about QLayout that is at minimumSizeHint should be
-  //    also at minimumSize, didn't notice it first time and spend lot of time
-  //    trying to figure this out :)
-  
-  bar->setMinimumWidth (2);
-#ifdef Q_OS_LINUX
-  int min_h= (int) floor (28 * retina_scale);
-  bar->setMinimumHeight (min_h);
-#else
-#if (QT_VERSION >= 0x050000)
-  if (tm_style_sheet != "") {
-    int min_h= (int) floor (28 * retina_scale);
-    bar->setMinimumHeight (min_h);
-  }
-#else
-  double status_scale=
-    (((double) retina_icons) > retina_scale? 1.5: retina_scale);
-  if (status_scale > 1.0) {
-    int std_h= (os_mingw ()? 28: 20);
-    int min_h= (int) floor (std_h * status_scale);
-    bar->setMinimumHeight (min_h);
-  }
-#endif
-#endif
+
 
   // toolbars
   
@@ -205,99 +152,26 @@ qt_tm_widget_rep::qt_tm_widget_rep(int mask, command _quit)
   string dock_name = "dock:" * as_string(cnt++);
   dock_window_widget = tm_new<qt_window_widget_rep> (sideTools, dock_name,
                                                      command(), true);
-  
-  if (tm_style_sheet == "") {
-    mainToolBar->setStyle (qtmstyle ());
-    modeToolBar->setStyle (qtmstyle ());
-    focusToolBar->setStyle (qtmstyle ());
-    userToolBar->setStyle (qtmstyle ());
-    sideTools->setStyle (qtmstyle ());
-    bottomTools->setStyle (qtmstyle ());
-  }
-  
-  {
-    // set proper sizes for icons
-    QImage *pxm = xpm_image ("tm_new.xpm");
-    QSize sz = (pxm ? pxm->size() : QSize (24, 24));
-    tweak_iconbar_size (sz);
-    mainToolBar->setIconSize (sz);
-    pxm = xpm_image ("tm_section.xpm");
-    sz = (pxm ? pxm->size() : QSize (20, 20));
-    tweak_iconbar_size (sz);
-    modeToolBar->setIconSize (sz);
-    pxm = xpm_image ("tm_add.xpm");
-    sz = (pxm ? pxm->size() : QSize (16, 16));
-    tweak_iconbar_size (sz);
-    focusToolBar->setIconSize (sz);
-  }
 
-  // Why we need fixed height:
-  // The height of the toolbar is actually determined by the font height.
-  // And the font height is not fixed. If the height of the toolbar is not
-  // fixed, the stretching of it will make the document area floating and
-  // triggers the re-rendering of the full document.
-  //
-  // NOTICE: setFixedHeight must be after setIconSize
-  // TODO: the size of the toolbar should be calculated dynamically
-#if (QT_VERSION >= 0x050000)
-#if defined (Q_OS_MAC) || defined (Q_OS_WIN)
-  int toolbarHeight= 30 * retina_icons;
-  mainToolBar->setFixedHeight (toolbarHeight + 8 * retina_icons);
-  modeToolBar->setFixedHeight (toolbarHeight + 4 * retina_icons);
-  focusToolBar->setFixedHeight (toolbarHeight);
-#else
-  int toolbarHeight= 30;
-  mainToolBar->setFixedHeight (toolbarHeight + 8);
-  modeToolBar->setFixedHeight (toolbarHeight + 4);
-  focusToolBar->setFixedHeight (toolbarHeight);
-#endif
-#else
-#ifdef Q_OS_MAC
-  if (retina_icons > 1) {
-    int toolbarHeight= 30;
-    if (!use_unified_toolbar)
-      mainToolBar->setFixedHeight (toolbarHeight + 8);
-    modeToolBar->setFixedHeight (toolbarHeight + 4);
-    focusToolBar->setFixedHeight (toolbarHeight);
-  }
-#else
-  int toolbarHeight= 30 * retina_icons;
-  mainToolBar->setFixedHeight (toolbarHeight + 8);
-  modeToolBar->setFixedHeight (toolbarHeight + 4);
-  focusToolBar->setFixedHeight (toolbarHeight);  
-#endif
-#endif
-  if (tm_style_sheet != "") {
-    double scale= retina_scale;
-#if ((QT_VERSION < 0x050000) && defined (Q_OS_MAC))
-    scale= max (scale, 0.6 * ((double) retina_icons));
-#endif
-    int h1= (int) floor (38 * scale + 0.5);
-    int h2= (int) floor (34 * scale + 0.5);
-    int h3= (int) floor (30 * scale + 0.5);
-#if ((QT_VERSION < 0x050000) && defined (Q_OS_MAC))
-    if (use_unified_toolbar && retina_icons == 2 && scale == 1.2) {
-      h1= 34; h2= 36; h3= 32; }
-#endif
-    mainToolBar->setFixedHeight (h1);
-    modeToolBar->setFixedHeight (h2);
-    focusToolBar->setFixedHeight (h3);
-  }
 
-  mw->setCentralWidget(new texmacs::DocumentWidget(qt_simple_widget_rep::last_created_widget));
-    qt_simple_widget_rep::last_created_widget = nullptr;
+
+  auto documentWidget = new texmacs::DocumentWidget(qt_simple_widget_rep::last_created_widget, last_editor, mw);
+  mw->setCentralWidget(documentWidget);
+  mw->addStackedWidget(new texmacs::DrawBoard(*documentWidget->horizontalScrollBar(), *documentWidget->verticalScrollBar()));
+  qt_simple_widget_rep::last_created_widget = nullptr;
+  last_editor = nullptr;
   QWidget *cw = mw->centralWidget();
   cw->setObjectName("centralWidget");  // this is important for styling toolbars.
   
     // The main layout
   
-  QVBoxLayout *bl = new QVBoxLayout (cw);
-  bl->setContentsMargins (0, 1, 0, 0);
-  bl->setSpacing (0);
-  cw->setLayout (bl);
+  //QVBoxLayout *bl = new QVBoxLayout (cw);
+  //bl->setContentsMargins (0, 1, 0, 0);
+  //bl->setSpacing (0);
+  //cw->setLayout (bl);
   QWidget* q = main_widget->as_qwidget(); // force creation of QWidget
   q->setParent (qwid); // q->layout()->removeWidget(q) will reset the parent to this
-  bl->addWidget (q);
+ // bl->addWidget (q);
 
   mainToolBar->setObjectName ("mainToolBar");
   modeToolBar->setObjectName ("modeToolBar");
@@ -401,7 +275,7 @@ qt_tm_widget_rep::qt_tm_widget_rep(int mask, command _quit)
   // at this point all the toolbars are empty so we avoid showing them
   // same for the menu bar if we are not on the Mac (where we do not have
   // other options)
-  
+  /*
   mainToolBar->setVisible (false);
   modeToolBar->setVisible (false);
   focusToolBar->setVisible (false);
@@ -412,10 +286,8 @@ qt_tm_widget_rep::qt_tm_widget_rep(int mask, command _quit)
 #ifndef Q_OS_MAC
   mainwindow()->menuBar()->setVisible (false);
 #endif
-  QPalette pal;
-  QColor bgcol= to_qcolor (tm_background);
-  pal.setColor (QPalette::Mid, bgcol);
-  mainwindow()->setPalette(pal);
+   */
+
 }
 
 qt_tm_widget_rep::~qt_tm_widget_rep () {
@@ -470,6 +342,7 @@ qt_tm_widget_rep::plain_window_widget (string name, command _quit, int b) {
 
 void
 qt_tm_widget_rep::update_visibility () {
+    return;
 #define XOR(exp1,exp2) (((!exp1) && (exp2)) || ((exp1) && (!exp2)))
 
   bool old_mainVisibility = mainToolBar->isVisible();
@@ -713,8 +586,6 @@ qt_tm_widget_rep::send (slot s, blackbox val) {
         mainwindow()->statusBar()->removeWidget (prompt);
         mainwindow()->statusBar()->addWidget (leftLabel);
         mainwindow()->statusBar()->addPermanentWidget (rightLabel);
-        leftLabel->show();
-        rightLabel->show();
         prompt->deleteLater();
         prompt = NULL;
       }
@@ -880,15 +751,15 @@ qt_tm_widget_rep::write (slot s, blackbox index, widget w) {
         // glue_widget, so we may not just use canvas() everywhere.
     case SLOT_SCROLLABLE:
     {
-      check_type_void (index, s);
+      //check_type_void (index, s);
 
       QWidget* q = main_widget->qwid;
-      q->hide();
-      QLayout* l = centralwidget()->layout();
-      l->removeWidget(q);
+      //q->hide();
+      //QLayout* l = centralwidget()->layout();
+      //l->removeWidget(q);
 
       q = concrete(w)->as_qwidget();   // force creation of the new QWidget
-      l->addWidget(q);
+      //l->addWidget(q);
       /* " When you use a layout, you do not need to pass a parent when
        constructing the child widgets. The layout will automatically reparent
        the widgets (using QWidget::setParent()) so that they are children of
@@ -989,7 +860,6 @@ qt_tm_widget_rep::write (slot s, blackbox index, widget w) {
       if (old_qwidget) old_qwidget->deleteLater();
       sideTools->setWidget (new_qwidget);
       update_visibility();
-      new_qwidget->show();
     }
       break;
 
@@ -1002,7 +872,6 @@ qt_tm_widget_rep::write (slot s, blackbox index, widget w) {
       if (old_qwidget) old_qwidget->deleteLater();
       bottomTools->setWidget (new_qwidget);
       update_visibility();
-      new_qwidget->show();
     }
       break;
       
@@ -1229,7 +1098,7 @@ qt_tm_embedded_widget_rep::as_qwidget() {
   qwid = new QWidget();
   QVBoxLayout* l = new QVBoxLayout();
   l->setContentsMargins (0,0,0,0);
-  qwid->setLayout (l);
+ // qwid->setLayout (l);
   l->addWidget (concrete(main_widget)->as_qwidget());
   return qwid;
 }

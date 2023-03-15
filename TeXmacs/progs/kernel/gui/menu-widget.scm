@@ -208,7 +208,7 @@
              (make-menu-label (caddr p) new-style tt?)))
           ((tuple? p 'text 2)           ; (text <font desc> "text")
            (widget-box (cadr p) (caddr p) col #t #t))
-          ((tuple? p 'icon 1)           ; (icon "name.xpm")
+          ((tuple? p 'icon 1)           ; (icon "name")
            (widget-xpm (cadr p)))
           ((tuple? p 'color 5)          ; (color col hext? vext? minw minh)
            (widget-color (second p) (third p) (fourth p)

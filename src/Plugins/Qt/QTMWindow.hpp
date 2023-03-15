@@ -79,11 +79,7 @@ public:
   
 signals:
   void closed ();
-  
-protected:
-  virtual void  closeEvent (QCloseEvent* event);
-  virtual void   moveEvent (QMoveEvent* event);
-  virtual void resizeEvent (QResizeEvent* event);
+
 };
 
 

@@ -105,13 +105,13 @@
 (menu-bind db-extra-icons
   (:mode in-bib-names?)
   /
-  (=> (balloon (icon "tm_von.xpm") "Insert particle")
+  (=> (balloon (icon "tm_von") "Insert particle")
       (link bib-von-menu))
-  ((balloon (icon "tm_name_bis.xpm") "Insert last name")
+  ((balloon (icon "tm_name_bis") "Insert last name")
    (make 'name))
-  (=> (balloon (icon "tm_junior.xpm") "Insert title after name")
+  (=> (balloon (icon "tm_junior") "Insert title after name")
       (link bib-jr-menu))
-  ((balloon (icon "tm_and.xpm") "Insert more names")
+  ((balloon (icon "tm_and") "Insert more names")
    (make-name-sep)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;

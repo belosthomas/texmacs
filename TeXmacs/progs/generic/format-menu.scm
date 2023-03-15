@@ -205,8 +205,8 @@
 (define (effect-pen-icon t)
   (with p (get-effect-pen t)
     (if (string? p)
-        (string-append "tm_pen_" p ".xpm")
-        "tm_customized.xpm")))
+        (string-append "tm_pen_" p "")
+        "tm_customized")))
 
 (tm-menu (select-effect-pen-menu t)
   ("Gaussian" (set-effect-pen t "gaussian"))

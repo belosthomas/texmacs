@@ -317,8 +317,8 @@ qt_renderer_rep::lines (array<SI> x, array<SI> y) {
 
 void
 qt_renderer_rep::clear (SI x1, SI y1, SI x2, SI y2) {
-  x1= max (x1, cx1-ox); y1= max (y1, cy1-oy);
-  x2= min (x2, cx2-ox); y2= min (y2, cy2-oy);
+  x1= std::max (x1, cx1-ox); y1= std::max (y1, cy1-oy);
+  x2= std::min (x2, cx2-ox); y2= std::min (y2, cy2-oy);
   // outer_round (x1, y1, x2, y2); might still be needed somewhere
   decode (x1, y1);
   decode (x2, y2);
@@ -340,8 +340,8 @@ qt_renderer_rep::fill (SI x1, SI y1, SI x2, SI y2) {
     y2 += ((d+1)>>1);
   }
 
-  x1= max (x1, cx1-ox); y1= max (y1, cy1-oy);
-  x2= min (x2, cx2-ox); y2= min (y2, cy2-oy);
+  x1= std::max (x1, cx1-ox); y1= std::max (y1, cy1-oy);
+  x2= std::min (x2, cx2-ox); y2= std::min (y2, cy2-oy);
   // outer_round (x1, y1, x2, y2); might still be needed somewhere
   if ((x1>=x2) || (y1>=y2)) return;
 
@@ -538,37 +538,7 @@ qt_renderer_rep::draw (int c, font_glyphs fng, SI x, SI y) {
     glyph pre_gl= fng->get (c); if (is_nil (pre_gl)) return;
     glyph gl= shrink (pre_gl, 1, 1, xo, yo);
     int i, j, w= gl->width, h= gl->height;
-#ifdef QTMPIXMAPS
-    QTMPixmapOrImage* im= new QTMPixmapOrImage (w, h);
-    if (!headless_mode) {
-      int nr_cols= std_shrinkf*std_shrinkf;
-      if (nr_cols >= 64) nr_cols= 64;
 
-      im->fill (Qt::transparent);
-      QPainter pp(im->QPixmap_ptr ());
-      QPen pen(painter->pen());
-      QBrush br(pen.color());
-      pp.setPen(Qt::NoPen);
-      for (j=0; j<h; j++)
-        for (i=0; i<w; i++) {
-          int col = gl->get_x (i, j);
-          br.setColor (QColor (r, g, b, (a*col)/nr_cols));
-          pp.fillRect (i, j, 1, 1, br);
-        }
-      pp.end();
-    }
-    else {
-      QImage* aux= im->QImage_ptr ();
-      int nr_cols= std_shrinkf*std_shrinkf;
-      if (nr_cols >= 64) nr_cols= 64;
-      im->fill (Qt::transparent);
-      for (j=0; j<h; j++)
-        for (i=0; i<w; i++) {
-          int col = gl->get_x (i, j);
-          aux->setPixel (i, j, qRgba (r, g, b, (a*col)/nr_cols));
-        }
-    }
-#else
     QTMImage *im= new QImage (w, h, QImage::Format_ARGB32_Premultiplied);
     //QTMImage *im= new QImage (w, h, QImage::Format_ARGB32_Premultiplied);
     {
@@ -585,7 +555,7 @@ qt_renderer_rep::draw (int c, font_glyphs fng, SI x, SI y) {
           im->setPixel (i, j, qRgba (r, g, b, (a*col)/nr_cols));
         }
     }
-#endif
+
     qt_image mi2 (im, xo, yo, w, h);
     mi = mi2;
     //[im release]; // qt_image retains im
@@ -692,10 +662,10 @@ qt_renderer_rep::get_shadow (renderer ren, SI x1, SI y1, SI x2, SI y2) {
   if (ren->is_printer ()) return;
   qt_renderer_rep* shadow= static_cast<qt_renderer_rep*>(ren);
   outer_round (x1, y1, x2, y2);
-  x1= max (x1, cx1- ox);
-  y1= max (y1, cy1- oy);
-  x2= min (x2, cx2- ox);
-  y2= min (y2, cy2- oy);
+  x1= std::max (x1, cx1- ox);
+  y1= std::max (y1, cy1- oy);
+  x2= std::min (x2, cx2- ox);
+  y2= std::min (y2, cy2- oy);
   shadow->ox= ox;
   shadow->oy= oy;
   shadow->master= this;
@@ -727,10 +697,10 @@ qt_renderer_rep::put_shadow (renderer ren, SI x1, SI y1, SI x2, SI y2) {
   if (painter == static_cast<qt_renderer_rep*>(ren)->painter) return;
   qt_shadow_renderer_rep* shadow= static_cast<qt_shadow_renderer_rep*>(ren);
   outer_round (x1, y1, x2, y2);
-  x1= max (x1, cx1- ox);
-  y1= max (y1, cy1- oy);
-  x2= min (x2, cx2- ox);
-  y2= min (y2, cy2- oy);
+  x1= std::max (x1, cx1- ox);
+  y1= std::max (y1, cy1- oy);
+  x2= std::min (x2, cx2- ox);
+  y2= std::min (y2, cy2- oy);
   decode (x1, y1);
   decode (x2, y2);
   if (x1<x2 && y2<y1) {
@@ -792,10 +762,10 @@ qt_proxy_renderer_rep::get_shadow (renderer ren, SI x1, SI y1, SI x2, SI y2) {
   if (ren->is_printer ()) return;
   qt_renderer_rep* shadow= static_cast<qt_renderer_rep*>(ren);
   outer_round (x1, y1, x2, y2);
-  x1= max (x1, cx1- ox);
-  y1= max (y1, cy1- oy);
-  x2= min (x2, cx2- ox);
-  y2= min (y2, cy2- oy);
+  x1= std::max (x1, cx1- ox);
+  y1= std::max (y1, cy1- oy);
+  x2= std::min (x2, cx2- ox);
+  y2= std::min (y2, cy2- oy);
   shadow->ox= ox;
   shadow->oy= oy;
   shadow->cx1= x1+ ox;
@@ -856,10 +826,10 @@ qt_shadow_renderer_rep::get_shadow (renderer ren, SI x1, SI y1, SI x2, SI y2) {
   if (ren->is_printer ()) return;
   qt_shadow_renderer_rep* shadow= static_cast<qt_shadow_renderer_rep*>(ren);
   outer_round (x1, y1, x2, y2);
-  x1= max (x1, cx1- ox);
-  y1= max (y1, cy1- oy);
-  x2= min (x2, cx2- ox);
-  y2= min (y2, cy2- oy);
+  x1= std::max (x1, cx1- ox);
+  y1= std::max (y1, cy1- oy);
+  x2= std::min (x2, cx2- ox);
+  y2= std::min (y2, cy2- oy);
   shadow->ox= ox;
   shadow->oy= oy;
   shadow->cx1= x1+ ox;

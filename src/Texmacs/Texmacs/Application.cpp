@@ -1,5 +1,7 @@
 #include "Application.hpp"
 
+#include <QDebug>
+
 texmacs::Application::Application(int &argc, char **argv) : QApplication(argc, argv) {
     // Set the application informations
     setWindowIcon(QIcon(":/TeXmacs/images/texmacs.png"));
@@ -37,7 +39,6 @@ void texmacs::Application::loadSplashScreen() {
     });
     connect(this, &Application::initialized, this, [this]() {
         int n = 0;
-        init_plugins ();
         gui_open (n, nullptr);
         mServer = new server();
         open_window ();
@@ -122,8 +123,12 @@ void texmacs::Application::initializeScheme() {
 }
 
 void texmacs::Application::onApplicationStarted() {
-    resetTeXmacs();
+    // resetTeXmacs();
     extractResources();
+
+    emit initializationMessage("Loading Pixmaps...");
+    mPixmapManager.loadAll();
+
     initializeEnvironmentVariables();
 
     the_et     = tuple ();
@@ -134,5 +139,11 @@ void texmacs::Application::onApplicationStarted() {
     bench_cumul ("initialize texmacs");
 
     initializeScheme();
+
+    emit initializationMessage("Initializing Plugins...");
+    init_plugins ();
+
+    emit initializationMessage("Initializing Done ! Opening TeXMacs...");
+
     emit initialized();
 }

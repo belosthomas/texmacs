@@ -133,25 +133,25 @@
 
 (tm-menu (focus-toggle-icons t)
   (:require (tm-gpg-decrypted? t))
-  ((check (balloon (icon "tm_lock_open.xpm") "Decrypted") "v"
+  ((check (balloon (icon "tm_lock_open") "Decrypted") "v"
           (alternate-second? (focus-tree)))
    (tm-gpg-encrypt (focus-tree))))
 
 (tm-menu (focus-toggle-icons t)
   (:require (tm-gpg-passphrase-decrypted? t))
-  ((check (balloon (icon "tm_lock_open.xpm") "Decrypted") "v"
+  ((check (balloon (icon "tm_lock_open") "Decrypted") "v"
           (alternate-second? (focus-tree)))
    (tm-gpg-dialogue-passphrase-encrypt (focus-tree))))
 
 (tm-menu (focus-toggle-icons t)
   (:require (tm-gpg-encrypted? t))
-  ((check (balloon (icon "tm_lock_closed.xpm") "Encrypted") "v"
+  ((check (balloon (icon "tm_lock_closed") "Encrypted") "v"
           (alternate-second? (focus-tree)))
    (tm-gpg-dialogue-decrypt (focus-tree))))
 
 (tm-menu (focus-toggle-icons t)
   (:require (tm-gpg-passphrase-encrypted? t))
-  ((check (balloon (icon "tm_lock_closed.xpm") "Encrypted") "v"
+  ((check (balloon (icon "tm_lock_closed") "Encrypted") "v"
           (alternate-second? (focus-tree)))
    (tm-gpg-dialogue-passphrase-decrypt (focus-tree))))
 
@@ -211,7 +211,7 @@
 
 (tm-menu (focus-toggle-icons t)
   (:require (tree-in? t '(gpg-passphrase-encrypted-buffer)))
-  ((check (balloon (icon "tm_lock_closed.xpm") "Encrypted buffer") "v"
+  ((check (balloon (icon "tm_lock_closed") "Encrypted buffer") "v"
           (alternate-second? (focus-tree)))
    (tm-gpg-dialogue-passphrase-decrypt-buffer (current-buffer))))
 

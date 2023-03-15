@@ -85,8 +85,8 @@ public:
   
     ////////////////////// Qt widget counterparts
 
-  texmacs::ScrollableOpenGLWidget*         canvas () { return associatedDocumentWidget; }
-  texmacs::ScrollableOpenGLWidget* scrollarea () { return associatedDocumentWidget; }
+  texmacs::DocumentWidget*         canvas () { return associatedDocumentWidget; }
+  texmacs::DocumentWidget* scrollarea () { return associatedDocumentWidget; }
 
     ////////////////////// backing store management
 

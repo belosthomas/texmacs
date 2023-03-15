@@ -17,7 +17,7 @@
 #include "boot.hpp"
 #include "scheme.hpp"
 
-#include "config.h"
+#include "tm_config.h"
 
 #include <QDebug>
 #include <QEvent>
@@ -38,115 +38,7 @@
 #include <QRect>
 
 
-hashmap<int,string> qtkeymap (0);
-hashmap<int,string> qtdeadmap (0);
-hashmap<int,string> qtcomposemap (0);
 
-inline void
-map (int code, string name) {
-  qtkeymap (code) = name;
-}
-
-inline void
-deadmap (int code, string name) {
-  qtdeadmap (code) = name;
-}
-
-void
-initkeymap () {
-  static bool fInit= false;
-  if (fInit) return;
-  fInit= true;
-  if (DEBUG_QT && DEBUG_KEYBOARD) debug_qt << "Initializing keymap\n";
-  map (Qt::Key_Space     , "space");
-  map (Qt::Key_Tab       , "tab");
-  map (Qt::Key_Backtab   , "tab");
-  map (Qt::Key_Return    , "return");
-  map (Qt::Key_Enter     , "enter");
-  map (Qt::Key_Escape    , "escape");
-  map (Qt::Key_Backspace , "backspace");
-  map (Qt::Key_Up        , "up" );
-  map (Qt::Key_Down      , "down" );
-  map (Qt::Key_Left      , "left" );
-  map (Qt::Key_Right     , "right" );
-  map (Qt::Key_F1        , "F1" );
-  map (Qt::Key_F2        , "F2" );
-  map (Qt::Key_F3        , "F3" );
-  map (Qt::Key_F4        , "F4" );
-  map (Qt::Key_F5        , "F5" );
-  map (Qt::Key_F6        , "F6" );
-  map (Qt::Key_F7        , "F7" );
-  map (Qt::Key_F8        , "F8" );
-  map (Qt::Key_F9        , "F9" );
-  map (Qt::Key_F10       , "F10" );
-  map (Qt::Key_F11       , "F11" );
-  map (Qt::Key_F12       , "F12" );
-  map (Qt::Key_F13       , "F13" );
-  map (Qt::Key_F14       , "F14" );
-  map (Qt::Key_F15       , "F15" );
-  map (Qt::Key_F16       , "F16" );
-  map (Qt::Key_F17       , "F17" );
-  map (Qt::Key_F18       , "F18" );
-  map (Qt::Key_F19       , "F19" );
-  map (Qt::Key_F20       , "F20" );
-  map (Qt::Key_F21       , "F21" );
-  map (Qt::Key_F22       , "F22" );
-  map (Qt::Key_F23       , "F23" );
-  map (Qt::Key_F24       , "F24" );
-  map (Qt::Key_F25       , "F25" );
-  map (Qt::Key_F26       , "F26" );
-  map (Qt::Key_F27       , "F27" );
-  map (Qt::Key_F28       , "F28" );
-  map (Qt::Key_F29       , "F29" );
-  map (Qt::Key_F30       , "F30" );
-  map (Qt::Key_F31       , "F31" );
-  map (Qt::Key_F32       , "F32" );
-  map (Qt::Key_F33       , "F33" );
-  map (Qt::Key_F34       , "F34" );
-  map (Qt::Key_F35       , "F35" );
-  map (Qt::Key_Insert    , "insert" );
-  map (Qt::Key_Delete    , "delete" );
-  map (Qt::Key_Home      , "home" );
-  map (Qt::Key_End       , "end" );
-  map (Qt::Key_PageUp    , "pageup" );
-  map (Qt::Key_PageDown  , "pagedown" );
-  map (Qt::Key_ScrollLock, "scrolllock" );
-  map (Qt::Key_Pause     , "pause" );
-  map (Qt::Key_SysReq    , "sysreq" );
-  map (Qt::Key_Stop      , "stop" );
-  map (Qt::Key_Menu      , "menu" );
-  map (Qt::Key_Print     , "print" );
-  map (Qt::Key_Select    , "select" );
-  map (Qt::Key_Execute   , "execute" );
-  map (Qt::Key_Help      , "help" );
-  map (Qt::Key_section   , "section" );
-
-  deadmap (Qt::Key_Dead_Acute     , "acute");
-  deadmap (Qt::Key_Dead_Grave     , "grave");
-  deadmap (Qt::Key_Dead_Diaeresis , "umlaut");
-  deadmap (Qt::Key_Dead_Circumflex, "hat");
-  deadmap (Qt::Key_Dead_Tilde     , "tilde");
-
-  // map (0x0003              , "K-enter");
-  // map (Qt::Key_Begin       , "begin" );
-  // map (Qt::Key_PrintScreen , "printscreen" );
-  // map (Qt::Key_Break       , "break" );
-  // map (Qt::Key_User        , "user" );
-  // map (Qt::Key_System      , "system" );
-  // map (Qt::Key_Reset       , "reset" );
-  // map (Qt::Key_ClearLine   , "clear" );
-  // map (Qt::Key_ClearDisplay, "cleardisplay" );
-  // map (Qt::Key_InsertLine  , "insertline" );
-  // map (Qt::Key_DeleteLine  , "deleteline" );
-  // map (Qt::Key_InsertChar  , "insert" );
-  // map (Qt::Key_DeleteChar  , "delete" );
-  // map (Qt::Key_Prev        , "prev" );
-  // map (Qt::Key_Next        , "next" );
-  // map (Qt::Key_Undo        , "undo" );
-  // map (Qt::Key_Redo        , "redo" );
-  // map (Qt::Key_Find        , "find" );
-  // map (Qt::Key_ModeSwitchFunctionKey, "modeswitch" );
-}
 #ifdef OS_MINGW
 enum WindowsNativeModifiers {
     ShiftLeft            = 0x00000001,
@@ -202,11 +94,11 @@ QTMWidget::~QTMWidget () {
 }
 
 qt_simple_widget_rep*
-QTMWidget::tm_widget () const { 
-  return concrete_simple_widget (tmwid); 
+QTMWidget::tm_widget () const {
+  return concrete_simple_widget (tmwid);
 }
 
-void 
+void
 QTMWidget::scrollContentsBy (int dx, int dy) {
   QTMScrollView::scrollContentsBy (dx,dy);
 
@@ -215,7 +107,7 @@ QTMWidget::scrollContentsBy (int dx, int dy) {
   // scrollbars
 }
 
-void 
+void
 QTMWidget::resizeEvent (QResizeEvent* event) {
   (void) event;
   // Is this ok?
@@ -227,7 +119,7 @@ QTMWidget::resizeEvent (QResizeEvent* event) {
   //FIXME: I would like to have a force_update here but this causes a failed
   //assertion in TeXmacs since the at the boot not every internal structure is
   //initialized at this point. It seems not too difficult to fix but I
-  //postpone this to discuss with Joris. 
+  //postpone this to discuss with Joris.
   //
   //Not having a force_update results in some lack of sync of the surface
   //while the user is actively resizing with the mouse.
@@ -275,177 +167,6 @@ get_shift_preference (char key_code) {
   return get_user_preference ("shift-" * as_string (key_code));
 }
 
-void
-QTMWidget::keyPressEvent (QKeyEvent* event) {
-  if (is_nil (tmwid)) return;
-  initkeymap();
-
-  if (DEBUG_QT && DEBUG_KEYBOARD) debug_qt << "keypressed\n";
-  {
-    int key = event->key();
-    Qt::KeyboardModifiers mods = event->modifiers();
-
-    if (DEBUG_QT && DEBUG_KEYBOARD) {
-      debug_qt << "key  : " << key << LF;
-      debug_qt << "text : " << event->text().toLatin1().data() << LF;
-      debug_qt << "count: " << event->text().count() << LF;
-      debug_qt << "unic : " << event->text().data()[0].unicode() << LF;
-
-#ifdef OS_MINGW
-      debug_qt << "nativeScanCode: " << event->nativeScanCode() << LF; 
-      debug_qt << "nativeVirtualKey: " << event->nativeVirtualKey() << LF;
-      debug_qt << "nativeModifiers: " << event->nativeModifiers() << LF;
-#endif
-      if (mods & Qt::ShiftModifier) debug_qt << "shift\n";
-      if (mods & Qt::MetaModifier) debug_qt << "meta\n";
-      if (mods & Qt::ControlModifier) debug_qt << "control\n";
-      if (mods & Qt::KeypadModifier) debug_qt << "keypad\n";
-      if (mods & Qt::AltModifier) debug_qt << "alt\n";
-    }
-
-    string r;
-#ifdef OS_MINGW 
-/* "Qt::Key_AltGr On Windows, when the KeyDown event for this key is sent,
-* the Ctrl+Alt modifiers are also set." (excerpt from Qt doc)
-* However the AltGr key is used to obtain many symbols 
-* which should not be regarded as C-A- shortcuts.
-* (e.g. \ or @ on a French keyboard) 
-* 
-* Hence, when "native modifiers" are (ControlLeft | AltRight) 
-* we clear Qt's Ctrl+Alt modifiers
-*/
-    if ((event->nativeModifiers() & (ControlLeft | AltRight)) == (ControlLeft | AltRight)) {
-      if (DEBUG_QT && DEBUG_KEYBOARD) debug_qt << "assuming it's an AltGr key code"<<LF;
-      mods &= ~Qt::AltModifier;
-      mods &= ~Qt::ControlModifier;
-    }
-#endif
-    if (qtkeymap->contains (key)) {
-      r = qtkeymap[key];
-    }
-    else if (qtdeadmap->contains (key)) {
-      mods &=~ Qt::ShiftModifier;
-      r = qtdeadmap[key];
-    }
-    else {
-        // We need to use text(): Alt-{5,6,7,8,9} are []|{} under MacOS, etc.
-      QString nss = event->text();
-      unsigned int   kc  = event->nativeVirtualKey();
-      unsigned short unic= nss.data()[0].unicode();
-      /*
-      debug_qt << "key  : " << key << LF;
-      debug_qt << "text : " << event->text().toLatin1().data() << LF;
-      debug_qt << "count: " << event->text().count() << LF;
-      if (mods & Qt::ShiftModifier) debug_qt << "shift\n";
-      if (mods & Qt::MetaModifier) debug_qt << "meta\n";
-      if (mods & Qt::ControlModifier) debug_qt << "control\n";
-      if (mods & Qt::KeypadModifier) debug_qt << "keypad\n";
-      if (mods & Qt::AltModifier) debug_qt << "alt\n";
-      cout << kc << ", " << ((mods & Qt::ShiftModifier) != 0)
-           << " -> " << unic << LF;
-      */
-      if (unic > 32 && unic < 255 &&
-          (mods & Qt::ShiftModifier) != 0 &&
-          (mods & Qt::ControlModifier) == 0 &&
-          (mods & Qt::AltModifier) == 0 &&
-          (mods & Qt::MetaModifier) == 0)
-        set_shift_preference (kc, (char) unic);
-#ifdef Q_OS_WIN
-      if ((unic > 0 && unic < 32 && key > 0 && key < 128) ||
-          (unic > 0 && unic < 255 && key > 32 &&
-           (mods & Qt::ShiftModifier) != 0 &&
-           (mods & Qt::ControlModifier) != 0)) {
-#else
-      if (unic < 32 && key > 0 && key < 128) {
-#endif
-        // NOTE: For some reason, the 'shift' modifier key is not applied
-        // to 'key' when 'control' is pressed as well.  We perform some
-        // dirty hacking to figure out the right shifted variant of a key
-        // by ourselves...
-        if (is_upcase ((char) key)) {
-          if ((mods & Qt::ShiftModifier) == 0)
-            key= (int) locase ((char) key);
-        }
-        else if (has_shift_preference (kc) &&
-                 (mods & Qt::ShiftModifier) != 0 &&
-                 (mods & Qt::ControlModifier) != 0) {
-          string pref= get_shift_preference (kc);
-          if (N(pref) > 0) key= (int) (unsigned char) pref [0];
-          if (DEBUG_QT && DEBUG_KEYBOARD)
-            debug_qt << "Control+Shift " << kc << " -> " << key << LF;
-        }
-        mods &=~ Qt::ShiftModifier;
-        r= string ((char) key);
-      }
-      else {
-        switch (unic) {
-          case 96:   r= "`"; 
-            // unicode to cork conversion not appropriate for this case...
-#ifdef Q_OS_MAC
-            // CHECKME: are these two MAC exceptions really needed?
-            if (mods & Qt::AltModifier) r= "grave";
-#endif
-            break;
-          case 168:  r= "umlaut"; break;
-          case 180:  r= "acute"; break;
-            // the following combining characters should be caught by qtdeadmap
-          case 0x300: r= "grave"; break;
-          case 0x301: r= "acute"; break;
-          case 0x302: r= "hat"; break;
-          case 0x308: r= "umlaut"; break;
-          case 0x33e: r= "tilde"; break;
-          default:
-            QByteArray buf= nss.toUtf8();
-            string rr (buf.constData(), buf.size());
-            string tstr= utf8_to_cork (rr);
-            // HACK! The encodings defined in langs/encoding and which
-            // utf8_to_cork uses (via the converters loaded in
-            // converter_rep::load()), enclose the texmacs symbols in "< >", 
-            // but this format is not used for keypresses, so we must remove
-            // them.
-            int len= N (tstr);
-            if (len >= 1 && tstr[0] == '<' && tstr[1] != '#' && tstr[len-1] == '>')
-              r= tstr (1, len-1);
-            else
-              r= tstr;
-            if (r == "less") r= "<";
-            else if (r == "gtr") r= ">";
-        }
-#ifdef Q_OS_MAC
-        if (mods & Qt::AltModifier) {
-          // Alt produces many symbols in Mac keyboards: []|{} etc.
-          if ((N(r) != 1 ||
-               ((int) (unsigned char) r[0]) < 32 ||
-               ((int) (unsigned char) r[0]) >= 128) &&
-              key >= 32 && key < 128 &&
-              ((mods & (Qt::MetaModifier + Qt::ControlModifier)) == 0)) {
-            if ((mods & Qt::ShiftModifier) == 0 && key >= 65 && key <= 90)
-              key += 32;
-            qtcomposemap (key)= r;
-            r= string ((char) key);
-          }
-          else mods &= ~Qt::AltModifier; //unset Alt
-        }
-#endif
-        mods &= ~Qt::ShiftModifier;
-      }
-    }
-    if (r == "") return;
-    if (mods & Qt::ShiftModifier) r= "S-" * r;
-    if (mods & Qt::AltModifier) r= "A-" * r;
-    //if (mods & Qt::KeypadModifier) r= "K-" * r;
-#ifdef Q_OS_MAC
-    if (mods & Qt::MetaModifier) r= "C-" * r;        // The "Control" key
-    if (mods & Qt::ControlModifier) r= "M-" * r;  // The "Command" key
-#else
-    if (mods & Qt::ControlModifier) r= "C-" * r;
-    if (mods & Qt::MetaModifier) r= "M-" * r;     // The "Windows" key
-#endif
-
-    if (DEBUG_QT && DEBUG_KEYBOARD) debug_qt << "key press: " << r << LF;
-    the_gui->process_keypress (tm_widget(), r, texmacs_time());
-  }
-}
 
 static unsigned int
 mouse_state (QMouseEvent* event, bool flag) {
@@ -493,118 +214,13 @@ QTMWidget::kbdEvent (int key, Qt::KeyboardModifiers mods, const QString& s) {
 }
 
 void
-QTMWidget::inputMethodEvent (QInputMethodEvent* event) {
-  QString const & preedit_string = event->preeditString();
-  QString const & commit_string = event->commitString();
-  
-  if (!commit_string.isEmpty()) {
-    bool done= false;
-#ifdef OS_MACOS
-#if (QT_VERSION < 0x050000)
-    // NOTE: this hack is only needed for Qt4 under MacOS,
-    // but it only works for standard US keyboards
-    done= true;
-    string s= from_qstring (commit_string);
-    Qt::KeyboardModifiers SA= Qt::ShiftModifier | Qt::AltModifier;
-    if (s == "\17") kbdEvent (36, Qt::AltModifier, commit_string);
-    else if (s == "<ddagger>") kbdEvent (38, Qt::AltModifier, commit_string);
-    else if (s == "<leq>") kbdEvent (44, Qt::AltModifier, commit_string);
-    else if (s == "<geq>") kbdEvent (46, Qt::AltModifier, commit_string);
-    else if (s == "<trademark>") kbdEvent (50, Qt::AltModifier, commit_string);
-    else if (s == "<infty>") kbdEvent (53, Qt::AltModifier, commit_string);
-    else if (s == "<ldots>") kbdEvent (59, Qt::AltModifier, commit_string);
-    else if (s == "<#20AC>") kbdEvent (64, Qt::AltModifier, commit_string);
-    else if (s == "<partial>") kbdEvent (68, Qt::AltModifier, commit_string);
-    else if (s == "<#192>") kbdEvent (70, Qt::AltModifier, commit_string);
-    else if (s == "<dagger>") kbdEvent (84, Qt::AltModifier, commit_string);
-    else if (s == "<sqrt>") kbdEvent (86, Qt::AltModifier, commit_string);
-    else if (s == "\35") kbdEvent (94, Qt::AltModifier, commit_string);
-    else if (s == "\31") kbdEvent (66, SA, commit_string);
-    else if (s == "<lozenge>") kbdEvent (89, SA, commit_string);
-    else done= false;
-#endif
-#endif
-    
-    if (!done) {
-      if (DEBUG_QT)
-        debug_qt << "IM committing: " << commit_string.toUtf8().data() << LF;
-      if (preediting && get_preference ("speech", "off") == "off")
-        for (int i = 0; i < commit_string.size(); ++i)
-          kbdEvent (0, Qt::NoModifier, commit_string[i]);
-      else {
-        string s= "speech:" * from_qstring (commit_string);
-        kbdEvent (0, Qt::NoModifier, to_qstring (s));
-      }
-    }
-  }
-  
-  if (DEBUG_QT)
-    debug_qt << "IM preediting :" << preedit_string.toUtf8().data() << LF;
-  
-  string r = "pre-edit:";
-  if (!preedit_string.isEmpty())
-  {
-    
-    // find cursor position in the preedit string
-    QList<QInputMethodEvent::Attribute>  const & attrs = event->attributes();
-    //    int pos = preedit_string.count();
-    int pos = 0;
-    bool visible_cur = false;
-    for (int i=0; i< attrs.count(); i++) 
-      if (attrs[i].type == QInputMethodEvent::Cursor) {
-        pos = attrs[i].start;
-        visible_cur = (attrs[i].length != 0);
-      }
-    
-    // find selection in the preedit string
-    int sel_start = 0;
-    int sel_length = 0;
-    if (pos <  preedit_string.count()) {
-      for (int i=0; i< attrs.count(); i++) 
-        if ((attrs[i].type == QInputMethodEvent::TextFormat) &&
-            (attrs[i].start <= pos) &&
-            (pos < attrs[i].start + attrs[i].length)) {
-          sel_start = attrs[i].start;
-          sel_length =  attrs[i].length;
-          if (!visible_cur) pos += attrs[i].length;
-        }
-    } else {
-      sel_start = pos;
-      sel_length = 0;
-    }
-    (void) sel_start; (void) sel_length;
-    
-    r = r * as_string (pos) * ":" * from_qstring (preedit_string);
-  }
-
-  if (!is_nil (tmwid)) {
-    preediting = !preedit_string.isEmpty();
-    the_gui->process_keypress (tm_widget(), r, texmacs_time());
-  }
-
-  event->accept();
-}  
-
-QVariant 
-QTMWidget::inputMethodQuery (Qt::InputMethodQuery query) const {
-  switch (query) {
- /*   case Qt::ImMicroFocus : {
-      const QPoint &topleft= cursor_pos - tm_widget()->backing_pos + surface()->geometry().topLeft();
-      return QVariant (QRect (topleft, QSize (5, 5)));
-    }
-    default:*/ // todo
-      return QWidget::inputMethodQuery (query);
-  }
-}
-
-void
 QTMWidget::mousePressEvent (QMouseEvent* event) {
   if (is_nil (tmwid)) return;
   QPoint point = event->pos() + origin();
   coord2 pt = from_qpoint(point);
   unsigned int mstate= mouse_state (event, false);
   string s= "press-" * mouse_decode (mstate);
-  the_gui -> process_mouse (tm_widget(), s, pt.x1, pt.x2,  
+  the_gui -> process_mouse (tm_widget(), s, pt.x1, pt.x2,
                             mstate, texmacs_time ());
   event->accept();
 }
@@ -628,7 +244,7 @@ QTMWidget::mouseMoveEvent (QMouseEvent* event) {
   coord2 pt = from_qpoint(point);
   unsigned int mstate = mouse_state (event, false);
   string s = "move";
-  the_gui->process_mouse (tm_widget(), s, pt.x1, pt.x2, 
+  the_gui->process_mouse (tm_widget(), s, pt.x1, pt.x2,
                           mstate, texmacs_time ());
   event->accept();
 }
@@ -650,7 +266,7 @@ tablet_state (QTabletEvent* event, bool flag) {
 
 void
 QTMWidget::tabletEvent (QTabletEvent* event) {
-  if (is_nil (tmwid)) return; 
+  if (is_nil (tmwid)) return;
   unsigned int mstate = tablet_state (event, true);
   string s= "move";
   if (event->button() != 0) {
@@ -669,7 +285,7 @@ QTMWidget::tabletEvent (QTabletEvent* event) {
          << ((double) event->yTilt())
          << ((double) event->z())
          << ((double) event->tangentialPressure());
-    the_gui->process_mouse (tm_widget(), s, pt.x1, pt.x2, 
+    the_gui->process_mouse (tm_widget(), s, pt.x1, pt.x2,
                             mstate, texmacs_time (), data);
   }
   /*
@@ -758,7 +374,7 @@ QTMWidget::gestureEvent (QGestureEvent* event) {
     if (pinch->state() == Qt::GestureStarted) {
       QPoint point (hotspot.x(), hotspot.y());
       coord2 pt = from_qpoint (point);
-      the_gui->process_mouse (tm_widget(), "pinch-start", pt.x1, pt.x2, 
+      the_gui->process_mouse (tm_widget(), "pinch-start", pt.x1, pt.x2,
                               0, texmacs_time ());
     }
     if (changeFlags & QPinchGesture::RotationAngleChanged) {
@@ -792,12 +408,12 @@ QTMWidget::gestureEvent (QGestureEvent* event) {
   QPoint point (hotspot.x(), hotspot.y());
   coord2 pt = from_qpoint (point);
   //cout << s << ", " << pt.x1 << ", " << pt.x2 << LF;
-  the_gui->process_mouse (tm_widget(), s, pt.x1, pt.x2, 
+  the_gui->process_mouse (tm_widget(), s, pt.x1, pt.x2,
                           0, texmacs_time (), data);
   event->accept();
 }
 
- 
+
 bool
 QTMWidget::event (QEvent* event) {
     // Catch Keypresses to avoid default handling of (Shift+)Tab keys
@@ -805,7 +421,7 @@ QTMWidget::event (QEvent* event) {
     QKeyEvent *ke = static_cast<QKeyEvent*> (event);
     keyPressEvent (ke);
     return true;
-  } 
+  }
   /* NOTE: we catch ShortcutOverride in order to disable the QKeySequences we
    assigned to QActions while building menus, etc. In doing this, we keep the
    shortcut text in the menus while relaying all keypresses through the editor*/
@@ -845,7 +461,7 @@ QTMWidget::sizeHint () const {
   return to_qsize (w, h);
 }
 
-void 
+void
 QTMWidget::dragEnterEvent (QDragEnterEvent *event)
 {
   if (is_nil (tmwid)) return;
@@ -865,11 +481,11 @@ QTMWidget::dragEnterEvent (QDragEnterEvent *event)
 
 int drop_payload_serial  =0;
 hashmap<int, tree> payloads;
- 
+
 void
 QTMWidget::dropEvent (QDropEvent *event) {
   if (is_nil (tmwid)) return;
-  
+
   QPoint point = event->pos () + origin ();
   coord2 pt= from_qpoint (point);
 
@@ -980,7 +596,7 @@ wheel_state (QWheelEvent* event) {
 
 void
 QTMWidget::wheelEvent(QWheelEvent *event) {
-  if (is_nil (tmwid)) return; 
+  if (is_nil (tmwid)) return;
   if (as_bool (call ("wheel-capture?"))) {
 #if (QT_VERSION >= 0x060000)
     QPointF pos  = event->position();
@@ -995,7 +611,7 @@ QTMWidget::wheelEvent(QWheelEvent *event) {
     bool   hor  = event->orientation() == Qt::Horizontal;
     QPoint wheel (hor? delta: 0.0, hor? 0.0: delta);
 #endif
-    coord2 pt = from_qpoint (point.toPoint());
+    coord2 pt(point.x(), point.y());
     coord2 wh = from_qpoint (wheel);
     unsigned int mstate= wheel_state (event);
     array<double> data; data << ((double) wh.x1) << ((double) wh.x2);

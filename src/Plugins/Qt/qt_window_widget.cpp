@@ -50,7 +50,7 @@ qt_window_widget_rep::qt_window_widget_rep (QWidget* _wid, string name,
   }
 
   if (!has_resizable_children (_wid))
-    qwid->setFixedSize (qwid->sizeHint());
+  //  qwid->setFixedSize (qwid->sizeHint());
   
     // HACK: don't increment window count for side tools or any other fake windows
   if (!fake) win_id = ++nr_windows;

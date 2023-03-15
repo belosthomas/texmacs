@@ -204,7 +204,7 @@ socket_link::start () {
   case ST_NOTIF:      ret= "Error in setting notifier"; break;
   default:            ret= "No error message";
   }
-  return ret * " errno: " * strerror(err);
+  return ret;
 }
 
 string&
@@ -280,7 +280,7 @@ socket_link::ready_to_send (int s) {
       if (sz) qsnw->setEnabled (true);
     }
     else if (ret <0) {
-      DBG_IO ("Sending error: " << strerror (ERRNO));
+      DBG_IO ("Sending error: ");
       stop ();
     }
     else qsnw->setEnabled (true);
@@ -351,7 +351,6 @@ socket_server::socket_server (string host, unsigned short port) {
 #endif
     if (BIND (sock, rp->ai_addr, rp->ai_addrlen) == 0)
       break;
-    DBG_IO (strerror (errno));
     DBG_IO ("Socket bind failed");
     CLOSE (sock);
     sock = -1;

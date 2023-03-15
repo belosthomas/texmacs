@@ -242,7 +242,7 @@ QTMTreeModel::parse_roles (const tree& roles) {
         else if (role == "ToolTipRole")    _roles[tag][Qt::ToolTipRole]    = j;
         else if (role == "CommandRole")    _roles[tag][CommandRole]        = j;
         else if (string ("UserRole:") <= role) {
-          int num = max (0, min (9, as_int (role (9, N(role))) - 1));          
+          int num = std::max (0, std::min (9, as_int (role (9, N(role))) - 1));
           _roles[tag][TMUserRole + num] = j;
         }
       }

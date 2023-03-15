@@ -30,23 +30,23 @@
       ($describe-item
           ($inline ($shortcut (structured-insert-up)) ", "
                    ($menu "Focus" "Insert above") ", "
-                   ($tmdoc-icon "tm_insert_up.xpm"))
+                   ($tmdoc-icon "tm_insert_up"))
         "Insert a new input field above the cursor.")
       ($describe-item
           ($inline ($shortcut (structured-insert-down)) ", "
                    ($menu "Focus" "Insert down") ", "
-                   ($tmdoc-icon "tm_insert_down.xpm"))
+                   ($tmdoc-icon "tm_insert_down"))
         "Insert a new input field below the cursor."))
     ($para
       "Existing input or input/output fields can be removed as follows:")
     ($description-long
       ($describe-item
           ($inline ($menu "Focus" "Remove above") ", "
-                   ($tmdoc-icon "tm_delete_up.xpm"))
+                   ($tmdoc-icon "tm_delete_up"))
         "Remove the field above the cursor.")
       ($describe-item
           ($inline ($menu "Focus" "Remove below") ", "
-                   ($tmdoc-icon "tm_delete_down.xpm"))
+                   ($tmdoc-icon "tm_delete_down"))
         "Remove the current field and move to the one below.")
       ($describe-item
           ($inline ($menu "Focus" "Remove banner"))

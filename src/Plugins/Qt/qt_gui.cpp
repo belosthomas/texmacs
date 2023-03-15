@@ -104,13 +104,7 @@ needing_update (false)
     //waitDialog = NULL;
   
   gui_helper = new QTMGuiHelper (this);
-  qApp->installEventFilter (gui_helper);
-  
-#ifdef QT_MAC_USE_COCOA
-    //HACK: this filter is needed to overcome a bug in Qt/Cocoa
-  extern void mac_install_filter(); // defined in src/Plugins/MacOS/mac_app.mm
-  mac_install_filter();
-#endif
+  //qApp->installEventFilter (gui_helper);
   
   set_output_language (get_locale_language ());
   refresh_language();
@@ -121,52 +115,6 @@ needing_update (false)
                     gui_helper, SLOT (doUpdate()));
   // (void) default_font ();
 
-  if (!retina_manual) {
-    retina_manual= true;
-#ifdef MACOSX_EXTENSIONS
-    double mac_hidpi = mac_screen_scale_factor();
-    if (DEBUG_STD)
-      debug_boot << "Mac Screen scaleFfactor: " << mac_hidpi <<  "\n";
-          
-    if (mac_hidpi == 2) {
-      if (DEBUG_STD) debug_boot << "Setting up HiDPI mode\n";
-#if (QT_VERSION < 0x050000)
-      retina_factor= 2;
-      if (tm_style_sheet == "") retina_scale = 1.4;
-      else retina_scale = 1.0;
-      if (!retina_iman) {
-        retina_iman  = true;
-        retina_icons = 2;
-        // retina_icons = 1;
-        // retina_icons = 2;  // FIXME: why is this not better?
-      }
-#else
-      retina_factor= 2;      
-#endif
-    }
-#else
-    SI w, h;
-    get_extents (w, h);
-    if (DEBUG_STD)
-      debug_boot << "Screen extents: " << w/PIXEL << " x " << h/PIXEL << "\n";
-    if (min (w, h) >= 1440 * PIXEL) {
-      retina_zoom = 2;
-      retina_scale= (tm_style_sheet == ""? 1.0: 1.6666);
-      if (!retina_iman) {
-        retina_iman  = true;
-        retina_icons = 2;
-      }
-    }
-#endif
-  }
-  if (has_user_preference ("retina-factor"))
-    retina_factor= get_user_preference ("retina-factor") == "on"? 2: 1;
-  if (has_user_preference ("retina-zoom"))
-    retina_zoom= get_user_preference ("retina-zoom") == "on"? 2: 1;
-  if (has_user_preference ("retina-icons"))
-    retina_icons= get_user_preference ("retina-icons") == "on"? 2: 1;
-  if (has_user_preference ("retina-scale"))
-    retina_scale= as_double (get_user_preference ("retina-scale"));
 }
 
 /* important routines */
@@ -322,7 +270,7 @@ qt_gui_rep::set_selection (string key, tree t,
   cb->clear (mode);
   
   c_string selection (s);
-  cb->setText (QString::fromLatin1 ((QByteArrayView)&*selection), mode);
+  cb->setText (QString::fromLatin1 (&*selection), mode);
   QMimeData *md = new QMimeData;
   
   if (format == "verbatim" || format == "default") {
@@ -829,14 +777,9 @@ qt_gui_rep::update () {
     // limit in processed events is reached.
     // If there are no events or the limit is reached then proceed to a redraw.
   
-  if (waiting_events.size() == 0) {
-      // If there are no waiting events call the interpose handler at least once
-    //if (the_interpose_handler) the_interpose_handler();
-  }
-  else while (waiting_events.size() > 0 && count_events < max_proc_events) {
+  while (waiting_events.size() > 0 && count_events < max_proc_events) {
     process_queued_events (1);
     count_events++;
-    //if (the_interpose_handler) the_interpose_handler();
   }
   // Repaint invalid regions and redraw
   bool postpone_treatment= (keyboard_events > 0 && keyboard_special == 0);

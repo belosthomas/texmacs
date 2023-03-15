@@ -507,7 +507,6 @@ QTMLineEdit::event (QEvent* ev) {
   return QLineEdit::event (ev);
 }
 
-extern hashmap<int,string> qtkeymap;
 void initkeymap ();
 
 /*
@@ -523,7 +522,6 @@ QTMLineEdit::keyPressEvent (QKeyEvent* ev)
             : ev->key();
 
   if (continuous ()) {
-    initkeymap ();
     if ((last_key != Qt::Key_Tab || type == "replace-what") &&
         (last_key != Qt::Key_Backtab || type == "replace-by") &&
         last_key != Qt::Key_Down &&
@@ -544,7 +542,7 @@ QTMLineEdit::keyPressEvent (QKeyEvent* ev)
         if ((ev->modifiers() & Qt::ShiftModifier) == 0)
           key[0]= (int) (key[0] + ((int) 'a') - ((int) 'A'));
     }
-    if (qtkeymap->contains (last_key)) key= qtkeymap[last_key];
+    //if (qtkeymap->contains (last_key)) key= qtkeymap[last_key];
     if ((ev->modifiers() & Qt::ShiftModifier) && N(key) > 1) key= "S-" * key;
 #ifdef Q_OS_MAC
     if (ev->modifiers() & Qt::ControlModifier) key= "C-" * key;
@@ -982,7 +980,7 @@ QTMComboBox::QTMComboBox (QWidget* parent) : QComboBox (parent) {
   QRect r = style()->subControlRect (QStyle::CC_ComboBox, &opt,
                                      QStyle::SC_ComboBoxArrow, &cb);
   int max_w= (int) floor (40 * retina_scale);
-  minSize.setWidth (min (r.width(), max_w));
+  minSize.setWidth (std::min (r.width(), max_w));
 }
 
 /*! Add items and fix the ComboBox size using texmacs length units.

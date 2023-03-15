@@ -2,18 +2,7 @@
 // Created by lizab on 21/02/2023.
 //
 
-#include "ScrollableOpenGLWidget.hpp"
-
-
-/******************************************************************************
- * MODULE     : texmacs::ScrollableOpenGLWidget.cpp
- * DESCRIPTION: QT Texmacs abstract scroll view widget
- * COPYRIGHT  : (C) 2009 Massimiliano Gubinelli
- *******************************************************************************
- * This software falls under the GNU general public license version 3 or later.
- * It comes WITHOUT ANY WARRANTY WHATSOEVER. For details, see the file LICENSE
- * in the root directory or <http://www.gnu.org/licenses/gpl-3.0.html>.
- ******************************************************************************/
+#include "ThingyTabInnerWindow.hpp"
 
 #include <QScrollBar>
 #include <QPainter>
@@ -23,16 +12,14 @@
 #include <QApplication>
 
 
-void
-texmacs::ScrollableOpenGLWidget::setOrigin(QPoint newOrigin) {
+void texmacs::ThingyTabInnerWindow::setOrigin(QPoint newOrigin) {
     if (newOrigin.x() != p_origin.x())
         QAbstractScrollArea::horizontalScrollBar()->setSliderPosition(newOrigin.x());
     if (newOrigin.y() != p_origin.y())
         QAbstractScrollArea::verticalScrollBar()->setSliderPosition(newOrigin.y());
 }
 
-void
-texmacs::ScrollableOpenGLWidget::setExtents ( QRect newExtents ) {
+void texmacs::ThingyTabInnerWindow::setExtents (QRect newExtents ) {
     //QWidget *_viewport = QAbstractScrollArea::viewport();
     //cout << "Inside  " << _viewport->width() << ", " << _viewport->height() << "\n";
     //cout << "Extents " << newExtents.width() << ", " << newExtents.height() << "\n";
@@ -45,8 +32,7 @@ texmacs::ScrollableOpenGLWidget::setExtents ( QRect newExtents ) {
 }
 
 /*! Scrolls contents so that the given point is visible. */
-void
-texmacs::ScrollableOpenGLWidget::ensureVisible ( int cx, int cy, int mx, int my ) {
+void texmacs::ThingyTabInnerWindow::ensureVisible (int cx, int cy, int mx, int my ) {
     QWidget *_viewport = QAbstractScrollArea::viewport();
     int w = _viewport->width();
     int h = _viewport->height();
@@ -79,8 +65,7 @@ texmacs::ScrollableOpenGLWidget::ensureVisible ( int cx, int cy, int mx, int my 
 }
 
 /*! Scrollbar stabilization */
-void
-texmacs::ScrollableOpenGLWidget::updateScrollBars() {
+void texmacs::ThingyTabInnerWindow::updateScrollBars() {
     QWidget *_viewport = QAbstractScrollArea::viewport();
     QScrollBar *_hScrollBar = QAbstractScrollArea::horizontalScrollBar();
     QScrollBar *_vScrollBar = QAbstractScrollArea::verticalScrollBar();
@@ -113,16 +98,15 @@ texmacs::ScrollableOpenGLWidget::updateScrollBars() {
     _vScrollBar->setSingleStep((h >> 4) + 1);
     _vScrollBar->setPageStep(h);
 
-    surface().setMinimumWidth (w < xw? w: xw);
-    surface().setMinimumHeight(h < xh? h: xh);
+    //surface().setMinimumWidth (w < xw? w: xw);
+    //surface().setMinimumHeight(h < xh? h: xh);
 
     // we may need a relayout if the surface width is changed
-    updateGeometry();
+    //updateGeometry();
 }
 
 /*! Scroll area updater */
-void
-texmacs::ScrollableOpenGLWidget::scrollContentsBy ( int dx, int dy ) {
+void texmacs::ThingyTabInnerWindow::scrollContentsBy (int dx, int dy ) {
     if (dx) p_origin.setX(p_origin.x() - dx);
     if (dy) p_origin.setY(p_origin.y() - dy);
 }

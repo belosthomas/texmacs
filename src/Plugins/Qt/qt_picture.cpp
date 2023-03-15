@@ -176,8 +176,8 @@ max (const QImage& im, bool sum) {
       QRgb col= im.pixel (x, y);
       r= qRed (col); g= qGreen (col); b= qBlue (col); a= qAlpha (col);
       if (a >= 128) {
-        if (sum) m= max (m, (r + g + b) / 3);
-        else m= max (m, max (r, max (g, b)));
+        if (sum) m= std::max (m, (r + g + b) / 3);
+        else m= std::max (m, std::max (r, std::max (g, b)));
       }
     }
   return m;
@@ -188,7 +188,7 @@ saturate (QImage& im) {
   int m= max (im, false);
   int s= max (im, true);
   if (m == 0 || s >= 224) return;
-  double f= min (224.0 / s, 255.0 / m);
+  double f= std::min (224.0 / s, 255.0 / m);
   quint16 r, g, b, a;
   int w= im.width (), h= im.height ();
   for (int y=0; y<h; y++)
@@ -313,7 +313,7 @@ picture
 new_qt_load_xpm (url file_name) {
   string sss;
   double f= 1.0;
-  double scale= max (retina_scale, (double) retina_icons);
+  double scale= std::max (retina_scale, (double) retina_icons);
   if (suffix (file_name) == "xpm" || suffix (file_name) == "png") {
     string suf= ".png";
     if (scale == 1.0) {}

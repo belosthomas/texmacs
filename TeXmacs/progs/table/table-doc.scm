@@ -30,23 +30,23 @@
         ($describe-item
             ($inline ($shortcut (structured-insert-left)) ", "
                      ($menu "Focus" "Insert left") ", "
-                     ($tmdoc-icon "tm_insert_left.xpm"))
+                     ($tmdoc-icon "tm_insert_left"))
           "Insert a new column at the left-hand side of the cursor.")
         ($describe-item
             ($inline ($shortcut (structured-insert-right)) ", "
                      ($menu "Focus" "Insert right") ", "
-                     ($tmdoc-icon "tm_insert_right.xpm"))
+                     ($tmdoc-icon "tm_insert_right"))
           "Insert a new column at the right-hand side of the cursor."))
       ($when (structured-vertical? t)
         ($describe-item
             ($inline ($shortcut (structured-insert-up)) ", "
                      ($menu "Focus" "Insert above") ", "
-                     ($tmdoc-icon "tm_insert_up.xpm"))
+                     ($tmdoc-icon "tm_insert_up"))
           "Insert a new row above the cursor.")
         ($describe-item
             ($inline ($shortcut (structured-insert-down)) ", "
                      ($menu "Focus" "Insert down") ", "
-                     ($tmdoc-icon "tm_insert_down.xpm"))
+                     ($tmdoc-icon "tm_insert_down"))
           "Insert a new row below the cursor.")))
     ($para
       "Existing rows and columns can be removed as follows:")
@@ -55,19 +55,19 @@
         ($describe-item
             ($inline ($shortcut (structured-remove-left)) ", "
                      ($menu "Focus" "Remove left") ", "
-                     ($tmdoc-icon "tm_delete_left.xpm"))
+                     ($tmdoc-icon "tm_delete_left"))
           "Remove the column at the left-hand side of the cursor.")
         ($describe-item
             ($inline ($shortcut (structured-remove-right)) ", "
                      ($menu "Focus" "Remove right") ", "
-                     ($tmdoc-icon "tm_delete_right.xpm"))
+                     ($tmdoc-icon "tm_delete_right"))
           "Remove the current column and move to the next one."))
       ($when (structured-horizontal? t)
         ($describe-item
             ($inline ($menu "Focus" "Remove above") ", "
-                     ($tmdoc-icon "tm_delete_up.xpm"))
+                     ($tmdoc-icon "tm_delete_up"))
           "Remove the row above the cursor.")
         ($describe-item
             ($inline ($menu "Focus" "Remove below") ", "
-                     ($tmdoc-icon "tm_delete_down.xpm"))
+                     ($tmdoc-icon "tm_delete_down"))
           "Remove the current row and move to the one below.")))))

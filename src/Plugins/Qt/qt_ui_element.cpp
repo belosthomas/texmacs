@@ -534,9 +534,9 @@ qt_ui_element_rep::as_qaction () {
     case xpm_widget:
         // a widget with an X pixmap icon
     {
-      url    image = open_box<url>(load);
+      string image = open_box<string>(load);
       act = new QTMAction (NULL);
-      act->setIcon (QIcon (as_pixmap (*xpm_image (image))));
+      act->setIcon (dynamic_cast<texmacs::Application*>(qApp)->pixmapManager().getIcon(QString::fromStdString(std::string(image.data(), N(image)))));
     }
       break;
 
@@ -844,11 +844,11 @@ qt_ui_element_rep::as_qwidget () {
       promise<widget> pw = x.x2;
       
       if (qtw->type == xpm_widget) {
-        url image = open_box<url> (get_payload (qtw));
+        string image = open_box<string> (get_payload (qtw));
         QToolButton* b = new QToolButton();
         
         QTMLazyMenu* lm = new QTMLazyMenu (pw, b, type == pullright_button);
-        b->setIcon (QIcon (as_pixmap (*xpm_image (image))));
+        b->setIcon (dynamic_cast<texmacs::Application*>(qApp)->pixmapManager().getIcon(QString::fromStdString(std::string(image.data(), N(image)))));
         b->setPopupMode (QToolButton::InstantPopup);
         b->setAutoRaise (true);
         b->setMenu (lm);
@@ -956,9 +956,9 @@ qt_ui_element_rep::as_qwidget () {
       // a widget with an X pixmap icon
     case xpm_widget:
     {
-      url image = open_box<url>(load);
+      string image = open_box<string>(load);
       QLabel* l = new QLabel (NULL);
-      l->setPixmap (as_pixmap (*xpm_image (image)));
+      l->setPixmap(dynamic_cast<texmacs::Application*>(qApp)->pixmapManager().getPixmap(QString::fromStdString(std::string(image.data(), N(image))), QSize(64, 64)));
       qwid = l;
     }
       break;
@@ -1158,7 +1158,7 @@ qt_ui_element_rep::as_qwidget () {
       
     case icon_tabs_widget:
     {
-      typedef array<url> U1;
+      typedef array<string> U1;
       typedef array<widget> T1;
       typedef triple<U1, T1, T1> T;
       T       x = open_box<T>(load);
@@ -1170,11 +1170,11 @@ qt_ui_element_rep::as_qwidget () {
       int i;
       for (i = 0; i < N(tabs); i++) {
         if (is_nil (tabs[i])) break;
-        QImage*       img = xpm_image (icons[i]);
         QWidget* prelabel = concrete (tabs[i])->as_qwidget();
         QLabel*     label = qobject_cast<QLabel*> (prelabel);
         QWidget*     body = concrete (bodies[i])->as_qwidget();
-        tw->addTab (body, QIcon (as_pixmap (*img)), label ? label->text() : "");
+        tw->addTab (body, dynamic_cast<texmacs::Application*>(qApp)->pixmapManager().getIcon(QString::fromStdString(std::string(icons[i].data(), N(icons[i])))), label ? label->text() : "");
+        // act->setIcon (dynamic_cast<texmacs::Application*>(qApp)->pixmapManager().getPixmap(QString::fromStdString(std::string(image.data(), N(image)))));
         delete prelabel;
       }
 

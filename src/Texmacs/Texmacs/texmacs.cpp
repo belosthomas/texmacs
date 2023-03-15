@@ -12,7 +12,6 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>
-#include <unistd.h>
 #include <locale.h> // for setlocale
 #include <signal.h>
 #ifdef STACK_SIZE
@@ -36,10 +35,6 @@ void mac_fix_paths ();
 #include <QDir>
 #endif
 
-#ifdef OS_MINGW
-#include "Windows/win-utf8-compat.hpp"
-#endif
-
 #ifdef MACOSX_EXTENSIONS
 #include "MacOS/mac_utilities.h"
 #endif
@@ -47,8 +42,6 @@ void mac_fix_paths ();
 #if defined(X11TEXMACS) && defined(MACOSX_EXTENSIONS)
 #include "MacOS/mac_app.h"
 #endif
-
-extern bool   char_clip;
 
 extern url    tm_init_file;
 extern url    tm_init_buffer_file;
@@ -266,8 +259,8 @@ TeXmacs_main (int argc, char** argv) {
             if ((g[j] == '+') || (g[j] == '-')) break;
           j3=j;
           if (j1<N(g)) {
-            geometry_w= max (as_int (g (0, j1)), 320);
-            geometry_h= max (as_int (g (j1+1, j2)), 200);
+            geometry_w= std::max (as_int (g (0, j1)), 320);
+            geometry_h= std::max (as_int (g (j1+1, j2)), 200);
           }
           if (j3<N(g)) {
             if (g[j2] == '-') geometry_x= as_int (g (j2, j3)) - 1;
@@ -349,8 +342,6 @@ TeXmacs_main (int argc, char** argv) {
       }
       else if (s == "-server") start_server_flag= true;
       else if (s == "-log-file") i++;
-      else if ((s == "-Oc") || (s == "-no-char-clipping")) char_clip= false;
-      else if ((s == "+Oc") || (s == "-char-clipping")) char_clip= true;
       else if ((s == "-S") || (s == "-setup") ||
                (s == "-delete-cache") || (s == "-delete-font-cache") ||
                (s == "-delete-style-cache") || (s == "-delete-file-cache") ||
@@ -689,10 +680,6 @@ main (int argc, char** argv) {
     } else limit.rlim_cur= STACK_SIZE;
     if(setrlimit(RLIMIT_STACK, &limit)) cerr << "Cannot set stack value\n";
   } else cerr << "Cannot get stack value\n";
-#endif
-
-#ifdef OS_MINGW
-	nowide::args a(argc,argv); // Fix arguments - make them UTF-8
 #endif
 
 

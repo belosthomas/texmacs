@@ -102,7 +102,7 @@
       "You may toggle the numbering using the keyboard shortcut "
       ($shortcut (numbered-toggle (focus-tree))) ", the menu entry "
       ($menu "Focus" "Numbered") ", or by pressing the "
-      ($tmdoc-icon "tm_numbered.xpm") " icon on the focus toolbar.")))
+      ($tmdoc-icon "tm_numbered") " icon on the focus toolbar.")))
 
 (tm-generate (focus-doc-alternate t)
   ($let* ((lab (tree-label t))
@@ -114,7 +114,7 @@
         "You may unfold the environment using the keyboard shortcut "
         ($shortcut (alternate-toggle (focus-tree))) ", the menu entry "
         ($menu "Focus" "Folded") ", or by pressing the "
-        ($tmdoc-icon "tm_alternate_first.xpm")
+        ($tmdoc-icon "tm_alternate_first")
         " icon on the focus toolbar. ")
       ($when (alternate-second? t)
         "The " ($markup lab) " environment is \x10unfolded\x11 "
@@ -175,7 +175,7 @@
         " tag can be customized by editing the macro which defines it. "
         "This can be done by clicking on " ($menu "Edit macro")
         " button in the " ($menu "Focus" "Preferences") " menu "
-        "(or in the equivalent " ($tmdoc-icon "tm_focus_prefs.xpm")
+        "(or in the equivalent " ($tmdoc-icon "tm_focus_prefs")
         " icon menu on the focus toolbar). "
         "You may also directly edit the macro in the style file or package "
         "where it was defined, using " ($menu "Edit source") ".")
@@ -240,22 +240,22 @@
       ($describe-item
           ($inline ($shortcut (kbd-select-if-active traverse-first)) ", "
                    ($menu "Focus" "First similar") ", "
-                   ($tmdoc-icon "tm_similar_first.xpm"))
+                   ($tmdoc-icon "tm_similar_first"))
         "Jump to the first " (focus-doc-similar t) ".")
       ($describe-item
           ($inline ($shortcut (kbd-select-if-active traverse-previous)) ", "
                    ($menu "Focus" "Previous similar") ", "
-                   ($tmdoc-icon "tm_similar_previous.xpm"))
+                   ($tmdoc-icon "tm_similar_previous"))
         "Jump to the previous " (focus-doc-similar t) ".")
       ($describe-item
           ($inline ($shortcut (kbd-select-if-active traverse-next)) ", "
                    ($menu "Focus" "Next similar") ", "
-                   ($tmdoc-icon "tm_similar_next.xpm"))
+                   ($tmdoc-icon "tm_similar_next"))
         "Jump to the next " (focus-doc-similar t) ".")
       ($describe-item
           ($inline ($shortcut (kbd-select-if-active traverse-last)) ", "
                    ($menu "Focus" "Last similar") ", "
-                   ($tmdoc-icon "tm_similar_last.xpm"))
+                   ($tmdoc-icon "tm_similar_last"))
         "Jump to the last " (focus-doc-similar t) "."))
     ($para
       "For more information and further useful shortcuts, "
@@ -279,23 +279,23 @@
         ($describe-item
             ($inline ($shortcut (structured-insert-left)) ", "
                      ($menu "Focus" "Insert left") ", "
-                     ($tmdoc-icon "tm_insert_left.xpm"))
+                     ($tmdoc-icon "tm_insert_left"))
           "Insert a new argument at the left-hand side of the cursor.")
         ($describe-item
             ($inline ($shortcut (structured-insert-right)) ", "
                      ($menu "Focus" "Insert right") ", "
-                     ($tmdoc-icon "tm_insert_right.xpm"))
+                     ($tmdoc-icon "tm_insert_right"))
           "Insert a new argument at the right-hand side of the cursor."))
       ($when (structured-vertical? t)
         ($describe-item
             ($inline ($shortcut (structured-insert-up)) ", "
                      ($menu "Focus" "Insert above") ", "
-                     ($tmdoc-icon "tm_insert_up.xpm"))
+                     ($tmdoc-icon "tm_insert_up"))
           "Insert a new argument above the cursor.")
         ($describe-item
             ($inline ($shortcut (structured-insert-down)) ", "
                      ($menu "Focus" "Insert down") ", "
-                     ($tmdoc-icon "tm_insert_down.xpm"))
+                     ($tmdoc-icon "tm_insert_down"))
           "Insert a new argument below the cursor.")))
     ($para
       "Existing arguments can be removed as follows:")
@@ -304,21 +304,21 @@
         ($describe-item
             ($inline ($shortcut (structured-remove-left)) ", "
                      ($menu "Focus" "Remove left") ", "
-                     ($tmdoc-icon "tm_delete_left.xpm"))
+                     ($tmdoc-icon "tm_delete_left"))
           "Remove the argument at the left-hand side of the cursor.")
         ($describe-item
             ($inline ($shortcut (structured-remove-right)) ", "
                      ($menu "Focus" "Remove right") ", "
-                     ($tmdoc-icon "tm_delete_right.xpm"))
+                     ($tmdoc-icon "tm_delete_right"))
           "Remove the current argument and move to the next one."))
       ($when (structured-vertical? t)
         ($describe-item
             ($inline ($menu "Focus" "Remove above") ", "
-                     ($tmdoc-icon "tm_delete_up.xpm"))
+                     ($tmdoc-icon "tm_delete_up"))
           "Remove the argument above the cursor.")
         ($describe-item
             ($inline ($menu "Focus" "Remove below") ", "
-                     ($tmdoc-icon "tm_delete_down.xpm"))
+                     ($tmdoc-icon "tm_delete_down"))
           "Remove the current argument and move to the one below.")))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -339,7 +339,7 @@
       ($for (x (cdr sl)) ", " ($src-arg x)) ". "
       "In order to edit the hidden arguments, you should use "
       ($menu "Focus" "Show hidden") " or push the "
-      ($tmdoc-icon "tm_show_hidden.xpm") " icon on the focus toolbar. "
+      ($tmdoc-icon "tm_show_hidden") " icon on the focus toolbar. "
       "Deactivated tags can be reactivated by pressing "
       ($shortcut (kbd-return)) ".")
     ($para
