@@ -1,3 +1,6 @@
 [submodule "thirdparty/s7"]
 	path = thirdparty/s7
 	url = https://github.com/belosthomas/s7-fork-stdfunction.git
+[submodule "thirdparty/guile"]
+	path = thirdparty/guile
+	url = https://github.com/lizabelos/guile18_androidmsvc
