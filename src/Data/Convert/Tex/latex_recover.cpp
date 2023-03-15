@@ -212,7 +212,7 @@ latex_error_find (string s, string src) {
 int
 get_line_number (string s, int pos) {
   int l=1;
-  pos= min (pos, N(s));
+  pos= std::min (pos, N(s));
   for (int i=0; i<pos; i++)
     if (s[i] == '\n') l++;
   return l;
@@ -221,7 +221,7 @@ get_line_number (string s, int pos) {
 int
 get_column_number (string s, int pos) {
   int c=0;
-  pos= min (pos, N(s));
+  pos= std::min (pos, N(s));
   for (int i=0; i<pos; i++)
     if (s[i] == '\n') c=0;
     else c++;

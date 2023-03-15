@@ -223,7 +223,7 @@ bridge_canvas_rep::my_typeset (int desired_status) {
     SI pad = props->bar_padding;
     SI bor = props->border;
     if (ends (type, "w") || ends (type, "e"))
-      delta= max (0, w + pad);
+      delta= std::max (0, w + pad);
     delta += 2 * bor + 2 * hpad;
   }
   SI l= env->get_length (PAR_LEFT);

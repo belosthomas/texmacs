@@ -55,7 +55,7 @@ int
 first_in_rows (glyph gl, int j1, int j2) {
   int i= gl->width;
   for (int j=j1; j<=j2; j++)
-    i= min (i, first_in_row (gl, j));
+    i= std::min (i, first_in_row (gl, j));
   return i;
 }
 
@@ -72,7 +72,7 @@ int
 last_in_rows (glyph gl, int j1, int j2) {
   int i= -1;
   for (int j=j1; j<=j2; j++)
-    i= max (i, last_in_row (gl, j));
+    i= std::max (i, last_in_row (gl, j));
   return i;
 }
 
@@ -109,7 +109,7 @@ collision_offset (glyph gl1, glyph gl2, bool overlap) {
       int end2  = last_in_row (gl2, j2);
       int di    = end1 - (overlap? end2: start2);
       int dx    = di - gl1->xoff + gl2->xoff;
-      best= max (best, dx);
+      best= std::max (best, dx);
     }
   }
   if (best > -1000000) return best * PIXEL;
@@ -143,11 +143,11 @@ probe (glyph gl, int x, int y, int dx, int dy) {
 
 glyph
 join (glyph gl1, glyph gl2) {
-  int x1= min (-gl1->xoff, -gl2->xoff);
-  int y1= min (gl1->yoff- gl1->height, gl2->yoff- gl2->height);
-  int x2= max (gl1->width- gl1->xoff, gl2->width- gl2->xoff);
-  int y2= max (gl1->yoff, gl2->yoff);
-  glyph bmr (x2-x1, y2-y1, -x1, y2, max (gl1->depth, gl2->depth));
+  int x1= std::min (-gl1->xoff, -gl2->xoff);
+  int y1= std::min (gl1->yoff- gl1->height, gl2->yoff- gl2->height);
+  int x2= std::max (gl1->width- gl1->xoff, gl2->width- gl2->xoff);
+  int y2= std::max (gl1->yoff, gl2->yoff);
+  glyph bmr (x2-x1, y2-y1, -x1, y2, std::max (gl1->depth, gl2->depth));
 
   int i, j, dx, dy;
   dx= -gl1->xoff- x1, dy= y2- gl1->yoff;
@@ -159,10 +159,10 @@ join (glyph gl1, glyph gl2) {
   for (j=0; j<gl2->height; j++)
     for (i=0; i<gl2->width; i++)
       bmr->set_x (i+dx, j+dy,
-		  max (bmr->get_x (i+dx, j+dy), gl2->get_x (i, j)));
+                  std::max (bmr->get_x (i+dx, j+dy), gl2->get_x (i, j)));
 
-  int lo= min (-gl1->xoff, -gl2->xoff);
-  int hi= max (gl1->lwidth - gl1->xoff, gl2->lwidth - gl2->xoff);
+  int lo= std::min (-gl1->xoff, -gl2->xoff);
+  int hi= std::max (gl1->lwidth - gl1->xoff, gl2->lwidth - gl2->xoff);
   bmr->lwidth= hi - lo;
   return bmr;
 }
@@ -178,7 +178,7 @@ intersect (glyph gl1, glyph gl2) {
       int i2= i - gl1->xoff + gl2->xoff;
       int j2= j - gl1->yoff + gl2->yoff;
       if (i2 >= 0 && ww2 > i2 && j2 >= 0 && hh2 > j2)
-        c= min (c, gl2->get_x (i2, j2));
+        c= std::min (c, gl2->get_x (i2, j2));
       else c= 0;
       bmr->set_x (i, j, c);
     }
@@ -218,7 +218,7 @@ bar_right (glyph gl1, glyph gl2) {
       r2= last_in_row (gl1, j); rj2= j; }
   glyph filled= copy (gl1);
   for (j= rj1; j <= rj2; j++)
-    for (i= max (last_in_row (gl1, j), 0); i<ww1; i++)
+    for (i= std::max (last_in_row (gl1, j), 0); i<ww1; i++)
       filled->set_x (i, j, 1);
   return join (gl1, intersect (gl2, filled));
 }
@@ -237,7 +237,7 @@ bar_bottom (glyph gl1, glyph gl2) {
       b2= last_in_column (gl1, i); bi2= i; }
   glyph filled= copy (gl1);
   for (i= bi1; i <= bi2; i++)
-    for (j= max (last_in_column (gl1, i), 0); j<hh1; j++)
+    for (j= std::max (last_in_column (gl1, i), 0); j<hh1; j++)
       filled->set_x (i, j, 1);
   return join (gl1, intersect (gl2, filled));
 }
@@ -440,7 +440,7 @@ bottom_edge (glyph gl, SI penh, SI keepy) {
   glyph bmr (ww, hh, gl->xoff, gl->yoff, gl->depth);
   for (i=0; i<ww; i++) {
     int j2= last_in_column (gl, i);
-    int j1= min (j2 - ph, kj);
+    int j1= std::min (j2 - ph, kj);
     bool ok= j2 > 0 && j2 > (kj - (ph >> 1));
     for (j=0; j<hh; j++)
       if (ok && j > j1 && j2 >= j)

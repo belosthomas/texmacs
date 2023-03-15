@@ -184,8 +184,8 @@ effect magnify (effect eff, double sx, double sy) {
 effect bubble (effect eff, double r, double a) {
   return tm_new<bubble_effect_rep> (eff, r, a); }
 effect crop (effect eff, double cx1, double cy1, double cx2, double cy2) {
-  cx1= max (cx1, 0.0); cy1= max (cy1, 0.0);
-  cx2= min (cx2, 1.0); cy2= min (cy2, 1.0);
+  cx1= std::max (cx1, 0.0); cy1= std::max (cy1, 0.0);
+  cx2= std::min (cx2, 1.0); cy2= std::min (cy2, 1.0);
   return tm_new<crop_effect_rep> (eff, cx1, cy1, cx2, cy2); }
 
 /******************************************************************************
@@ -198,7 +198,7 @@ public:
   gaussian_pen_effect_rep (double rx2, double ry2, double phi2):
     rx (rx2), ry (ry2), phi (phi2) {}
   rectangle get_extents (array<rectangle> rs) { (void) rs;
-    SI R= (SI) ceil (2.5 * max (rx, ry));
+    SI R= (SI) ceil (2.5 * std::max (rx, ry));
     return rectangle (-R, -R, R, R); }
   picture apply (array<picture> pics, SI pixel) { (void) pics;
     return gaussian_pen_picture (rx / pixel, ry / pixel, phi); }
@@ -210,7 +210,7 @@ public:
   oval_pen_effect_rep (double rx2, double ry2, double phi2):
     rx (rx2), ry (ry2), phi (phi2) {}
   rectangle get_extents (array<rectangle> rs) { (void) rs;
-    SI R= (SI) max (rx, ry);
+    SI R= (SI) std::max (rx, ry);
     return rectangle (-R, -R, R, R); }
   picture apply (array<picture> pics, SI pixel) { (void) pics;
     return oval_pen_picture (rx / pixel, ry / pixel, phi); }
@@ -234,8 +234,8 @@ public:
   motion_pen_effect_rep (double dx2, double dy2):
     dx (dx2), dy (dy2) {}
   rectangle get_extents (array<rectangle> rs) { (void) rs;
-    return rectangle ((SI) min (dx, 0.0), (SI) min (dy, 0.0),
-                      (SI) max (dx, 0.0), (SI) max (dy, 0.0)); }
+    return rectangle ((SI) std::min (dx, 0.0), (SI) std::min (dy, 0.0),
+                      (SI) std::max (dx, 0.0), (SI) std::max (dy, 0.0)); }
   picture apply (array<picture> pics, SI pixel) { (void) pics;
     return motion_pen_picture (dx / pixel, dy / pixel); }
 };

@@ -49,7 +49,7 @@ public:
 
     virtual tmscm bool_to_tmscm(bool b) = 0;
 
-    virtual tmscm int_to_tmscm(int64_t i) = 0;
+    virtual tmscm int_to_tmscm(int i) = 0;
 
     virtual tmscm long_to_tmscm(long l) = 0;
 
@@ -456,5 +456,9 @@ std::vector<std::string> get_scheme_factories();
 abstract_scheme *make_scheme(std::string name);
 
 void register_all_scheme();
+
+#ifdef SCHEME_DECL
+SCHEME_DECL
+#endif
 
 #endif

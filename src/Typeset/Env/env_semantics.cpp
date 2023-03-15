@@ -433,8 +433,8 @@ edit_env_rep::get_ornament_parameters () {
   SI lcor, bcor, rcor, tcor;
   if (is_percentage (cor)) {
     double a= as_percentage (cor) * corf;
-    lcor= rcor= (SI) round (a * min (lpad, rpad));
-    bcor= tcor= (SI) round (a * min (bpad, tpad));
+    lcor= rcor= (SI) round (a * std::min (lpad, rpad));
+    bcor= tcor= (SI) round (a * std::min (bpad, tpad));
   }
   else if (is_atomic (cor) && !occurs (",", cor->label))
     lcor= bcor= rcor= tcor= as_length (cor);
@@ -822,7 +822,7 @@ edit_env_rep::update_dash_style_unit () {
     SI hunit= as_length (t[0]);
     SI vunit= as_length (t[1]);
     dash_style_unit = hunit;
-    dash_style_ratio= ((double) vunit) / max (((double) hunit), 1.0);
+    dash_style_ratio= ((double) vunit) / std::max (((double) hunit), 1.0);
   }
   else {
     dash_style_unit= as_length (t);

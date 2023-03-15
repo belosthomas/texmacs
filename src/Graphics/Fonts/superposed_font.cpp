@@ -76,14 +76,14 @@ superposed_font_rep::get_extents (string s, metric& ex) {
   for (int i=1; i<N(fns); i++) {
     metric ey;
     fns[i]->get_extents (s, ey);
-    ex->x1= min (ex->x1, ey->x1);
-    ex->y1= min (ex->y1, ey->y1);
-    ex->x2= max (ex->x2, ey->x2);
-    ex->y2= max (ex->y2, ey->y2);
-    ex->x3= min (ex->x3, ey->x3);
-    ex->y3= min (ex->y3, ey->y3);
-    ex->x4= max (ex->x4, ey->x4);
-    ex->y4= max (ex->y4, ey->y4);
+    ex->x1= std::min (ex->x1, ey->x1);
+    ex->y1= std::min (ex->y1, ey->y1);
+    ex->x2= std::max (ex->x2, ey->x2);
+    ex->y2= std::max (ex->y2, ey->y2);
+    ex->x3= std::min (ex->x3, ey->x3);
+    ex->y3= std::min (ex->y3, ey->y3);
+    ex->x4= std::max (ex->x4, ey->x4);
+    ex->y4= std::max (ex->y4, ey->y4);
   }
 }
 

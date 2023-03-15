@@ -9,7 +9,7 @@
 * in the root directory or <http://www.gnu.org/licenses/gpl-3.0.html>.
 ******************************************************************************/
 
-#include "config.h"
+#include "tm_config.h"
 #include "tt_face.hpp"
 #include "font.hpp"
 #include "analyze.hpp"
@@ -46,7 +46,7 @@ range_percentage (font_metric fnm, int start, int end) {
   for (int i= start; i <= end; i++)
     if (fnm->exists (i)) count++;
     //if (really_exists (fnm, i)) count++;
-  return (100.0 * ((double) count)) / ((double) max (end+1-start, 1));
+  return (100.0 * ((double) count)) / ((double) std::max (end+1-start, 1));
 }
 
 bool
@@ -128,13 +128,13 @@ analyze_range (font fn, font_metric fnm, array<string>& r, string family) {
 
 int
 int_abs (int i) {
-  return max (i, -i);
+  return std::max (i, -i);
 }
 
 int
 l1_distance (array<int> a1, array<int> a2) {
   int r= 0;
-  for (int i=0; i<min (N(a1), N(a2)); i++)
+  for (int i=0; i<std::min (N(a1), N(a2)); i++)
     r += int_abs (a1[i] - a2[i]);
   return r;
 }
@@ -142,7 +142,7 @@ l1_distance (array<int> a1, array<int> a2) {
 int
 irregularity (font_metric fnm) {
   metric_struct* x= fnm->get (0x78);
-  int ex= max (x->y2 / 256, 1);
+  int ex= std::max (x->y2 / 256, 1);
   array<int> xlike;
   xlike << 0x61 << 0x63 << 0x65 << 0x6d << 0x6e << 0x6f
         << 0x75 << 0x76 << 0x77;
@@ -236,7 +236,7 @@ max_ascent (font_metric fnm, int start, int end) {
   int m= 0;
   for (int i=start; i<=end; i++) {
     metric_struct* x= fnm->get (i);
-    m= max (m, x->y2/256);
+    m= std::max (m, x->y2/256);
   }
   return m;
 }
@@ -246,7 +246,7 @@ max_descent (font_metric fnm, int start, int end) {
   int m= 0;
   for (int i=start; i<=end; i++) {
     metric_struct* x= fnm->get (i);
-    m= max (m, -x->y1/256);
+    m= std::max (m, -x->y1/256);
   }
   return m;
 }
@@ -255,7 +255,7 @@ void
 analyze_major (font fn, font_metric fnm, array<string>& r) {
   if (range_exists (fnm, 0x41, 0x5a) && range_exists (fnm, 0x61, 0x7a)) {
     metric_struct* x= fnm->get (0x78);
-    int ex= max (x->y2 / 256, 1);
+    int ex= std::max (x->y2 / 256, 1);
     r << (string ("ex=") * as_string (ex));
     metric_struct* M= fnm->get (0x4d);
     int em_rat= (100 * (M->x2 / 256)) / ex;
@@ -291,7 +291,7 @@ analyze_major (font fn, font_metric fnm, array<string>& r) {
         }
       }
     int fillp= (int) (100.0 * (fill / 52.0));
-    int vcnt= cnt / max (totlw, 1);
+    int vcnt= cnt / std::max (totlw, 1);
     r << (string ("fillp=") * as_string (fillp));
     r << (string ("vcnt=") * as_string (vcnt));
 
@@ -340,8 +340,8 @@ array_trace (array<int> a) {
     if (a[i] < 0) a[i]= -a[i];
   int ma= 0, mi= 1000000000;
   for (int i=0; i<N(a); i++) {
-    ma= max (ma, a[i]);
-    mi= min (mi, a[i]);
+    ma= std::max (ma, a[i]);
+    mi= std::min (mi, a[i]);
   }
   mi--; ma++;
   string s;
@@ -440,7 +440,7 @@ analyze_trace (font fn, font_metric fnm, array<string>& r) {
 
 double
 db_abs (double x) {
-  return max (x, -x);
+  return std::max (x, -x);
 }
 
 string
@@ -465,7 +465,7 @@ numeric_distance (array<string> a1, array<string> a2, string attr, double m) {
   string v1= find_attribute_value (a1, attr);
   string v2= find_attribute_value (a2, attr);
   if (v1 == "" || v2 == "") return 1.0;
-  return min (db_abs (as_double (v1) - as_double (v2)) / m, 1.0);
+  return std::min (db_abs (as_double (v1) - as_double (v2)) / m, 1.0);
 }
 
 double
@@ -488,7 +488,7 @@ trace_distance (string v1, string v2, double m) {
   }
   double r= sqrt (d / N(v1));
   //cout << attr << ", " << v1 << ", " << v2 << " -> " << r << "\n";
-  return min (r / m, 1.0);
+  return std::min (r / m, 1.0);
 }
 
 double

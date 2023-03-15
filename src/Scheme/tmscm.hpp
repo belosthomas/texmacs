@@ -104,7 +104,7 @@ public:
 
     virtual bool to_bool() = 0;
 
-    virtual int64_t to_int() = 0;
+    virtual int to_int() = 0;
 
     virtual double to_double() = 0;
 

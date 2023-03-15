@@ -56,8 +56,8 @@ line_box_rep::line_box_rep (path ip, SI X1b, SI Y1b, SI X2b, SI Y2b, pencil p):
   X2 = X2b;
   Y2 = Y2b;
   pen= p;
-  x1 = min (X1, X2); y1 = min (Y1, Y2);
-  x2 = max (X1, X2); y2 = max (Y1, Y2);
+  x1 = std::min (X1, X2); y1 = std::min (Y1, Y2);
+  x2 = std::max (X1, X2); y2 = std::max (Y1, Y2);
   x3 = x1-(w>>1);    y3 = y1-(w>>1); 
   x4 = x2+(w>>1);    y4 = y2+(w>>1);
 }
@@ -90,8 +90,8 @@ polygon_box_rep::polygon_box_rep (
   int i, n= N(x);
   x1= x2= x[0]; y1= y2= y[0];
   for (i=1; i<n; i++) {
-    x1= min (x1, x[i]); y1= min (y1, y[i]);
-    x2= max (x2, x[i]); y2= max (y2, y[i]);
+    x1= std::min (x1, x[i]); y1= std::min (y1, y[i]);
+    x2= std::max (x2, x[i]); y2= std::max (y2, y[i]);
   }
   x3= x1-(w>>1); y3= y1-(w>>1); 
   x4= x2+(w>>1); y4= y2+(w>>1);
@@ -140,10 +140,10 @@ arc_box_rep::arc_box_rep (path ip, SI X1b, SI Y1b, SI X2b, SI Y2b,
   SI Q1= ((Y1+Y2)/2) + (SI) (((Y2-Y1)/2) * sin (((double) a1) * scale));
   SI P2= ((X1+X2)/2) + (SI) (((X2-X1)/2) * cos (((double) a2) * scale));
   SI Q2= ((Y1+Y2)/2) + (SI) (((Y2-Y1)/2) * sin (((double) a2) * scale));
-  SI p1= min (P1, P2);
-  SI q1= min (Q1, Q2);
-  SI p2= max (P1, P2);
-  SI q2= max (Q1, Q2);
+  SI p1= std::min (P1, P2);
+  SI q1= std::min (Q1, Q2);
+  SI p2= std::max (P1, P2);
+  SI q2= std::max (Q1, Q2);
 
   int s= (a1>>6)%360;
   int d= ((a2-a1)>>6);
@@ -156,8 +156,8 @@ arc_box_rep::arc_box_rep (path ip, SI X1b, SI Y1b, SI X2b, SI Y2b,
   if ((s<630) && ((s+d)>630)) q1= Y1;
 
   SI w = pen->get_width ();
-  x1= min (p1, p2); y1= min (q1, q2);
-  x2= max (p1, p2); y2= max (q1, q2);
+  x1= std::min (p1, p2); y1= std::min (q1, q2);
+  x2= std::max (p1, p2); y2= std::max (q1, q2);
   x3= x1-(w>>1);    y3= y1-(w>>1); 
   x4= x2+(w>>1);    y4= y2+(w>>1);
 }

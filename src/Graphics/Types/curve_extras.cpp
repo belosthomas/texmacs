@@ -90,8 +90,8 @@ std_bezier_matrix (int segments, array<double> times) {
   matrix<double> m (0.0, rows, cols);
   for (int i=0; i<rows; i++) {
     double t= times[i];
-    int j= max (0, min (segments - 1, (int) floor (segments * t)));
-    double u = max (0.0, min (1.0, segments * t - j));
+    int j= std::max (0, std::min (segments - 1, (int) floor (segments * t)));
+    double u = std::max (0.0, std::min (1.0, segments * t - j));
     double v = 1.0 - u;
     double u2= u*u;
     double v2= v*v;
@@ -160,8 +160,8 @@ alt_bezier_matrix (int segments, array<double> times) {
   matrix<double> m (0.0, rows, cols);
   for (int i=0; i<rows; i++) {
     double t= times[i];
-    int j= max (0, min (segments - 1, (int) floor (segments * t)));
-    double u = max (0.0, min (1.0, segments * t - j));
+    int j= std::max (0, std::min (segments - 1, (int) floor (segments * t)));
+    double u = std::max (0.0, std::min (1.0, segments * t - j));
     double v = 1.0 - u;
     double u2= u*u;
     double v2= v*v;
@@ -426,9 +426,9 @@ smoothen (array<point> a, int width) {
   array<double> coeffs;
   double weight;
   for (int i=0; i<N(a); i++) {
-    int w= min (i, min (N(a)-1-i, width));
+    int w= std::min (i, std::min (N(a)-1-i, width));
     if (w != cached_w) {
-      double alpha= 3.0 / max (w * w, 1);
+      double alpha= 3.0 / std::max (w * w, 1);
       coeffs= array<double> ();
       weight= 0.0;
       for (int j=0; j<=w; j++) {

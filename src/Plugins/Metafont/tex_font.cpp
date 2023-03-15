@@ -276,18 +276,18 @@ tex_font_rep::special_get_extents (string s, metric& ex) {
   if (N(rr) != 0) r= rr;
   get_extents (r, ey);
   x= ex->x2;
-  ex->x1= min (ex->x1, x+ ey->x1); ex->y1= min (ex->y1, ey->y1);
-  ex->x2= max (ex->x2, x+ ey->x2); ex->y2= max (ex->y2, ey->y2);
-  ex->x3= min (ex->x3, x+ ey->x3); ex->y3= min (ex->y3, ey->y3);
-  ex->x4= max (ex->x4, x+ ey->x4); ex->y4= max (ex->y4, ey->y4);
+  ex->x1= std::min (ex->x1, x+ ey->x1); ex->y1= std::min (ex->y1, ey->y1);
+  ex->x2= std::max (ex->x2, x+ ey->x2); ex->y2= std::max (ex->y2, ey->y2);
+  ex->x3= std::min (ex->x3, x+ ey->x3); ex->y3= std::min (ex->y3, ey->y3);
+  ex->x4= std::max (ex->x4, x+ ey->x4); ex->y4= std::max (ex->y4, ey->y4);
   status= temp;
   
   get_extents (s (j, N(s)), ey);
   x= ex->x2;
-  ex->x1= min (ex->x1, x+ ey->x1); ex->y1= min (ex->y1, ey->y1);
-  ex->x2= max (ex->x2, x+ ey->x2); ex->y2= max (ex->y2, ey->y2);
-  ex->x3= min (ex->x3, x+ ey->x3); ex->y3= min (ex->y3, ey->y3);
-  ex->x4= max (ex->x4, x+ ey->x4); ex->y4= max (ex->y4, ey->y4);
+  ex->x1= std::min (ex->x1, x+ ey->x1); ex->y1= std::min (ex->y1, ey->y1);
+  ex->x2= std::max (ex->x2, x+ ey->x2); ex->y2= std::max (ex->y2, ey->y2);
+  ex->x3= std::min (ex->x3, x+ ey->x3); ex->y3= std::min (ex->y3, ey->y3);
+  ex->x4= std::max (ex->x4, x+ ey->x4); ex->y4= std::max (ex->y4, ey->y4);
 }
 
 void
@@ -516,10 +516,10 @@ tex_font_rep::accented_get_extents (string s, metric& ex) {
         else xx += (ey->x2 - ey->x1) / 5;
       }
       else xx += (SI) (((double) yy) * slope);
-      ex->x3 = min (ex->x3, xx + ez->x3);
-      ex->y3 = min (ex->y3, yy + ez->y3);
-      ex->x4 = max (ex->x4, xx + ez->x4);
-      ex->y4 = max (ex->y4, yy + ez->y4);
+      ex->x3 = std::min (ex->x3, xx + ez->x3);
+      ex->y3 = std::min (ex->y3, yy + ez->y3);
+      ex->x4 = std::max (ex->x4, xx + ez->x4);
+      ex->y4 = std::max (ex->y4, yy + ez->y4);
     }
   
   status= old_status;
@@ -678,12 +678,12 @@ tex_font_rep::get_extents (string s, metric& ex) {
     glyph gl= pk->get (c);
     if (is_nil (gl)) continue;
     
-    y1= min (y1, -conv (tfm->d(c)));
-    y2= max (y2,  conv (tfm->h(c)));
-    x3= min (x3, x2- ((int) gl->xoff) * PIXEL);
-    x4= max (x4, x2+ ((int) (gl->width- gl->xoff)) * PIXEL);
-    y3= min (y3, ((int) (gl->yoff- gl->height)) * PIXEL);
-    y4= max (y4, ((int) gl->yoff) * PIXEL);
+    y1= std::min (y1, -conv (tfm->d(c)));
+    y2= std::max (y2,  conv (tfm->h(c)));
+    x3= std::min (x3, x2- ((int) gl->xoff) * PIXEL);
+    x4= std::max (x4, x2+ ((int) (gl->width- gl->xoff)) * PIXEL);
+    y3= std::min (y3, ((int) (gl->yoff- gl->height)) * PIXEL);
+    y4= std::max (y4, ((int) gl->yoff) * PIXEL);
     x2 += conv (tfm->w(c)+ ker[i]);
   }
 

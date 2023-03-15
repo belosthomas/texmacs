@@ -45,10 +45,10 @@ grid_box_rep::grid_box_rep (
 {
   first_time= true;
   point flim1= f(lim1), flim2= f(lim2);
-  x1= x3= (SI) min (flim1[0], flim2[0]);
-  y1= y3= (SI) min (flim1[1], flim2[1]);
-  x2= x4= (SI) max (flim1[0], flim2[0]);
-  y2= y4= (SI) max (flim1[1], flim2[1]);
+  x1= x3= (SI) std::min (flim1[0], flim2[0]);
+  y1= y3= (SI) std::min (flim1[1], flim2[1]);
+  x2= x4= (SI) std::max (flim1[0], flim2[0]);
+  y2= y4= (SI) std::max (flim1[1], flim2[1]);
 }
 
 void
@@ -57,8 +57,8 @@ grid_box_rep::display (renderer ren) {
   if (first_time || ren->pixel!=ren_pixel) {
     point p1= f [point (x1, y1)];
     point p2= f [point (x2, y2)];
-    point l1= point (min (p1[0], p2[0]), min (p1[1], p2[1]));
-    point l2= point (max (p1[0], p2[0]), max (p1[1], p2[1]));
+    point l1= point (std::min (p1[0], p2[0]), std::min (p1[1], p2[1]));
+    point l2= point (std::max (p1[0], p2[0]), std::max (p1[1], p2[1]));
     point e1= l1, e2= point (l1[0], l2[1]);
     point e3= l2, e4= point (l2[0], l1[1]);
     point e1t= f (e1), e2t= f (e2);

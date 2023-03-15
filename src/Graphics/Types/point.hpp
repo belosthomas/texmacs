@@ -25,8 +25,8 @@ point operator /  (point p1, point p2);
 bool  operator == (point p1, point p2);
 
 point abs (point p);
-double min (point p);
-double max (point p);
+double min_value (point p);
+double max_value (point p);
 
 bool is_point (tree t);
 inline point as_point(double x) {

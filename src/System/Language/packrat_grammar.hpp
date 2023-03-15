@@ -16,14 +16,9 @@
 #include "hashmap.hpp"
 #include "resource.hpp"
 
-#ifdef HAVE_STDINT_H
 #include <stdint.h>
 #define C int32_t
 #define D int64_t
-#else
-#define C int
-#define D long long int
-#endif
 
 RESOURCE(packrat_grammar);
 

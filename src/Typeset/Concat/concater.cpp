@@ -136,12 +136,12 @@ concater_rep::print (space spc) {
 
 void
 concater_rep::penalty_min (int p) {
-  if (N(a)>0) a[N(a)-1]->penalty = min (a[N(a)-1]->penalty, p);
+  if (N(a)>0) a[N(a)-1]->penalty = std::min (a[N(a)-1]->penalty, p);
 }
 
 void
 concater_rep::penalty_max (int p) {
-  if (N(a)>0) a[N(a)-1]->penalty = max (a[N(a)-1]->penalty, p);
+  if (N(a)>0) a[N(a)-1]->penalty = std::max (a[N(a)-1]->penalty, p);
 }
 
 void

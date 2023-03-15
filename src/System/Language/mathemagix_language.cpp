@@ -413,7 +413,7 @@ parse_comment (string s, int& pos) {
   if (pos+1<N(s) && s[pos+1]=='{') {
     pos= pos+2;
     while ((pos<N(s) && s[pos]!='}') || (pos+1<N(s) && s[pos+1]!='/')) pos++;
-    pos= min(pos+2,N(s));
+    pos= std::min(pos+2,N(s));
   }
 }
 

@@ -23,7 +23,7 @@ operator - (point p) {
 
 point
 operator + (point p1, point p2) {
-  int i, n= min (N(p1), N(p2));
+  int i, n= std::min (N(p1), N(p2));
   point r (n);
   for (i=0; i<n; i++)
     r[i]= p1[i] + p2[i];
@@ -32,7 +32,7 @@ operator + (point p1, point p2) {
 
 point
 operator - (point p1, point p2) {
-  int i, n= min (N(p1), N(p2));
+  int i, n= std::min (N(p1), N(p2));
   point r (n);
   for (i=0; i<n; i++)
     r[i]= p1[i] - p2[i];
@@ -50,7 +50,7 @@ operator * (double x, point p) {
 
 point
 operator * (point p1, point p2) {
-  int i, n= min (N(p1), N(p2));
+  int i, n= std::min (N(p1), N(p2));
   point r (n);
   for (i=0; i<n; i++)
     r[i]= p1[i] * p2[i];
@@ -68,7 +68,7 @@ operator / (point p, double x) {
 
 point
 operator / (point p1, point p2) {
-  int i, n= min (N(p1), N(p2));
+  int i, n= std::min (N(p1), N(p2));
   point r (n);
   for (i=0; i<n; i++)
     r[i]= p1[i] / p2[i];
@@ -94,22 +94,22 @@ abs (point p) {
 }
 
 double
-min (point p) {
+min_value (point p) {
   int i, n= N(p);
   TM_ASSERT (N(p) > 0, "non empty point expected");
   double r= p[0];
   for (i=1; i<n; i++)
-    r= min (r, p[i]);
+    r= std::min (r, p[i]);
   return r;
 }
 
 double
-max (point p) {
+max_value (point p) {
   int i, n= N(p);
   TM_ASSERT (N(p) > 0, "non empty point expected");
   double r= p[0];
   for (i=1; i<n; i++)
-    r= max (r, p[i]);
+    r= std::max (r, p[i]);
   return r;
 }
 
@@ -141,7 +141,7 @@ as_tree (point p) {
 
 double
 inner (point p1, point p2) {
-  int i, n= min (N(p1), N(p2));
+  int i, n= std::min (N(p1), N(p2));
   double r= 0;
   for (i=0; i<n; i++)
     r += p1[i] * p2[i];
@@ -181,7 +181,7 @@ arg (point p) {
 
 point
 proj (axis ax, point p) {
-  int i, n= min (N(ax.p0), N(ax.p1));
+  int i, n= std::min (N(ax.p0), N(ax.p1));
   point a (n), b (n);
   for (i=0; i<n ; i++) {
     a[i]= ax.p1[i] - ax.p0[i];
@@ -207,7 +207,7 @@ seg_dist (axis ax, point p) {
   if (inner (ab, ap) > 0 && inner (ba, bp) > 0)
     return dist (ax, p);
   else
-    return min (norm (ap), norm (bp));
+    return std::min (norm (ap), norm (bp));
 }
 
 double

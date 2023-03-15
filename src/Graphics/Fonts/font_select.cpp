@@ -624,7 +624,7 @@ distance (string s, array<string> v, bool asym) {
   else if (is_glyphs (s)) m= D_GLYPHS;
 
   for (int i=1; i<N(v); i++)
-    m= min (distance (s, v[i], asym), m);
+    m= std::min (distance (s, v[i], asym), m);
   return m;
 }
 

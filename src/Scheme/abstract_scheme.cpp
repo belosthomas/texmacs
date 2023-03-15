@@ -16,6 +16,7 @@
 #include <iostream>
 #include <unordered_map>
 
+std::unique_ptr<abstract_scheme> global_scheme;
 
 void abstract_scheme::protected_call (object cmd) {
 #ifdef USE_EXCEPTIONS
@@ -47,7 +48,7 @@ void abstract_scheme::notify_preference (string var) {
 }
 
 string abstract_scheme::get_preference (string var, string def) {
-    std::cout << "get_preference: " << std::string(var.data(), N(var)) << " " << std::string(def.data(), N(def)) << std::endl;
+    //std::cout << "get_preference: " << std::string(var.data(), N(var)) << " " << std::string(def.data(), N(def)) << std::endl;
     if (!preferences_ok)
         return get_user_preference (var, def);
     else {
@@ -79,10 +80,7 @@ abstract_scheme *make_scheme(std::string name) {
 }
 
 void register_all_scheme() {
-#ifdef SCHEME_DECL
-    SCHEME_DECL
-#endif
-#ifdef SCHEME_DECL
+#ifdef SCHEME_REGI
     SCHEME_REGI
 #endif
 }

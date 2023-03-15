@@ -8423,7 +8423,7 @@ tmscm
 tmg_widget_xpm (tmscm arg1) {
   TMSCM_ASSERT_URL (arg1, TMSCM_ARG1, "widget-xpm");
 
-  url in1= arg1->to_url();
+  string in1= arg1->to_string();
 
   // TMSCM_DEFER_INTS;
   widget out= xpm_widget (in1);

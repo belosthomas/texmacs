@@ -52,7 +52,7 @@ print_verbatim_table (string& buf, tree t, bool wrap) {
     if (is_func (row, CWITH)) row= row[N(row)-1];
     if (!is_func (row, ROW)) tab[i]= tree (TUPLE);
     else {
-      nc= max (nc, N(row));
+      nc= std::max (nc, N(row));
       tab[i]= tree (TUPLE, N(row));
       for (j=0; j<N(row); j++)
         tab[i][j]= as_verbatim (row[j], wrap);
@@ -62,7 +62,7 @@ print_verbatim_table (string& buf, tree t, bool wrap) {
   for (j=0; j<nc; j++) w[j]= 0;
   for (i=0; i<nr; i++) {
     for (j=0; j<N(tab[i]); j++)
-      w[j]= max (w[j], get_width(tab[i][j]->label));
+      w[j]= std::max (w[j], get_width(tab[i][j]->label));
   }
   for (i=0; i<nr; i++) {
     for (j=0; j<N(tab[i]); j++) {

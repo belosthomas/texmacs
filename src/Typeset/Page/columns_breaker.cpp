@@ -273,9 +273,9 @@ new_breaker_rep::compute_space (array<space> spcs, array<vpenalty> pens,
   int nr_cols= N(spcs);
   SI ht_min= 0, ht_def= 0, ht_max= MAX_SI;  
   for (int i=0; i<nr_cols; i++) {
-    ht_min= max (ht_min, spcs[i]->min);
+    ht_min= std::max (ht_min, spcs[i]->min);
     ht_def += spcs[i]->def;
-    ht_max= min (ht_max, spcs[i]->max);
+    ht_max= std::min (ht_max, spcs[i]->max);
     if (i != nr_cols - 1) pen += pens[i];
   }
   ht_def /= nr_cols;

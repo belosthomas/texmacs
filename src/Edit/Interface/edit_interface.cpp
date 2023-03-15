@@ -51,6 +51,8 @@ get_zoom (editor_rep* ed, tm_buffer buf) {
   else return retina_zoom * ed->sv->get_default_zoom_factor ();
 }
 
+edit_interface_rep *last_editor = nullptr;
+
 edit_interface_rep::edit_interface_rep ():
   editor_rep (), // NOTE: ignored by the compiler, but suppresses warning
   env_change (0),
@@ -65,7 +67,7 @@ edit_interface_rep::edit_interface_rep ():
   zoomf (get_zoom (this, buf)),
   magf (zoomf / std_shrinkf),
   pixel ((SI) tm_round ((std_shrinkf * PIXEL) / zoomf)),
-  zpixel (max ((SI) tm_round (std_shrinkf * PIXEL), pixel)),
+  zpixel (std::max ((SI) tm_round (std_shrinkf * PIXEL), pixel)),
   copy_always (),
   last_x (0), last_y (0), last_t (0),
   tremble_count (0), tremble_right (false),
@@ -75,6 +77,8 @@ edit_interface_rep::edit_interface_rep ():
 {
   input_mode= INPUT_NORMAL;
   gui_root_extents (cur_wx, cur_wy);
+  assert(last_editor == nullptr);
+  last_editor = this;
 }
 
 edit_interface_rep::~edit_interface_rep () {
@@ -154,7 +158,7 @@ edit_interface_rep::set_zoom_factor (double zoom) {
   zoomf = zoom;
   magf  = zoomf / std_shrinkf;
   pixel = (SI) tm_round ((std_shrinkf * PIXEL) / zoomf);
-  zpixel= max ((SI) tm_round (std_shrinkf * PIXEL), pixel);
+  zpixel= std::max ((SI) tm_round (std_shrinkf * PIXEL), pixel);
 }
 
 void
@@ -303,7 +307,7 @@ edit_interface_rep::set_extents (SI x1, SI y1, SI x2, SI y2) {
 * Scroll so as to make the cursor and the selection visible
 ******************************************************************************/
 
-static SI absval (SI x) { return max (x, -x); }
+static SI absval (SI x) { return std::max (x, -x); }
 
 void
 edit_interface_rep::cursor_visible () {
@@ -391,7 +395,7 @@ edit_interface_rep::cursor_visible () {
           SI inner_cx= outer_cx - sx;
           SI dx= inner_cx - inner->x1;
           double p= 100.0 * ((double) (dx - (cx>>1))) / ((double) (tx-cx));
-          p= max (min (p, 100.0), 0.0);
+          p= std::max (std::min (p, 100.0), 0.0);
           tree old_xt= eb[path_up (sp)]->get_info ("scroll-x");
           tree new_xt= as_string (p) * "%";
           if (new_xt != old_xt && is_accessible (obtain_ip (old_xt))) {
@@ -412,7 +416,7 @@ edit_interface_rep::cursor_visible () {
           SI inner_cy= outer_cy - sy;
           SI dy= inner_cy - inner->y1;
           double p= 100.0 * ((double) (dy - (cy>>1))) / ((double) (ty-cy));
-          p= max (min (p, 100.0), 0.0);
+          p= std::max (std::min (p, 100.0), 0.0);
           tree old_yt= eb[path_up (sp)]->get_info ("scroll-y");
           tree new_yt= as_string (p) * "%";
           if (new_yt != old_yt && is_accessible (obtain_ip (old_yt))) {
@@ -440,8 +444,8 @@ edit_interface_rep::selection_visible () {
     SI new_y = (scroll_y)? end_y : (vy1+vy2)/2;
   */
   // trying a "proportional" scroll 
-  SI mx = max (-end_x + vx1 + extra, max (end_x - vx2 + extra, 0));
-  SI my = max (-end_y + vy1 + extra, max (end_y - vy2 + extra, 0));
+  SI mx = std::max (-end_x + vx1 + extra, std::max (end_x - vx2 + extra, 0));
+  SI my = std::max (-end_y + vy1 + extra, std::max (end_y - vy2 + extra, 0));
 
   if ((mx>0) || (my>0)) {
     SI vxc = (vx1+vx2)/2, dx = end_x - vxc;
@@ -861,7 +865,7 @@ edit_interface_rep::apply_changes () {
           cursor_visible ();
 
     SI dw= 0;
-    if (tremble_count > 3) dw= (1 + min (tremble_count - 3, 25)) * 2 * pixel;
+    if (tremble_count > 3) dw= (1 + std::min (tremble_count - 3, 25)) * 2 * pixel;
     SI /*P1= zpixel,*/ P2= 2*zpixel, P3= 3*zpixel;
     cursor cu= get_cursor();
     rectangle ocr (oc->ox+ ((SI) ((oc->y1-dw)*oc->slope))- P3 - dw,
@@ -960,8 +964,8 @@ edit_interface_rep::apply_changes () {
     if (!is_empty (alt_sel)) {
       alt_selection_rects= array<rectangles> (); int b= 0, e= N(alt_sel);
       if (e - b >= 200) {
-        b= max (find_alt_selection_index (alt_sel, vy2, b, e) - 100, b);
-        e= min (find_alt_selection_index (alt_sel, vy1, b, e) + 100, e);
+        b= std::max (find_alt_selection_index (alt_sel, vy2, b, e) - 100, b);
+        e= std::min (find_alt_selection_index (alt_sel, vy1, b, e) + 100, e);
       }
       for (int i=b; i+1<e; i+=2) {
         range_set sub_sel= simple_range (alt_sel[i], alt_sel[i+1]);

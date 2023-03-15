@@ -91,7 +91,7 @@ void clear_selection (string cb);
 #define ANY_EVENT         2
 #define DRAG_EVENT        3
 #define MOTION_EVENT      4
-#define MENU_EVENT        5
+#define TM_MENU_EVENT     5
 
 void beep ();
   // Issue a beep

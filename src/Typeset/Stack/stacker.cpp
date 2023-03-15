@@ -45,13 +45,13 @@ get_pos (array<SI> a, SI which) {
   step= test= N(a)>>1;
   while (a[test] != which) {
     if (step==1) {
-      if (which < a[test]) return max (0, test-1);
-      else return min (N(a)-1, test+1);
+      if (which < a[test]) return std::max (0, test-1);
+      else return std::min (N(a)-1, test+1);
     }
     else {
       step = (step + 1) >> 1;
-      if (which < a[test]) test= max (0, test- step);
-      else test= min (N(a)-1, test+ step);
+      if (which < a[test]) test= std::max (0, test- step);
+      else test= std::min (N(a)-1, test+ step);
     }
   }
   return test;
@@ -100,7 +100,7 @@ shove_in (box b1, box b2, SI hor_sep, SI top, SI bot) {
       int end  = get_pos (hpos, b1->sx2(i)+ hor_sep);
       if (end>n) end= n;
       for (j=start; j<end; j++)
-	vpos1[j]= min (vpos1[j], y);
+	vpos1[j]= std::min (vpos1[j], y);
     }
   for (i=0; i<N(b2); i++)
     if (b2[i]->w() > 0) {
@@ -109,12 +109,12 @@ shove_in (box b1, box b2, SI hor_sep, SI top, SI bot) {
       int end  = get_pos (hpos, b2->sx2(i)+ hor_sep);
       if (end>n) end= n;
       for (j=start; j<end; j++)
-	vpos2[j]= max (vpos2[j], y);
+	vpos2[j]= std::max (vpos2[j], y);
     }
 
   SI m= vpos2[0]-vpos1[0];
   for (i=1; i<n; i++)
-    m= max (m, vpos2[i]-vpos1[i]);
+    m= std::max (m, vpos2[i]-vpos1[i]);
   return m;
 }
 
@@ -128,10 +128,10 @@ shove_in (box b1, box b2, SI hor_sep, SI top, SI bot) {
 static void
 shove (page_item& item1, page_item& item2,
        stack_border sb, stack_border sb2, array<SI> swell) {
-  SI  height = max (sb->height , sb2->height_before );
-  SI  sep    = max (sb->sep    , sb2->sep_before    );
-  SI  hor_sep= max (sb->hor_sep, sb2->hor_sep_before);
-  SI  ver_sep= max (sb->ver_sep, sb2->ver_sep_before);
+  SI  height = std::max (sb->height , sb2->height_before );
+  SI  sep    = std::max (sb->sep    , sb2->sep_before    );
+  SI  hor_sep= std::max (sb->hor_sep, sb2->hor_sep_before);
+  SI  ver_sep= std::max (sb->ver_sep, sb2->ver_sep_before);
   SI  bot    = sb->bot;
   SI  top    = sb2->top;
 
@@ -151,17 +151,17 @@ shove (page_item& item1, page_item& item2,
     SI d1=0, d2=0;
     if (b1->y1 < swell[3]) {
       double exceed= swell[3] - b1->y1;
-      double unit  = max (swell[3] - swell[4], 1);
-      double ratio = min (exceed / unit, 1.0);
+      double unit  = std::max (swell[3] - swell[4], 1);
+      double ratio = std::min (exceed / unit, 1.0);
       d1= (SI) (ratio * swell[0]);
     }
     if (b2->y2 > swell[1]) {
       double exceed= b1->y2 - swell[1];
-      double unit  = max (swell[2] - swell[1], 1);
-      double ratio = min (exceed / unit, 1.0);
+      double unit  = std::max (swell[2] - swell[1], 1);
+      double ratio = std::min (exceed / unit, 1.0);
       d2= (SI) (ratio * swell[0]);
     }
-    ver_sep += max (d1, d2);
+    ver_sep += std::max (d1, d2);
   }
 
   while (true) {
@@ -185,7 +185,7 @@ shove (page_item& item1, page_item& item2,
     else break;
   }
 
-  if ((b2->y2- b1->y1) < (height- max (sep, ver_sep))) {
+  if ((b2->y2- b1->y1) < (height- std::max (sep, ver_sep))) {
     // enough place
     // cout << "  Normal" << LF;
     item1->spc= item1->spc + space (height- (b2->y2- b1->y1));
@@ -199,12 +199,12 @@ shove (page_item& item1, page_item& item2,
 	b1->get_type() == SCROLL_BOX ||
 	b2->get_type() == SCROLL_BOX)
     {
-      SI h= max (height, max (b2->y2, b2->y2 - b1->y1 - (top - bot)));
+      SI h= std::max (height, std::max (b2->y2, b2->y2 - b1->y1 - (top - bot)));
       item1->spc= item1->spc + space (h- (b2->y2- b1->y1));
     }
     else {
       // collisions
-      SI h= max (height, sh + ver_sep);
+      SI h= std::max (height, sh + ver_sep);
       item1->spc= item1->spc + space (h- (b2->y2- b1->y1));
     }
   }

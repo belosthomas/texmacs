@@ -52,8 +52,8 @@ resize (edit_env env, SI old, SI minimum, SI maximum, tree new_size) {
     switch (s[1]) {
     case '+': return offset + arg;
     case '-': return offset - arg;
-    case '[': return min (offset, arg);
-    case ']': return max (offset, arg);
+    case '[': return std::min (offset, arg);
+    case ']': return std::max (offset, arg);
     default : return arg;  
     }
   }
@@ -70,7 +70,7 @@ get_canvas_properties (edit_env env, tree t) {
   SI   border = env->get_length (ORNAMENT_BORDER);
   if (!printed) {
     SI pixel= env->pixel;
-    border= max (pixel, ((border + pixel/2) / pixel) * pixel);
+    border= std::max (pixel, ((border + pixel/2) / pixel) * pixel);
   }
 
   canvas_properties props;
@@ -111,7 +111,7 @@ get_canvas_horizontal (canvas_properties props,
   x2= resize (env, bx2, bx1, bx2, props->x2);
   if (type != "plain") {
     if (ends (type, "w") || ends (type, "e"))
-      x2= max (x1, x2 - (bwid + bpad));
+      x2= std::max (x1, x2 - (bwid + bpad));
     x1 += (border + props->hpadding);
     x2 -= (border + props->hpadding);
   }
@@ -137,7 +137,7 @@ get_canvas_vertical (canvas_properties props,
   y2= resize (env, by2, by1, by2, props->y2);
   if (type != "plain") {
     if (starts (type, "n") || starts (type, "s"))
-      y2= max (y1, y2 - (bwid + bpad));
+      y2= std::max (y1, y2 - (bwid + bpad));
     y1 += (border + props->vpadding);
     y2 -= (border + props->vpadding);
   }

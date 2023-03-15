@@ -12,7 +12,7 @@
 #ifndef TT_FILE_H
 #define TT_FILE_H
 
-#include "config.h"
+#include "tm_config.h"
 #include "url.hpp"
 #include "bitmap_font.hpp"
 

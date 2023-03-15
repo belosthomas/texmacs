@@ -208,7 +208,7 @@ line_breaker_rep::next_ragged_break (path pos) {
 	  array<int> hp= cur_item->lan->get_hyphens (s);
 	  int i= get_position (cur_item->b->get_leaf_font (),
 			       s, line_width- cur_spc);
-	  for (i= min (i+1, N(hp)-1); i>=0; i--)
+	  for (i= std::min (i+1, N(hp)-1); i>=0; i--)
 	    if (hp[i] < HYPH_INVALID) {
 	      line_item item1, item2;
 	      hyphenate (cur_item, i, item1, item2);
@@ -270,7 +270,7 @@ line_breaker_rep::test_better (path new_pos, path old_pos,
       ((pen == cur->pen) && (pen_spc < cur->pen_spc))) {
     cur->prev   = old_pos;
     cur->pen    = pen;
-    cur->pen_spc= min (pen_spc, (PEN) 1000000000);
+    cur->pen_spc= std::min (pen_spc, (PEN) 1000000000);
     //cout << "  Better\n";
   }
 }
@@ -285,9 +285,9 @@ line_breaker_rep::propose_break (path new_pos, path old_pos,
 
   if ((spc->min <= line_width) &&
       ((spc->max >= line_width) || (new_pos->item==end))) {
-    SI d= max (line_width- spc->def, spc->def- line_width);
+    SI d= std::max (line_width- spc->def, spc->def- line_width);
     if (new_pos->item==end) d=0;
-    test_better (new_pos, old_pos, min (HYPH_INVALID, cur->pen + pen),
+    test_better (new_pos, old_pos, std::min (HYPH_INVALID, cur->pen + pen),
 		 cur->pen_spc + (cur->pen == HYPH_INVALID?
                                  ((PEN) 0): square ((PEN) (d / PIXEL))));
   }
@@ -327,7 +327,7 @@ line_breaker_rep::break_string (line_item item, path pos, int i, space spc) {
 
   if ((item->b->w() > line_width) || (!is_atom (pos))) {
     j= get_position (item->b->get_leaf_font (), item_s, line_width- spc->def);
-    for (j= min (j+2, N(hp)-1); j>=0; j--)
+    for (j= std::min (j+2, N(hp)-1); j>=0; j--)
       if (hp[j] < HYPH_INVALID) {
 	line_item item1, item2;
 	hyphenate (item, j, item1, item2);

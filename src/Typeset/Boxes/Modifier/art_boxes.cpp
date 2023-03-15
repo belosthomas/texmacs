@@ -50,19 +50,19 @@ art_box_rep::art_box_rep (path ip, box b, art_box_parameters ps2):
   y1= 0;
   x2= b->w() + ps->lpad + ps->rpad;
   y2= b->h() + ps->bpad + ps->tpad;
-  x3= min (x3, 0);
-  y3= min (y3, 0);
-  x4= max (x4, x2);
-  y4= max (y4, y2);
+  x3= std::min (x3, 0);
+  y3= std::min (y3, 0);
+  x4= std::max (x4, x2);
+  y4= std::max (y4, y2);
   perform_rewritings ();
   for (int i=0; i<N(data); i++)
     if (data[i][0] == "image" || data[i][0] == "rubber") {
       SI xl= 0, xr= x2, yb= 0, yt= y2;
       get_image_extents (data[i], xl, xr, yb, yt);
-      x3= min (x3, xl - 5*PIXEL);
-      y3= min (y3, yb - 5*PIXEL);
-      x4= max (x4, xr + 5*PIXEL);
-      y4= max (y4, yt + 5*PIXEL);
+      x3= std::min (x3, xl - 5*PIXEL);
+      y3= std::min (y3, yb - 5*PIXEL);
+      x4= std::max (x4, xr + 5*PIXEL);
+      y4= std::max (y4, yt + 5*PIXEL);
     }
   finalize ();
 }
@@ -148,12 +148,12 @@ art_box_rep::display_one (renderer ren, tree prg) {
     }
     double curx= xl;
     for (int i=0; i<nx; i++) {
-      int ii= min (i, 1);
+      int ii= std::min (i, 1);
       if (nx >= 2 && i == nx-1) ii= 2;
       double nextx= curx + (hor[ii+1] - hor[ii]) * uw * scx;
       double cury= yb;
       for (int j=0; j<ny; j++) {
-        int jj= min (j, 1);
+        int jj= std::min (j, 1);
         if (ny >= 2 && j == ny-1) jj= 2;
         double nexty= cury + (ver[jj+1] - ver[jj]) * uh * scy;
         if (nextx > curx && nexty > cury) {

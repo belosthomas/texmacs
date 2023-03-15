@@ -91,10 +91,10 @@ BEGIN_MAGNIFY
     for (int i=1; i<N(bs); i++) {
       box b= bs[i];
       //cout << i << ", " << b << ", " << b->get_type () << "\n";
-      x1= min (x1, b->x1); y1= min (y1, b->y1);
-      x2= max (x2, b->x2); y2= max (y2, b->y2);
-      x1= min (x1, b->x3); y1= min (y1, b->y3);
-      x2= max (x2, b->x4); y2= max (y2, b->y4);
+      x1= std::min (x1, b->x1); y1= std::min (y1, b->y1);
+      x2= std::max (x2, b->x2); y2= std::max (y2, b->y2);
+      x1= std::min (x1, b->x3); y1= std::min (y1, b->y3);
+      x2= std::max (x2, b->x4); y2= std::max (y2, b->y4);
     }
     SI pad= env->get_length (GR_CROP_PADDING);
     lim1= env->fr [point (x1 - pad, y1 - pad)];
@@ -109,9 +109,9 @@ BEGIN_MAGNIFY
     SI y1= env->fr (lim1) [1];
     SI y2= env->fr (lim2) [1];
     if (y1 > 0 && y2 > 0)
-      b= move_box (ip, b, 0, -min (y1, y2));
+      b= move_box (ip, b, 0, -std::min (y1, y2));
     else if (y1 < 0 && y2 < 0)
-      b= move_box (ip, b, 0, -max (y1, y2));
+      b= move_box (ip, b, 0, -std::max (y1, y2));
   }
   print (b);
 
@@ -377,7 +377,7 @@ static double
 first_intersection (curve c, point lb, point rt) {
   double dt= 1.0 / 16.0, t0= 0.0;
   while (t0 + dt <= 0.999999 && inside (c (t0 + dt), lb, rt)) t0 += dt; 
-  double t1= min (1.0, t0 + dt);
+  double t1= std::min (1.0, t0 + dt);
   while (t1 - t0 >= 0.000001) {
     double mid= 0.5 * (t0 + t1);
     point  p= c (mid);
@@ -391,7 +391,7 @@ static double
 last_intersection (curve c, point lb, point rt) {
   double dt= 1.0 / 16.0, t1= 1.0;
   while (t1 - dt >= 0.000001 && inside (c (t1 - dt), lb, rt)) t1 -= dt;
-  double t0= max (0.0, t1 - dt);
+  double t0= std::max (0.0, t1 - dt);
   while (t1 - t0 >= 0.000001) {
     double mid= 0.5 * (t0 + t1);
     point  p= c (mid);
@@ -630,7 +630,7 @@ BEGIN_MAGNIFY
              is_atomic (enhance[0]) && is_atomic (enhance[1])) {
       method  = enhance[0]->label;
       strength= as_double (enhance[1]->label);
-      strength= max (0.2, min (5.0, strength));
+      strength= std::max (0.2, std::min (5.0, strength));
     }
 
     curve c;
@@ -644,7 +644,7 @@ BEGIN_MAGNIFY
       double vpixel= gpixel;
       if (is_compound (t[2], "ink-meta") && N(t[2]) >= 2 && is_double (t[2][1]))
         vpixel= as_double (t[2][1]);
-      strength= max (0.5, strength);
+      strength= std::max (0.5, strength);
       //array<point> bez= alt_bezier_fit (b, (int) round (10 * strength));
       array<point> bez= bezier_fit (b, 2.0 * strength * vpixel);
       if (N(bez) == 1) bez << bez[0] << bez[0] << bez[0];

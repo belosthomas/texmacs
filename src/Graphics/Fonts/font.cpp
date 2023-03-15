@@ -361,10 +361,10 @@ font_rep::var_get_extents (string s, metric& ex) {
         flag= false;
       }
       else {
-        ex->x3= min (ex->x3, ex->x2+ ey->x3);
-        ex->x4= max (ex->x4, ex->x2+ ey->x4);
-        ex->y3= min (ex->y3, ey->y3);
-        ex->y4= max (ex->y4, ey->y4);
+        ex->x3= std::min (ex->x3, ex->x2+ ey->x3);
+        ex->x4= std::max (ex->x4, ex->x2+ ey->x4);
+        ex->y3= std::min (ex->y3, ey->y3);
+        ex->y4= std::max (ex->y4, ey->y4);
         ex->x2 += ey->x2;
       }
     }

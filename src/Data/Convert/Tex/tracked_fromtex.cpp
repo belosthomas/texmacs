@@ -28,7 +28,7 @@ latex_protect (string s, hashset<int>& l, int& i, string env) {
     i += N(b);
     int j= i;
     while (j < N(s) && !test (s, j, e)) j++;
-    for (int k=i; k<min(N(s),j+1); k++)
+    for (int k=i; k<std::min(N(s),j+1); k++)
       l->insert (k);
     i= j + N(e);
   }
@@ -461,7 +461,7 @@ increasing_matches (tree d1, tree d2) {
       while (i<n && c[i] < 0) i++;
       int q1= i;
       int q2= (i<n? c[i]: N(d2));
-      for (int j=0; j < min (q1-p1, q2-p2); j++)
+      for (int j=0; j < std::min (q1-p1, q2-p2); j++)
         c[p1+j]= p2+j;
     }
   //cout << "Matches(2) " << c << LF << HRULE;
@@ -568,9 +568,9 @@ texmacs_check_transparency (tree mt, tree t, hashset<int>& invalid) {
         if (i == N(umt)) break;
         while (i<N(umt) && c[i] < 0) i++;
         if (i != N(umt)) i++;
-        for (int j= max (0, start-delta); j<start; j++) c[i]= -1;
-        for (int j= i; j <= min (N(umt), i+delta); j++) c[i]= -1;
-        i= min (N(umt), i+delta);
+        for (int j= std::max (0, start-delta); j<start; j++) c[i]= -1;
+        for (int j= i; j <= std::min (N(umt), i+delta); j++) c[i]= -1;
+        i= std::min (N(umt), i+delta);
       }
       delta *= 2;
     }

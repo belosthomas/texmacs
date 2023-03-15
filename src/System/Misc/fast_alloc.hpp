@@ -13,7 +13,7 @@
 #define FAST_ALLOC_H
 #define NO_FAST_ALLOC
 
-#include "config.h"
+#include "tm_config.h"
 #include "tm_configure.hpp"
 #include <stdlib.h>
 

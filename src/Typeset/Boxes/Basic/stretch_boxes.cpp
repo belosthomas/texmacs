@@ -64,7 +64,7 @@ box
 wide_bar_box (path ip, SI x1, SI x2, pencil pen) {
   SI width, height;
   get_wide_parameters (x1, x2, pen, width, height);
-  width= max (((x2-x1) + width) >> 1, pen->get_width ());
+  width= std::max (((x2-x1) + width) >> 1, pen->get_width ());
   return line_box (ip, 0, 0, width, 0, pen);
 }
 
@@ -119,7 +119,7 @@ wide_squbr_box (path ip, SI x1, SI x2, pencil pen) {
   SI penw= pen->get_width ();
   pencil demipen= pencil (pen->get_color (), penw/2);
   path dip= decorate_middle (ip);
-  SI width= max (x2-x1, 4*penw), height= 4*penw;
+  SI width= std::max (x2-x1, 4*penw), height= 4*penw;
   array<box> bs (3);
   array<SI>  xs (3);
   array<SI>  ys (3);
@@ -135,7 +135,7 @@ wide_sqobr_box (path ip, SI x1, SI x2, pencil pen) {
   SI penw= pen->get_width ();
   pencil demipen= pencil (pen->get_color (), penw/2);
   path dip= decorate_middle (ip);
-  SI width= max (x2-x1, 4*penw), height= 4*penw;
+  SI width= std::max (x2-x1, 4*penw), height= 4*penw;
   array<box> bs (3);
   array<SI>  xs (3);
   array<SI>  ys (3);

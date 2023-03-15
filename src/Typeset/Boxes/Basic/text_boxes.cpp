@@ -281,7 +281,7 @@ cursor
 text_box_rep::find_cursor (path bp) {
   metric ex;
   cursor cu (0, 0);
-  int l= min (bp->item, N(str));
+  int l= std::min (bp->item, N(str));
   fn->get_extents (str (0, l), ex);
   cu->ox= ex->x2;
   if (!is_nil (xk) && N(str) != 0) {
@@ -298,8 +298,8 @@ text_box_rep::find_cursor (path bp) {
     tm_char_backwards (str, k);
     fn->get_extents (str (k, l), ex);
   }
-  cu->y1= min (ex->y1, 0);
-  cu->y2= max (ex->y2, fn->yx);
+  cu->y1= std::min (ex->y1, 0);
+  cu->y2= std::max (ex->y2, fn->yx);
   cu->slope= fn->get_right_slope (str);
   return cu;
 }
@@ -401,7 +401,7 @@ get_delimiter (string s, font fn, SI height) {
       int pos2;
       int nr2= get_number (r2, pos2);
       if (pos2 > 0) {
-        int nr= max (nr2 + plus, 0);
+        int nr= std::max (nr2 + plus, 0);
         return r2 (0, pos2) * "-" * as_string (nr) * ">";
       }
     }
@@ -513,11 +513,11 @@ delimiter_box (path ip, string s, font fn, pencil pen, SI bot, SI top) {
   if (s == "<large-sqrt>") {
     SI sep= fn->sep, Y= y + ((b->y1 + b->y2) >> 1);
     if (Y > fn->yfrac) {
-      SI d= min (min (Y - fn->yfrac, y + b->y2 - top), 2*sep);
+      SI d= std::min (std::min (Y - fn->yfrac, y + b->y2 - top), 2*sep);
       if (d > 0) y -= d;
     }
     else if (Y < fn->yfrac) {
-      SI d= min (min (fn->yfrac - Y, bot - (y + b->y1)), 2*sep);
+      SI d= std::min (std::min (fn->yfrac - Y, bot - (y + b->y1)), 2*sep);
       if (d > 0) y += d;
     }
   }
@@ -525,7 +525,7 @@ delimiter_box (path ip, string s, font fn, pencil pen, SI bot, SI top) {
   //     << " -> " << r << "; " << x/PIXEL << ", " << y/PIXEL << "\n";
   //cout << "  extents: " << b->x1/PIXEL << ", " << b->y1/PIXEL
   //     << "; " << b->x2/PIXEL << ", " << b->y2/PIXEL << "\n";
-  SI var_bot= max (bot, b->y1 + y), var_top= min (top, b->y2 + y);
+  SI var_bot= std::max (bot, b->y1 + y), var_top= std::min (top, b->y2 + y);
   box mvb= move_delimiter_box (ip, b, x, y, var_bot, var_top);
   if (ends (r, "-0>")) return mvb;
   SI dy= ((mvb->y1 + mvb->y2)>>1) - fn->yfrac;
@@ -543,8 +543,8 @@ delimiter_box (path ip, string s, font fn, pencil pen,
   SI y= (top + bot - b->y1 - b->y2) >> 1;
   if (b->y2 - b->y1 < h) {
     y= (mid - b->y1 - b->y2) >> 1;
-    y= min (top - b->y2, y);
-    y= max (bot - b->y1, y);
+    y= std::min (top - b->y2, y);
+    y= std::max (bot - b->y1, y);
   }
   //cout << s << ", " << bot/PIXEL << " -- " << top/PIXEL
   //     << " -> " << r << "; " << x/PIXEL << ", " << y/PIXEL << "\n";

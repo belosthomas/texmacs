@@ -126,7 +126,7 @@ public:
         return scm_to_bool (mSCM);
     }
 
-    int64_t to_int() override {
+    int to_int() override {
         return scm_to_int64(mSCM);
     }
 

@@ -11,19 +11,14 @@
 
 #ifndef BASIC_H
 #define BASIC_H
+
+#include <algorithm>
+
 #include "fast_alloc.hpp"
 #include <math.h>
 
-#ifdef HAVE_INTPTR_T
-#ifdef HAVE_INTTYPES_H
 #include <inttypes.h>
-#endif
-#ifdef HAVE_STDINT_H
 #include <stdint.h>
-#endif
-#else
-typedef long intptr_t;
-#endif
 
 #define LESSGTR <>
 
@@ -45,13 +40,13 @@ typedef unsigned int color;
 * debugging
 ******************************************************************************/
 
-#if (defined __SUNPRO_CC || defined __clang__)
+//#if (defined __SUNPRO_CC || defined __clang__)
 #define STACK_NEW_ARRAY(name,T,size) T* name= tm_new_array<T> (size)
 #define STACK_DELETE_ARRAY(name) tm_delete_array (name)
-#else
-#define STACK_NEW_ARRAY(name,T,size) T name[size]
-#define STACK_DELETE_ARRAY(name)
-#endif
+//#else
+//#define STACK_NEW_ARRAY(name,T,size) T name[size]
+//#define STACK_DELETE_ARRAY(name)
+//#endif
 
 enum { DEBUG_FLAG_AUTO, DEBUG_FLAG_VERBOSE, DEBUG_FLAG_EVENTS,
        DEBUG_FLAG_STD, DEBUG_FLAG_IO, DEBUG_FLAG_BENCH,
@@ -115,12 +110,6 @@ void clear_debug_messages (string channel);
 * miscellaneous routines
 ******************************************************************************/
 
-inline SI min (SI i, SI j) { if (i<j) return i; else return j; }
-inline SI max (SI i, SI j) { if (i>j) return i; else return j; }
-inline DI min (DI i, DI j) { if (i<j) return i; else return j; }
-inline DI max (DI i, DI j) { if (i>j) return i; else return j; }
-inline double min (double i, double j) { if (i<j) return i; else return j; }
-inline double max (double i, double j) { if (i>j) return i; else return j; }
 inline int hash (int i) { return i; }
 inline int hash (long int i) { return (int) i; }
 inline int hash (DI i) { return (int) i; }

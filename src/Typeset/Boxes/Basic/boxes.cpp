@@ -29,8 +29,8 @@ box box::operator [] (path p) {
   if (is_nil (p)) return *this; else return rep->subbox(p->item)[p->next]; }
 double box_rep::left_slope () { return 0.0; }
 double box_rep::right_slope () { return 0.0; }
-SI box_rep::left_correction () { return (SI) (-min (0, y1) * left_slope ()); }
-SI box_rep::right_correction () { return (SI) (max (0, y2) * right_slope ()); }
+SI box_rep::left_correction () { return (SI) (-std::min (0, y1) * left_slope ()); }
+SI box_rep::right_correction () { return (SI) (std::max (0, y2) * right_slope ()); }
 SI box_rep::lsub_correction () { return 0; }
 SI box_rep::lsup_correction () { return 0; }
 SI box_rep::rsub_correction () { return 0; }
@@ -562,8 +562,8 @@ box_rep::redraw (renderer ren, path p, rectangles& l) {
       }
       else subbox(k)->redraw (ren, p->next, ll);
       if (!is_nil(ll)) {
-        i1= min (i1, k);
-        i2= max (i2, k);
+        i1= std::min (i1, k);
+        i2= std::max (i2, k);
         l = ll * l;
         ll= rectangles ();
       }
@@ -628,8 +628,8 @@ void
 box_rep::clear (renderer ren, SI x1, SI y1, SI x2, SI y2) {
   SI old_x1, old_y1, old_x2, old_y2;
   ren->get_clipping (old_x1, old_y1, old_x2, old_y2);
-  if (max (old_x1, x1) < min (old_x2, x2) &&
-      max (old_y1, y1) < min (old_y2, y2)) {
+  if (std::max (old_x1, x1) < std::min (old_x2, x2) &&
+          std::max (old_y1, y1) < std::min (old_y2, y2)) {
     ren->extra_clipping (x1, y1, x2, y2);
     redraw_background (ren);
     ren->set_clipping (old_x1, old_y1, old_x2, old_y2, true);
@@ -757,7 +757,7 @@ box_rep::anim_delay () {
   double r= 0.0;
   for (i=0; i<n; i++) {
     double sr= subbox (i)->anim_delay ();
-    r= max (r, sr);
+    r= std::max (r, sr);
   }
   return r;
 }
@@ -768,7 +768,7 @@ box_rep::anim_duration () {
   double r= 0.0;
   for (i=0; i<n; i++) {
     double sr= subbox (i)->anim_duration ();
-    r= max (r, sr);
+    r= std::max (r, sr);
   }
   return r;
 }
@@ -786,7 +786,7 @@ box_rep::anim_next () {
   int i, n= subnr ();
   for (i=0; i<n; i++) {
     double sr= subbox (i)->anim_next ();
-    r= min (r, sr);
+    r= std::min (r, sr);
   }
   return r;
 }

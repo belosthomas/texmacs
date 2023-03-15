@@ -79,7 +79,7 @@ parse_string_rep::get_string (int n) {
   list<string> ll= l;
   list<int>    pp= p;
   while (n >= 0 && !is_nil (ll)) {
-    int m= min (N (ll->item) - pp->item, n);
+    int m= std::min (N (ll->item) - pp->item, n);
     s << ll->item (pp->item, pp->item + m);
     n -= m;
     ll = ll->next;

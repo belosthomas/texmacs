@@ -17,11 +17,12 @@
 #include "merge_sort.hpp"
 #include "drd_std.hpp"
 #include "language.hpp"
-#include <unistd.h>
 #ifdef OS_MINGW
 #include <time.h>
 #include <direct.h>
 #endif
+
+#include <qDebug>
 
 tree texmacs_settings = tuple ();
 int  install_status   = 0;
@@ -109,6 +110,8 @@ static string main_tmp_dir= "$TEXMACS_HOME_PATH/system/tmp";
 
 static void
 make_dir (url which) {
+    string s_which = concretize(which);
+    qDebug() << "make_dir" << QString::fromStdString(std::string(s_which.data(), N(s_which)));
   if (is_none(which))
     return ;
   if (!is_directory (which)) {
@@ -119,13 +122,8 @@ make_dir (url which) {
 
 static url
 url_temp_dir_sub () {
-#ifdef OS_MINGW
   static url tmp_dir=
-    url_system (main_tmp_dir) * url_system (as_string (time (NULL)));
-#else
-  static url tmp_dir=
-    url_system (main_tmp_dir) * url_system (as_string ((int) getpid ()));
-#endif
+    url_system (main_tmp_dir) * url_system (as_string (rand ()));
   return (tmp_dir);
 }
 
@@ -150,13 +148,7 @@ static void
 clean_temp_dirs () {
   bool err= false;
   array<string> a= read_directory (main_tmp_dir, err);
-#ifndef OS_MINGW
-  for (int i=0; i<N(a); i++)
-    if (is_int (a[i]))
-      if (!process_running (as_int (a[i])))
-        if (a[i] != as_string ((int) getpid ()))
-          system ("rm -rf", url (main_tmp_dir) * url (a[i]));
-#else
+
   /* delete the directories after 7 days */
   time_t ts = as_int (basename (url_temp_dir_sub ())) - (3600 * 24 * 7 );
   for (int i=0; i<N(a); i++)     
@@ -169,7 +161,7 @@ clean_temp_dirs () {
         rmdir (as_charp (as_string (cur)));
       }
     }
-#endif
+
 }
 
 /******************************************************************************

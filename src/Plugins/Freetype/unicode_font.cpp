@@ -9,7 +9,7 @@
 * in the root directory or <http://www.gnu.org/licenses/gpl-3.0.html>.
 ******************************************************************************/
 
-#include "config.h"
+#include "tm_config.h"
 #include "font.hpp"
 #include "Freetype/free_type.hpp"
 #include "Freetype/tt_file.hpp"
@@ -188,11 +188,11 @@ unicode_font_rep::unicode_font_rep (string name,
   y1= ex->y1;
   y2= ex->y2;
   get_extents ("p", ex);
-  y1= min (y1, ex->y1);
-  y2= max (y2, ex->y2);
+  y1= std::min (y1, ex->y1);
+  y2= std::max (y2, ex->y2);
   get_extents ("d", ex);
-  y1= min (y1, ex->y1);
-  y2= max (y2, ex->y2);
+  y1= std::min (y1, ex->y1);
+  y2= std::max (y2, ex->y2);
   display_size = y2-y1;
   design_size  = size << 8;
 
@@ -228,9 +228,9 @@ unicode_font_rep::unicode_font_rep (string name,
     if (supports ("<#2212>"));
     else if (supports ("<#2013>")) {
       get_extents ("<#2013>", ex);
-      wline= min (wline, ex->y2 - ex->y1);
+      wline= std::min (wline, ex->y2 - ex->y1);
     }
-    wline= max (min (wline, wfn/8), wfn/48);
+    wline= std::max (std::min (wline, wfn/8), wfn/48);
     if (!supports ("<#2212>")) yfrac += wline/4;
   }
   if (starts (res_name, "unicode:Papyrus.")) wline= (2*wline)/3;
@@ -665,14 +665,14 @@ unicode_font_rep::get_extents (string s, metric& ex) {
         uc= ligature_replace (uc, s, i);
       x += ROUND (fnm->kerning (pc, uc));
       metric_struct* next= fnm->get (uc);
-      ex->x1= min (ex->x1, x+ ROUND (next->x1));
-      ex->y1= min (ex->y1, ROUND (next->y1));
-      ex->x2= max (ex->x2, x+ ROUND (next->x2));
-      ex->y2= max (ex->y2, ROUND (next->y2));
-      ex->x3= min (ex->x3, x+ FLOOR (next->x3));
-      ex->y3= min (ex->y3, FLOOR (next->y3));
-      ex->x4= max (ex->x4, x+ CEIL (next->x4));
-      ex->y4= max (ex->y4, CEIL (next->y4));
+      ex->x1= std::min (ex->x1, x+ ROUND (next->x1));
+      ex->y1= std::min (ex->y1, ROUND (next->y1));
+      ex->x2= std::max (ex->x2, x+ ROUND (next->x2));
+      ex->y2= std::max (ex->y2, ROUND (next->y2));
+      ex->x3= std::min (ex->x3, x+ FLOOR (next->x3));
+      ex->y3= std::min (ex->y3, FLOOR (next->y3));
+      ex->x4= std::max (ex->x4, x+ CEIL (next->x4));
+      ex->y4= std::max (ex->y4, CEIL (next->y4));
       x += ROUND (next->x2);
       //if (fnm->kerning (pc, uc) != 0)
       //cout << "Kerning " << ((char) pc) << ((char) uc) << " " << ROUND (fnm->kerning (pc, uc)) << ", " << ROUND (next->x2) << "\n";
@@ -830,7 +830,7 @@ unicode_font_rep::get_left_slope (string s) {
   string c= s (pos, N(s));
   if (N(c) >= 3) {
     if (is_math_italic (c))
-      return max (slope, 0.2); // FIXME: should be determined more reliably
+      return std::max (slope, 0.2); // FIXME: should be determined more reliably
     else if (math_type == MATH_TYPE_TEX_GYRE && is_integral (s))
       return 0.1;
   }
@@ -851,7 +851,7 @@ unicode_font_rep::get_right_slope (string s) {
   string c= s (pos, N(s));
   if (N(c) >= 3) {
     if (is_math_italic (c))
-      return max (slope, 0.2); // FIXME: should be determined more reliably
+      return std::max (slope, 0.2); // FIXME: should be determined more reliably
     else if (math_type == MATH_TYPE_TEX_GYRE && is_integral (s))
       return 0.1;
   }

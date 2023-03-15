@@ -64,14 +64,14 @@ case_box_rep::case_box_rep (path ip, array<tree> c2, array<box> b2):
   x1= y1= x3= y3= MAX_SI;
   x2= y2= x4= y4= -MAX_SI;
   for (i=0; i<n; i++) {
-    x1= min (x1, bs[i]->x1);
-    y1= min (y1, bs[i]->y1);
-    x2= max (x2, bs[i]->x2);
-    y2= max (y2, bs[i]->y2);
-    x3= min (x3, bs[i]->x3);
-    y3= min (y3, bs[i]->y3);
-    x4= max (x4, bs[i]->x4);
-    y4= max (y4, bs[i]->y4);
+    x1= std::min (x1, bs[i]->x1);
+    y1= std::min (y1, bs[i]->y1);
+    x2= std::max (x2, bs[i]->x2);
+    y2= std::max (y2, bs[i]->y2);
+    x3= std::min (x3, bs[i]->x3);
+    y3= std::min (y3, bs[i]->y3);
+    x4= std::max (x4, bs[i]->x4);
+    y4= std::max (y4, bs[i]->y4);
   }
 }
 
@@ -106,7 +106,7 @@ tree
 case_box_rep::message (tree t, SI x, SI y, rectangles& rs) {
   if (t == "enter" || t == "move") entered= true;
   if (t == "leave") entered= false;
-  for (int i=0; i < min (N(conds), N(bs)); i++)
+  for (int i=0; i < std::min (N(conds), N(bs)); i++)
     if (satisfies (t, conds[i])) {
       switch_to (i, rs);
       return bs[current]->message (t, x, y, rs);

@@ -27,20 +27,13 @@
 #include <stdlib.h>
 #include <errno.h>
 #include <sys/stat.h>
-#include <sys/file.h>
-#include <unistd.h>
 #include <sys/types.h>
 #include <string.h>  // strerror
-#if defined (OS_MINGW)
-#include "Windows/win-utf8-compat.hpp"
-#else
-#include <dirent.h>
-#define struct_stat struct stat
-#endif
 
 #ifdef MACOSX_EXTENSIONS
 #include "MacOS/mac_images.h"
 #endif
+
 
 /******************************************************************************
 * New style loading and saving
@@ -71,19 +64,7 @@ load_string (url u, string& s, bool fatal) {
     bench_start ("load file");
     c_string _name (name);
     // cout << "OPEN :" << _name << LF;
-#ifdef OS_MINGW
     FILE* fin= fopen (_name, "rb");
-#else
-    FILE* fin= fopen (_name, "r");
-    int fd= -1;
-    if (fin != NULL) {
-      fd= fileno (fin);
-      if (flock (fd, LOCK_SH) == -1) {
-        fclose (fin);
-        fin= NULL;
-      }
-    }
-#endif
     if (fin == NULL) {
       err= true;
       if (!occurs ("system", name))
@@ -99,10 +80,6 @@ load_string (url u, string& s, bool fatal) {
       }
       if (err) {
         std_warning << "Seek failed for " << as_string (u) << "\n";
-#ifdef OS_MINGW
-#else
-        flock (fd, LOCK_UN);
-#endif
         fclose (fin);
       }
     }
@@ -111,10 +88,6 @@ load_string (url u, string& s, bool fatal) {
       s->resize (size);
       int read= fread (&(s[0]), 1, size, fin);
       if (read < size) s->resize (read);
-#ifdef OS_MINGW
-#else
-      flock (fd, LOCK_UN);
-#endif
       fclose (fin);
     }
     bench_cumul ("load file");
@@ -155,22 +128,7 @@ save_string (url u, string s, bool fatal) {
     string name= concretize (r);
     {
       c_string _name (name);
-#ifdef OS_MINGW
       FILE* fout= fopen (_name, "wb");
-#else
-      FILE* fout= fopen (_name, "r+");
-      bool rw= (fout != NULL);
-      if (!rw) fout= fopen (_name, "w");
-      int fd= -1;
-      if (fout != NULL) {
-        fd= fileno (fout);
-        if (flock (fd, LOCK_EX) == -1) {
-          fclose (fout);
-          fout= NULL;
-        }
-        else if (rw) ftruncate (fd, 0);
-      }
-#endif
       if (fout == NULL) {
         err= true;
         std_warning << "Save error for " << name << ", "
@@ -180,10 +138,6 @@ save_string (url u, string s, bool fatal) {
         int i, n= N(s);
         for (i=0; i<n; i++)
           fputc (s[i], fout);
-#ifdef OS_MINGW
-#else
-        flock (fd, LOCK_UN);
-#endif
         fclose (fout);
       }
     }
@@ -217,19 +171,7 @@ append_string (url u, string s, bool fatal) {
     string name= concretize (r);
     {
       c_string _name (name);
-#ifdef OS_MINGW
       FILE* fout= fopen (_name, "ab");
-#else
-      FILE* fout= fopen (_name, "a");
-      int fd= -1;
-      if (fout != NULL) {
-        fd= fileno (fout);
-        if (flock (fd, LOCK_EX) == -1) {
-          fclose (fout);
-          fout= NULL;
-        }
-      }
-#endif
       if (fout == NULL) {
         err= true;
         std_warning << "Append error for " << name << ", "
@@ -239,10 +181,6 @@ append_string (url u, string s, bool fatal) {
         int i, n= N(s);
         for (i=0; i<n; i++)
           fputc (s[i], fout);
-#ifdef OS_MINGW
-#else
-        flock (fd, LOCK_UN);
-#endif
         fclose (fout);
       }
     }
@@ -262,65 +200,8 @@ append_string (url u, string s, bool fatal) {
 * Getting attributes of a file
 ******************************************************************************/
 
-static bool
-get_attributes (url name, struct_stat* buf,
-                bool link_flag=false, bool cache_flag= true)
-{
-  // cout << "Stat " << name << LF;
-  string name_s= concretize (name);
-
-  // Stat result in cache?
-  if (cache_flag &&
-      is_cached ("stat_cache.scm", name_s) &&
-      is_up_to_date (url_parent (name)))
-    {
-      tree r= cache_get ("stat_cache.scm", name_s);
-      // cout << "Cache : " << r << LF;
-      if (r == "#f") return true;
-      if ((is_compound(r)) && (N(r)==3)) {
-        buf->st_mode = ((unsigned int) as_int (r[0]));
-        buf->st_mtime= ((unsigned int) as_int (r[1]));
-        buf->st_size = ((unsigned int) as_int (r[2]));
-        return false;
-      } 
-      std_warning << "Inconsistent value in stat_cache.scm for key "
-                  << name_s << LF;
-      std_warning << "The current value is " << r << LF;
-      std_warning << "I'm resetting this key" << LF;
-      // continue and recache, the current value is inconsistent. 
-    }
-  // End caching
-
-  //cout << "No cache" << LF;
-
-  bench_start ("stat");
-  bool flag;
-  c_string temp (name_s);
-  flag= stat (temp, buf);
-  (void) link_flag;
-  // FIXME: configure should test whether lstat works
-  // flag= (link_flag? lstat (temp, buf): stat (temp, buf));
-  bench_cumul ("stat");
-
-  // Cache stat results
-  if (cache_flag) {
-    if (flag) {
-      if (do_cache_stat_fail (name_s))
-        cache_set ("stat_cache.scm", name_s, "#f");
-    }
-    else {
-      if (do_cache_stat (name_s)) {
-        string s1= as_string ((int) buf->st_mode);
-        string s2= as_string ((int) buf->st_mtime);
-        string s3= as_string ((int) buf->st_size);
-        cache_set ("stat_cache.scm", name_s, tree (TUPLE, s1, s2, s3));
-      }
-    }
-  }
-  // End caching
-
-  return flag;
-}
+#include <QFileInfo>
+#include <QDateTime>
 
 bool
 is_of_type (url name, string filter) {
@@ -377,37 +258,39 @@ is_of_type (url name, string filter) {
     }
   }
 #endif
+
+  string conc_name= concretize (name);
+  QFileInfo qt_name (QString::fromStdString(std::string(conc_name.data(), N(conc_name))));
+
   bool preserve_links= false;
-  for (i=0; i<n; i++)
-    preserve_links= preserve_links || (filter[i] == 'l');
-  struct_stat buf;
-  bool err= get_attributes (name, &buf, preserve_links);
+  for (i=0; i<n; i++) {
+      preserve_links = preserve_links || (filter[i] == 'l');
+  }
+
+  if (!qt_name.exists()) {
+      return false;
+  }
+
   for (i=0; i<n; i++)
     switch (filter[i]) {
       // FIXME: should check user id and group id for r, w and x
     case 'f':
-      if (err || !S_ISREG (buf.st_mode)) return false;
+      if (!qt_name.isFile()) return false;
       break;
     case 'd':
-      if (err || !S_ISDIR (buf.st_mode)) return false;
+      if (!qt_name.isDir()) return false;
       break;
     case 'l':
-      if (err || !S_ISLNK (buf.st_mode)) return false;
+      if (!qt_name.isSymLink()) return false;
       break;
     case 'r':
-      if (err) return false;
-      if ((buf.st_mode & (S_IRUSR | S_IRGRP | S_IROTH)) == 0) return false;
+        if (!qt_name.isReadable()) return false;
       break;
     case 'w':
-      if (err) return false;
-      if ((buf.st_mode & (S_IWUSR | S_IWGRP | S_IWOTH)) == 0) return false;
+        if (!qt_name.isWritable()) return false;
       break;
     case 'x':
-      if (err) return false;
-#ifdef OS_MINGW
-      if (((suf == "exe") || (suf == "com") || (suf == "bat")) && (buf.st_mode & S_IRUSR)) return true;
-#endif
-      if ((buf.st_mode & (S_IXUSR | S_IXGRP | S_IXOTH)) == 0) return false;
+        if (!qt_name.isExecutable()) return false;
       break;
     }
   return true;
@@ -419,36 +302,33 @@ bool is_symbolic_link (url name) { return is_of_type (name, "l"); }
 
 int
 file_size (url u) {
-  if (is_rooted_web (u)) return -1;
-  if (is_rooted_tmfs (u)) return -1;
-  struct_stat u_stat;
-  if (get_attributes (u, &u_stat, true)) return -1;
-  return u_stat.st_size;
+    string conc_name= concretize (u);
+    QFileInfo qt_name (QString::fromStdString(std::string(conc_name.data(), N(conc_name))));
+
+    if (!qt_name.exists()) {
+        return -1;
+    }
+
+    return qt_name.size();
 }
 
 int
 last_modified (url u, bool cache_flag) {
-  if (is_rooted_web (u))
-    return - (int) (((unsigned int) (-1)) >> 1);
-  if (is_rooted_tmfs (u))
-    return - (int) (((unsigned int) (-1)) >> 1);
-  struct_stat u_stat;
-  if (get_attributes (u, &u_stat, true, cache_flag))
-    return - (int) (((unsigned int) (-1)) >> 1);
-  return u_stat.st_mtime;
+    string conc_name= concretize (u);
+    QFileInfo qt_name (QString::fromStdString(std::string(conc_name.data(), N(conc_name))));
+
+    if (!qt_name.exists()) {
+        return -1;
+    }
+
+    return qt_name.lastModified().toSecsSinceEpoch();
 }
 
 bool
 is_newer (url which, url than) {
-  struct_stat which_stat;
-  struct_stat than_stat;
-  // FIXME: why was this? 
-  if (is_cached ("stat_cache.scm", concretize (which))) return false;
-  if (is_cached ("stat_cache.scm", concretize (than))) return false;
-  // end FIXME
-  if (get_attributes (which, &which_stat, true)) return false;
-  if (get_attributes (than , &than_stat , true)) return false;
-  return which_stat.st_mtime > than_stat.st_mtime;
+    int w= last_modified (which);
+    int t= last_modified (than);
+    return (w > t);
 }
 
 url
@@ -458,10 +338,10 @@ url_temp (string suffix) {
 #else
   static bool initialized= false;
   if (!initialized) {
-    srandom ((int) raw_time ());
+    srand ((int) raw_time ());
     initialized= true;
   }
-  unsigned int rnd= random ();
+  unsigned int rnd= rand ();
 #endif
   string name= "tmp_" * as_string (rnd) * suffix;
   url u= url_temp_dir () * url (name);
@@ -515,6 +395,8 @@ cache_dir_set (string dir, array<string> a) {
   for (int i=0; i<N(a); i++) t[i]= a[i];
   cache_set ("dir_cache.scm", dir, t);
 }
+
+#include <QDebug>
 
 array<string>
 read_directory (url u, bool& error_flag) {
@@ -607,12 +489,8 @@ remove_sub (url u) {
   }
   else {
     c_string _u (concretize (u));
-#ifdef OS_MINGW
-    if (nowide::remove (_u) && DEBUG_AUTO) {
-#else
     if (::remove (_u) && DEBUG_AUTO) {
-#endif
-      std_warning << "Remove failed: " << strerror (errno) << LF;
+      std_warning << "Remove failed: " << LF;
       std_warning << "File was: " << u << LF;
     }
   }
@@ -638,33 +516,27 @@ rmdir (url u) {
 
 void
 mkdir (url u) {
-#if defined (HAVE_SYS_TYPES_H) && defined (HAVE_SYS_STAT_H)
-  if (!exists (u)) {
-    if (!is_atomic (u) && !is_root (u)) mkdir (head (u));
-    c_string _u (concretize (u));
-    (void) ::mkdir (_u, S_IRWXU + S_IRGRP + S_IROTH);
-  }
-#else
-#ifdef OS_MINGW
-  system ("mkdir", u);
-#else
-  system ("mkdir -p", u);
-#endif
-#endif
+    string conc_name= concretize (u);
+    QString conc_name_str = QString::fromStdString(std::string(conc_name.data(), N(conc_name)));
+    QDir qt_name (conc_name_str);
+
+    if (!qt_name.exists()) {
+        QDir().mkpath(conc_name_str);
+    }
 }
 
 void
 change_mode (url u, int mode) {
-#if defined (HAVE_SYS_TYPES_H) && defined (HAVE_SYS_STAT_H)
-  c_string _u (concretize (u));
-  (void) ::chmod (_u, mode);
-#else
-  string m0= as_string ((mode >> 9) & 7);
-  string m1= as_string ((mode >> 6) & 7);
-  string m2= as_string ((mode >> 3) & 7);
-  string m3= as_string (mode & 7);
-  system ("chmod -f " * m0 * m1 * m2 * m3, u);
-#endif
+    string conc_name= concretize (u);
+    QString conc_name_str = QString::fromStdString(std::string(conc_name.data(), N(conc_name)));
+    QFileInfo qt_file_info (conc_name_str);
+
+    if (qt_file_info.exists()) {
+        QFile qt_file (conc_name_str);
+        qt_file.setPermissions((QFile::Permissions)mode);
+    }
+
+
 }
 
 /******************************************************************************

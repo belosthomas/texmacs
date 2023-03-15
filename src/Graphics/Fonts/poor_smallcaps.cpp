@@ -100,12 +100,12 @@ poor_smallcaps_font_rep::get_extents (string s, metric& ex) {
     advance (s, i, r, nr);
     if (nr >= 0) {
       subfn[nr]->get_extents (r, ey);
-      ex->y1= min (ex->y1, ey->y1);
-      ex->y2= max (ex->y2, ey->y2);
-      ex->x3= min (ex->x3, ex->x2 + ey->x3);
-      ex->y3= min (ex->y3, ey->y3);
-      ex->x4= max (ex->x4, ex->x2 + ey->x4);
-      ex->y4= max (ex->y4, ey->y4);
+      ex->y1= std::min (ex->y1, ey->y1);
+      ex->y2= std::max (ex->y2, ey->y2);
+      ex->x3= std::min (ex->x3, ex->x2 + ey->x3);
+      ex->y3= std::min (ex->y3, ey->y3);
+      ex->x4= std::max (ex->x4, ex->x2 + ey->x4);
+      ex->y4= std::max (ex->y4, ey->y4);
       ex->x2 += ey->x2;
     }
   }
@@ -221,7 +221,7 @@ poor_smallcaps_font_rep::get_left_slope  (string s) {
   if (n == 0) return subfn[0]->get_left_slope (s);
   string r= s;
   advance (s, i, r, nr);
-  nr= max (nr, 0);
+  nr= std::max (nr, 0);
   return subfn[nr]->get_left_slope (r);
 }
 
@@ -231,7 +231,7 @@ poor_smallcaps_font_rep::get_right_slope (string s) {
   if (n == 0) return subfn[0]->get_right_slope (s);
   string r= s;
   while (i<n) advance (s, i, r, nr);
-  nr= max (nr, 0);
+  nr= std::max (nr, 0);
   return subfn[nr]->get_right_slope (r);
 }
 
@@ -241,7 +241,7 @@ poor_smallcaps_font_rep::get_left_correction  (string s) {
   if (n == 0) return subfn[0]->get_left_correction (s);
   string r= s;
   advance (s, i, r, nr);
-  nr= max (nr, 0);
+  nr= std::max (nr, 0);
   return subfn[nr]->get_left_correction (r);
 }
 
@@ -251,7 +251,7 @@ poor_smallcaps_font_rep::get_right_correction (string s) {
   if (n == 0) return subfn[0]->get_right_correction (s);
   string r= s;
   while (i<n) advance (s, i, r, nr);
-  nr= max (nr, 0);
+  nr= std::max (nr, 0);
   return subfn[nr]->get_right_correction (r);
 }
 
@@ -261,7 +261,7 @@ poor_smallcaps_font_rep::get_lsub_correction  (string s) {
   if (n == 0) return subfn[0]->get_lsub_correction (s);
   string r= s;
   advance (s, i, r, nr);
-  nr= max (nr, 0);
+  nr= std::max (nr, 0);
   return subfn[nr]->get_lsub_correction (r);
 }
 
@@ -271,7 +271,7 @@ poor_smallcaps_font_rep::get_lsup_correction  (string s) {
   if (n == 0) return subfn[0]->get_lsup_correction (s);
   string r= s;
   advance (s, i, r, nr);
-  nr= max (nr, 0);
+  nr= std::max (nr, 0);
   return subfn[nr]->get_lsup_correction (r);
 }
 
@@ -281,7 +281,7 @@ poor_smallcaps_font_rep::get_rsub_correction (string s) {
   if (n == 0) return subfn[0]->get_rsub_correction (s);
   string r= s;
   while (i<n) advance (s, i, r, nr);
-  nr= max (nr, 0);
+  nr= std::max (nr, 0);
   return subfn[nr]->get_rsub_correction (r);
 }
 
@@ -291,7 +291,7 @@ poor_smallcaps_font_rep::get_rsup_correction (string s) {
   if (n == 0) return subfn[0]->get_rsup_correction (s);
   string r= s;
   while (i<n) advance (s, i, r, nr);
-  nr= max (nr, 0);
+  nr= std::max (nr, 0);
   return subfn[nr]->get_rsup_correction (r);
 }
 
@@ -301,7 +301,7 @@ poor_smallcaps_font_rep::get_wide_correction (string s, int mode) {
   if (n == 0) return subfn[0]->get_wide_correction (s, mode);
   string r= s;
   while (i<n) advance (s, i, r, nr);
-  nr= max (nr, 0);
+  nr= std::max (nr, 0);
   return subfn[nr]->get_wide_correction (r, mode);
 }
 

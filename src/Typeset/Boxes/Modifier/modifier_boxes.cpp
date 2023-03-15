@@ -268,7 +268,7 @@ shorter_box_rep::find_rip () {
 path
 shorter_box_rep::find_right_box_path () {
   path bp= b->find_right_box_path ();
-  return path (0, path_up (bp) * min (last_item (bp), len));
+  return path (0, path_up (bp) * std::min (last_item (bp), len));
 }
 
 int
@@ -440,18 +440,18 @@ struct macro_delimiter_box_rep: public macro_box_rep {
     return tree (TUPLE, "macro_delimiter", (tree) bs[0]); }
   SI sub_lo_base (int l) {
     SI fb= l<=0? big_fn->ysub_lo_base: big_fn->ysub_lo_base + big_fn->yshift;
-    fb += min (0, dy);
-    return min (y1, max (y1 - (l>0? 0: big_fn->yshift), fb)); }
+    fb += std::min (0, dy);
+    return std::min (y1, std::max (y1 - (l>0? 0: big_fn->yshift), fb)); }
   SI sub_hi_lim (int l) {
-    return big_fn->ysub_hi_lim + min (0, dy); }
+    return big_fn->ysub_hi_lim + std::min (0, dy); }
   SI sup_lo_base (int l) {
     SI fb= l>=0? big_fn->ysup_lo_base: big_fn->ysup_lo_base - big_fn->yshift;
-    fb += max (0, dy);
+    fb += std::max (0, dy);
     SI ex= big_fn->yx;
-    return max (y2 - ex, fb); }
+    return std::max (y2 - ex, fb); }
   SI sup_hi_lim (int l) {
     SI fb= big_fn->ysup_hi_lim;
-    fb += max (0, dy);
+    fb += std::max (0, dy);
     SI ex= big_fn->yx;
     if (fb + ex <= y2) return y2;
     if (fb + (ex>>1) <= y2) return (y2+fb)>>1;

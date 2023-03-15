@@ -294,7 +294,7 @@ poor_italic_font_rep::get_rsub_correction (string s) {
   string ss= s (pos, N(s));
   metric ex;
   base->get_extents (ss, ex);
-  double factor= (0.4 * yx) / max (yx, ex->y2);
+  double factor= (0.4 * yx) / std::max (yx, ex->y2);
   SI extra= (SI) (round (factor * get_right_correction (s)));
 
   SI r= extra + global_rsub_correct;

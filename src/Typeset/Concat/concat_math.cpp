@@ -38,7 +38,7 @@ concater_rep::typeset_large (tree t, path ip, int tp, int otp, string prefix) {
       // bug: allow hyphenation after ) and before *
     }
     else if (N(t) == 2 && is_int (t[1])) {
-      int nr= max (as_int (t[1]->label), 0);
+      int nr= std::max (as_int (t[1]->label), 0);
       string s= prefix * br * "-" * as_string (nr) * ">";
       box b= text_box (ip, 0, s, env->fn, env->pen);
       SI dy= env->fn->yfrac - ((b->y1 + b->y2) >> 1);
@@ -242,7 +242,7 @@ concater_rep::typeset_long_arrow (tree t, path ip) {
 
   string s= env->exec_string (t[0]);
   SI w= sup_b->w();
-  if (N(t) == 3) w= max (w, sub_b->w());
+  if (N(t) == 3) w= std::max (w, sub_b->w());
   w += env->fn->wquad;
   box arrow= wide_box (decorate (descend (ip, 0)), s, env->fn, env->pen, w);
 

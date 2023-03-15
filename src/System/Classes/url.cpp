@@ -240,9 +240,7 @@ heuristic_is_default (string name, int type) {
   // FIXME: we probably should take into account 'type' too
   if (N(name) < 2) return false;
   if ((name[0] == '\\') && (name[1] == '\\')) return true;
-  return
-    isalpha (name[0]) && (name[1] == ':') &&
-    ((N(name)==2) || (name[2] == '\\') || (name[2] == '/'));
+  return isalpha ((unsigned char)name[0]) && (name[1] == ':') && ((N(name)==2) || (name[2] == '\\') || (name[2] == '/'));
 #else
   char sep= (type==0)? URL_CONCATER: '/';
   return (name != "") && (name[0] == sep);
@@ -641,7 +639,7 @@ glue (url u, string s) {
 url
 unglue (url u, int nr) {
   if (is_atomic (u))
-    return as_url (tree (u->t->label (0, max (N(u->t->label) - nr, 0))));
+    return as_url (tree (u->t->label (0, std::max (N(u->t->label) - nr, 0))));
   if (is_concat (u)) return u[1] * unglue (u[2], nr);
   if (is_or (u)) return unglue (u[1], nr) | unglue (u[2], nr);
   if (is_none (u)) return u;

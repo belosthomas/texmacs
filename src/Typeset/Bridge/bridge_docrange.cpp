@@ -69,7 +69,7 @@ bridge_docrange_rep::bridge_docrange_rep (
     mid= array<int> (n+1);
     for (i=0; i<n; i++) {
       mid[i]  = begin + i * ACC_THRESHOLD;
-      mid[i+1]= min (mid[i] + ACC_THRESHOLD, end);
+      mid[i+1]= std::min (mid[i] + ACC_THRESHOLD, end);
       acc[i]  = bridge_docrange (ttt, st, ip, brs, mid[i], mid[i+1]);
     }
   }
@@ -103,7 +103,7 @@ bridge_docrange_rep::rebalance () {
       // cout << "  Expand " << k << " at " << i << "\n";
       for (j=0; j<k; j++) {
 	int b= mid[i] + j * ACC_THRESHOLD;
-	int e= min (b + ACC_THRESHOLD, mid[i+1]);
+	int e= std::min (b + ACC_THRESHOLD, mid[i+1]);
 	acc2 << bridge_docrange (ttt, st, ip, brs, b, e);
 	mid2 << b;
       }
@@ -175,8 +175,8 @@ bridge_docrange_rep::notify_remove (path p, int nr) {
   TM_ASSERT (p->item < end, "out of range");
   if (p->item + nr > begin) {
     status= CORRUPTED;
-    begin= min (begin , p->item);
-    end  = max (end-nr, p->item);
+    begin= std::min (begin , p->item);
+    end  = std::max (end-nr, p->item);
   }
   else {
     begin -= nr;
@@ -190,7 +190,7 @@ bridge_docrange_rep::notify_remove (path p, int nr) {
 	break;
     for (; i<n; i++) {
       acc[i]->notify_remove (p, nr);
-      mid[i+1]= max (mid[i+1]-nr, p->item);
+      mid[i+1]= std::max (mid[i+1]-nr, p->item);
     }
     // cout << "mid[rem,0]= " << mid << "\n";
     rebalance ();

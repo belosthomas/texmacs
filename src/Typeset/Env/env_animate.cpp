@@ -20,8 +20,8 @@
 tree
 edit_env_rep::exec_anim_static (tree t) {
   if (N(t) < 3) return tree (LABEL_ERROR, "bad anim-static");
-  int tot= max (as_length (exec (t[1])), 1);
-  int inc= max (as_length (exec (t[2])), 1);
+  int tot= std::max (as_length (exec (t[1])), 1);
+  int inc= std::max (as_length (exec (t[2])), 1);
   int cur= 0;
   double old_start  = anim_start;
   double old_end    = anim_end;
@@ -31,7 +31,7 @@ edit_env_rep::exec_anim_static (tree t) {
   tree r (ANIM_COMPOSE);
   while (true) {
     anim_portion= (1.0 * cur) / (1.0 * tot);
-    int delta= min (tot - cur, inc);
+    int delta= std::min (tot - cur, inc);
     r << tree (ANIM_CONSTANT, animate (t[0]), as_string (delta) * "ms");
     if (cur >= tot) break;
     cur += delta;
@@ -95,7 +95,7 @@ edit_env_rep::animate (tree t) {
     anim_end    = old_start + t1 * (old_end - old_start);
     anim_portion= old_start + tt * (old_end - old_start);
     double dt= anim_portion - anim_start;
-    double d1= max (anim_end - anim_start, 1.0e-6);
+    double d1= std::max (anim_end - anim_start, 1.0e-6);
     anim_portion= dt / d1;
     tree r= morph (c0, c1, edit_env (this));
     anim_start  = old_start;
@@ -350,7 +350,7 @@ complete_sub (tree t0, tree t1) {
     return t0 (0, l) * c * t0 (n0-r, n0);
   }
 
-  int h= n0>>1, ha= max (h, 1), hb= min (h, n0-2);
+  int h= n0>>1, ha= std::max (h, 1), hb= std::min (h, n0-2);
   for (int h0= ha; h0 <= hb; h0++)
     for (int h1=h0; h1<=h0+n1-n0; h1++)
       if (t0[h0] == t1[h1]) {
@@ -529,8 +529,8 @@ round_portion (double portion) {
 tree
 edit_env_rep::checkout_animation (tree t) {
   if (N(t) < 4) return t;
-  int tot= max (as_length (exec (t[1])), 1);
-  int cur= max (as_length (exec (t[3])), 0);
+  int tot= std::max (as_length (exec (t[1])), 1);
+  int cur= std::max (as_length (exec (t[3])), 0);
   double old_start  = anim_start;
   double old_end    = anim_end;
   double old_portion= anim_portion;
@@ -580,8 +580,8 @@ edit_env_rep::commit_animation (tree t) {
   tree a= tree (ANIM_STATIC, t[0], t[2], t[3], t[4]);
   tree u= checkout_animation (a);
   if (u[1] == t[1]) return a;
-  int tot= max (as_length (exec (t[2])), 1);
-  int cur= max (as_length (exec (t[4])), 0);
+  int tot= std::max (as_length (exec (t[2])), 1);
+  int cur= std::max (as_length (exec (t[4])), 0);
   double portion= round_portion ((1.0 * cur) / (1.0 * tot));
   a[0]= insert_frame (a[0], insert_anim_ids (t[1]), portion);
   return a;
@@ -631,7 +631,7 @@ edit_env_rep::expand_morph (tree t) {
   if (is_func (t, ANIM_STATIC, 4) ||
       is_func (t, ANIM_DYNAMIC, 4) ||
       is_compound (t, "anim-edit", 5)) {
-    int tot= max (as_length (exec (t[N(t)-3])), 1);
+    int tot= std::max (as_length (exec (t[N(t)-3])), 1);
     double old_start  = anim_start;
     double old_end    = anim_end;
     double old_portion= anim_portion;

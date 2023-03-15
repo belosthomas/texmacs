@@ -2,11 +2,9 @@
 #define SCHEME_GUILE30_GUILETM_HPP
 
 #include "Scheme/abstract_scheme.hpp"
-#include "tmscm.hpp"
+#include "guile18_tmscm.hpp"
 
-extern "C" {
-    #include <guile/3.0/libguile.h>
-}
+#include <libguile.h>
 
 SCM &guile_blackbox_tag();
 

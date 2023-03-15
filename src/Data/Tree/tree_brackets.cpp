@@ -321,7 +321,7 @@ infix_split (array<tree> a, array<int> tp_in, array<int> pri, int level) {
   int weakest= PRIORITY_RADICAL;
   for (int i=0; i<N(tp); i++)
     if (tp[i] == SYMBOL_OPEN_BIG)
-      weakest= min (weakest, pri[i]);
+      weakest= std::min (weakest, pri[i]);
     else if (tp[i] == SYMBOL_INFIX ||
              tp[i] == SYMBOL_PREFIX_INFIX ||
              tp[i] == SYMBOL_SEPARATOR ||

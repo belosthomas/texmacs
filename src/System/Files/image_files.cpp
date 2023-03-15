@@ -253,7 +253,10 @@ ps_read_bbox (string buf, int& x1, int& y1, int& x2, int& y2 ) {
 
 void
 set_imgbox_cache(tree t, int w, int h, int xmin, int ymin){
-    img_box (t)= (imgbox) {w, h, xmin, ymin};
+    img_box (t).w = w;
+    img_box (t).h = h;
+    img_box (t).xmin = xmin;
+    img_box (t).ymin = ymin;
 }
 
 void

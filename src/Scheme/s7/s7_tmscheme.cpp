@@ -10,11 +10,10 @@
 
 #include <QCoreApplication>
 
-#include "scheme.hpp"
+#include "s7_tmscheme.hpp"
 
 std::unordered_map<s7_scheme*, s7_tmscheme*> *s7_scheme_map = nullptr;
 
-void register_scheme_factory(SchemeFactory *factory);
 void registerS7() {
     register_scheme_factory(new S7Factory);
 }

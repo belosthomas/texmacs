@@ -12,7 +12,7 @@
 #define SCHEME_GUILE30_GUILETM_HPP
 
 #include "Scheme/abstract_scheme.hpp"
-#include "tmscm.hpp"
+#include "s7_tmscm.hpp"
 
 #include <s7.hpp>
 #include <iostream>
@@ -60,7 +60,7 @@ public:
         return s7_tmscm::mk(mInstance, s7_make_boolean(mInstance, b));
     }
 
-    tmscm int_to_tmscm(int64_t i) final {
+    tmscm int_to_tmscm(int i) final {
         return s7_tmscm::mk(mInstance, s7_make_integer(mInstance, i));
     }
 
@@ -164,8 +164,6 @@ public:
     }
 
 };
-
-void registerS7();
 
 #endif
 

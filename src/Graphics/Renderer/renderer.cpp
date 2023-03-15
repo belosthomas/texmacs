@@ -204,8 +204,8 @@ void
 renderer_rep::extra_clipping (SI x1, SI y1, SI x2, SI y2) {
   SI ox1, oy1, ox2, oy2;
   get_clipping (ox1, oy1, ox2, oy2);
-  x1= max (x1, ox1); y1= max (y1, oy1);
-  x2= max (x1, min (x2, ox2)); y2= max (y1, min (y2, oy2));
+  x1= std::max (x1, ox1); y1= std::max (y1, oy1);
+  x2= std::max (x1, std::min (x2, ox2)); y2= std::max (y1, std::min (y2, oy2));
   set_clipping (x1, y1, x2, y2);
 }
 
@@ -369,7 +369,7 @@ renderer_rep::clear_pattern (SI mx1, SI my1, SI mx2, SI my2,
     double pt= ((double) 600*PIXEL) / 72.0;
     SI imw= (SI) (((double) imw_pt) * pt);
     SI imh= (SI) (((double) imh_pt) * pt);
-    double ratio= ((double) max (imw_pt, 1)) / ((double) max (imh_pt, 1));
+    double ratio= ((double) std::max (imw_pt, 1)) / ((double) std::max (imh_pt, 1));
 
     bool flag= false;
     SI w= mx2 - mx1, h= my2 - my1;
@@ -463,8 +463,8 @@ renderer_rep::shadow (picture& pic, SI x1, SI y1, SI x2, SI y2) {
   outer_round (x1, y1, x2, y2);
   decode (x1, y1);
   decode (x2, y2);
-  x2= max (x1, x2);
-  y2= min (y1, y2);
+  x2= std::max (x1, x2);
+  y2= std::min (y1, y2);
   pic= native_picture (x2-x1, y1-y2, x0 - x1, (y1 - y2 - 1) - (y0 - y2));
   renderer ren= picture_renderer (pic, zoomf);
 

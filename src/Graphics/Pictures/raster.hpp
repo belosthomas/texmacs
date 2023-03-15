@@ -85,8 +85,8 @@ template<typename C> raster<C>
 subraster (raster<C> r, int x1, int y1, int x2, int y2) {
     x1 += r->ox; y1 += r->oy; x2 += r->ox; y2 += r->oy;
     int w= r->w, h= r->h;
-    x1= max (0, x1); y1= max (0, y1);
-    x2= min (w, x2); y2= min (h, y2);
+    x1= std::max (0, x1); y1= std::max (0, y1);
+    x2= std::min (w, x2); y2= std::min (h, y2);
     int ww= x2 - x1, hh= y2 - y1;
     raster<C> ret (ww, hh, r->ox - x1, r->oy - y1);
     for (int y=y1; y<y2; y++)
@@ -97,8 +97,8 @@ subraster (raster<C> r, int x1, int y1, int x2, int y2) {
 
 template<typename C> raster<C>
 crop (raster<C> r, double cx1, double cy1, double cx2, double cy2) {
-    cx1= max (cx1, 0.0); cy1= max (cy1, 0.0);
-    cx2= min (cx2, 1.0); cy2= min (cy2, 1.0);
+    cx1= std::max (cx1, 0.0); cy1= std::max (cy1, 0.0);
+    cx2= std::min (cx2, 1.0); cy2= std::min (cy2, 1.0);
     int x1= (int) round (-r->ox + cx1 * r->w);
     int y1= (int) round (-r->oy + cy1 * r->h);
     int x2= (int) round (-r->ox + cx2 * r->w);
@@ -343,8 +343,8 @@ draw_on (raster<C>& dest, raster<S> src, int x, int y) {
     int sh2= sh;
     if (x < 0) { s -= x; sw2 += x; x= 0; }
     if (y < 0) { s -= y * sw; sh2 += y; y= 0; }
-    int w = min (sw2, dw - x);
-    int h = min (sh2, dh - y);
+    int w = std::min (sw2, dw - x);
+    int h = std::min (sh2, dh - y);
     if (w <= 0 || h <= 0) return;
     d += y * dw + x;
     for (int yy=0; yy<h; yy++, d += dw, s +=sw)
@@ -399,12 +399,12 @@ empty_join (raster<C> r1, raster<S> r2, composition_mode mode) {
     int x1=0, y1=0, x2=0, y2=0;
     switch (composition_type (mode)) {
         case 0:
-            x1= max (-ox1, -ox2);
-            y1= max (-oy1, -oy2);
-            x2= min (w1-ox1, w2-ox2);
-            y2= min (h1-oy1, h2-oy2);
-            x1= min (x1, x2);
-            y1= min (y1, y2);
+            x1= std::max (-ox1, -ox2);
+            y1= std::max (-oy1, -oy2);
+            x2= std::min (w1-ox1, w2-ox2);
+            y2= std::min (h1-oy1, h2-oy2);
+            x1= std::min (x1, x2);
+            y1= std::min (y1, y2);
             break;
         case 1:
             x1= -ox2;
@@ -419,10 +419,10 @@ empty_join (raster<C> r1, raster<S> r2, composition_mode mode) {
             y2= h1-oy1;
             break;
         case 3:
-            x1= min (-ox1, -ox2);
-            y1= min (-oy1, -oy2);
-            x2= max (w1-ox1, w2-ox2);
-            y2= max (h1-oy1, h2-oy2);
+            x1= std::min (-ox1, -ox2);
+            y1= std::min (-oy1, -oy2);
+            x2= std::max (w1-ox1, w2-ox2);
+            y2= std::max (h1-oy1, h2-oy2);
             break;
     }
     int w  = x2 - x1;
@@ -636,7 +636,7 @@ template<typename C> raster<C>
 oval_pen (double rx, double ry, double phi) {
     rx += 0.5; ry += 0.5;
     chi_oval fun (rx, ry, phi);
-    int R= (int) ceil (max (rx, ry) - 0.5);
+    int R= (int) ceil (std::max (rx, ry) - 0.5);
     int w= (int) (2*R + 1);
     return pixelize<C> (fun, w, w, R, R);
 }
@@ -658,10 +658,10 @@ motion_pen (double dx, double dy) {
     double r  = hypot (dx, dy);
     if (r <= 1.0e-6) return rectangular_pen<C> (0.0, 0.0, 0.0);
     chi_motion fun (r, phi);
-    int x1= (int) floor (min (dx, 0.0) - 0.5);
-    int y1= (int) floor (min (dy, 0.0) - 0.5);
-    int x2= (int) ceil  (max (dx, 0.0) + 0.5);
-    int y2= (int) ceil  (max (dy, 0.0) + 0.5);
+    int x1= (int) floor (std::min (dx, 0.0) - 0.5);
+    int y1= (int) floor (std::min (dy, 0.0) - 0.5);
+    int x2= (int) ceil  (std::max (dx, 0.0) + 0.5);
+    int y2= (int) ceil  (std::max (dy, 0.0) + 0.5);
     return pixelize<C> (fun, x2 - x1, y2 - y1, -x1, -y1);
 }
 
@@ -713,7 +713,7 @@ template<typename C> raster<C>
 gaussian_pen (double rx, double ry, double phi, double order= 2.5) {
     gaussian_distribution fun (rx, ry, phi);
     double Rx= rx * order, Ry= ry * order;
-    int R= (int) ceil (max (Rx, Ry) - 0.5);
+    int R= (int) ceil (std::max (Rx, Ry) - 0.5);
     int w= (int) (2*R + 1);
     return pixelize<C> (fun, w, w, R, R, 1);
 }
@@ -866,7 +866,7 @@ oval_thicken (raster<C> ras, double dx, double dy, double phi) {
 template<typename C> inline void
 erode (C& dest_a, const C& src_a, const C& pen_a) {
     C a= src_a * pen_a + (1 - pen_a);
-    dest_a= min (dest_a, a);
+    dest_a= std::min (dest_a, a);
 }
 
 template<typename C, typename S> raster<C>
@@ -916,8 +916,8 @@ variation (raster<C> s1, raster<S> s2) {
                 for (int x2=0; x2<s2w; x2++) {
                     F cur= temp->internal_get_pixel (x1 - (x2 - s2ox), y1 - (y2 - s2oy));
                     F v= (cur - ref) * s2->a[y2*s2w + x2];
-                    max_v= max (max_v, v);
-                    min_v= min (min_v, v);
+                    max_v= std::max (max_v, v);
+                    min_v= std::min (min_v, v);
                 }
             get_alpha (d->a[y0*dw + x0]) = max_v - min_v;
         }
@@ -967,7 +967,7 @@ inner_max (raster<C> r, C s) {
     F ret= 0.001;
     for (int y=0; y<h; y++)
         for (int x=0; x<w; x++)
-            ret= max (ret, inner_max (r->a[y*w+x], s));
+            ret= std::max (ret, inner_max (r->a[y*w+x], s));
     return ret;
 }
 
@@ -1010,7 +1010,7 @@ incidence (raster<C> gx, raster<C> gy, double phi) {
         C ya= gy->a[i];
         C r = 1.0e-100 + sqrt (xa*xa + ya*ya);
         C pr= (xa * ca + ya * sa) / r;
-        res->a[i]= sqrt (max (pr, 0.0));
+        res->a[i]= sqrt (std::max (pr, 0.0));
     }
     return res;
 }
@@ -1054,7 +1054,7 @@ tl_distances (raster<C> r) {
             double px= (x>0? ret->a[y*w+x-1]: 0.0);
             double py= (y+1<h? ret->a[(y+1)*w+x]: 0.0);
             if (a == 0.0) ret->a[y*w+x]= 0.0;
-            else ret->a[y*w+x]= min (px, py) + a;
+            else ret->a[y*w+x]= std::min (px, py) + a;
         }
     return ret;
 }
@@ -1069,7 +1069,7 @@ br_distances (raster<C> r) {
             double px= (x+1<w? ret->a[y*w+x+1]: 0.0);
             double py= (y>0? ret->a[(y-1)*w+x]: 0.0);
             if (a == 0.0) ret->a[y*w+x]= 0.0;
-            else ret->a[y*w+x]= min (px, py) + a;
+            else ret->a[y*w+x]= std::min (px, py) + a;
         }
     return ret;
 }
@@ -1101,10 +1101,10 @@ turbulence (raster<true_color> ras, long seed,
 
 template<typename C> raster<C>
 degrade (raster<C> r, double wlx, double wly, double th, double sh) {
-    th= min (max (th, 1.0e-6), 1.0 - 1.0e-6);
-    double delta= 1.0 / (1.0 + max (10.0 * sh, 0.0));
-    double a1= max (th - delta, 0.0);
-    double a2= min (th + delta, 1.0);
+    th= std::min (std::max (th, 1.0e-6), 1.0 - 1.0e-6);
+    double delta= 1.0 / (1.0 + std::max (10.0 * sh, 0.0));
+    double a1= std::max (th - delta, 0.0);
+    double a2= std::min (th + delta, 1.0);
     raster<double> a= turbulence (r->w, r->h, r->ox, r->oy, 12321,
                                   wlx, wly, 3, true);
     int n= r->w * r->h;

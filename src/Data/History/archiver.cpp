@@ -148,7 +148,7 @@ nr_undo (patch p) {
 
 static int
 nr_redo (patch p) {
-  return max (0, nr_branches (p) - 1);
+  return std::max (0, nr_branches (p) - 1);
 }
 
 static patch

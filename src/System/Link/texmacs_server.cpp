@@ -8,14 +8,14 @@
 * It comes WITHOUT ANY WARRANTY WHATSOEVER. For details, see the file LICENSE
 * in the root directory or <http://www.gnu.org/licenses/gpl-3.0.html>.
 ******************************************************************************/
-
+#include "Qt/QTMSockets.hpp"
 #include "tm_link.hpp"
 #include "client_server.hpp"
 #include "socket_server.hpp"
 #include "scheme.hpp"
 
 #ifdef QTTEXMACS
-#include "Qt/QTMSockets.hpp"
+
 
 #if defined(OS_MACOS)
   #include "MacOS/mac_utilities.h"

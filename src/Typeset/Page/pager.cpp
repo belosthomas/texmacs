@@ -253,7 +253,7 @@ pager_rep::make_pages () {
   else papyrus_make ();
 
   int nr_pages= N(pages);
-  int nx= max (1, min (env->page_packet, nr_pages));
+  int nx= std::max (1, std::min (env->page_packet, nr_pages));
   int d = env->page_offset % nx;
   int ny= ((nr_pages + nx - 1 + d) / nx);
 
@@ -288,7 +288,7 @@ pager_rep::make_pages () {
     for (int j=0; j<ny; j++) {
       int p= j*nx + i - d;
       if (p >= 0 && p < nr_pages)
-        xx[i]= max (xx[i-1] + pg[p]->w(), xx[i]);
+        xx[i]= std::max (xx[i-1] + pg[p]->w(), xx[i]);
     }
   }
 
@@ -299,7 +299,7 @@ pager_rep::make_pages () {
     for (int i=0; i<nx; i++) {
       int p= j*nx + i - d;
       if (p >= 0 && p < nr_pages)
-        yy[j]= min (yy[j-1] - pg[p]->h(), yy[j]);
+        yy[j]= std::min (yy[j-1] - pg[p]->h(), yy[j]);
     }
   }
 

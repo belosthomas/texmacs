@@ -120,7 +120,7 @@ left_protrusion (glyph g, glyph o) {
   // while providing the glyph of the character 'o' as a 'reference'
   if (g->lwidth <= 0 || o->lwidth <= 0) return 0.0;
   if (g->width <= 0 || o->width <= 0) return 0.0;
-  int threshold= max (pixel_count (o) / 8, 1);
+  int threshold= std::max (pixel_count (o) / 8, 1);
   int xg= search_protrusion (g, 0, 1, threshold);
   if (xg >= g->width) cout << "** too small\n";
   int xo= search_protrusion (o, 0, 1, threshold);

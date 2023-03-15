@@ -405,17 +405,17 @@ concater_rep::typeset_range (tree t, path ip) {
     typeset_dynamic (tree (LABEL_ERROR, "bad range"), ip);
   else if (is_compound (t1)) {
     if (is_tuple (t1)) {
-      int i1= max (0, as_int (t2));
-      int i2= min (N (t1), as_int (t3));
-      i2 = max (i1, i2);
+      int i1= std::max (0, as_int (t2));
+      int i2= std::min (N (t1), as_int (t3));
+      i2 = std::max (i1, i2);
       typeset_dynamic (t1 (i1, i2), ip);
     }
     else typeset_dynamic (tree (LABEL_ERROR, "bad range"), ip);
   }
   else {
-    int i1= max (0, as_int (t2));
-    int i2= min (N(t1->label), as_int (t3));
-    i2 = max (i1, i2);
+    int i1= std::max (0, as_int (t2));
+    int i2= std::min (N(t1->label), as_int (t3));
+    i2 = std::max (i1, i2);
     path ip1= obtain_ip (t1);
     if (is_decoration (ip1))
       typeset_dynamic (t1->label (i1, i2), ip);

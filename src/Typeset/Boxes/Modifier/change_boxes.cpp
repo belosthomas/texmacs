@@ -498,10 +498,10 @@ repeat_box_rep::repeat_box_rep (path ip, box b, box r2, SI xoff2, bool u2):
     for (i=i1; i<i2; i++) {
       box bb= move_box (decorate_right (ip), repeat, 0, 0);
       insert (bb, i*width-xoff, 0);
-      x3= min (x3, i*width-xoff + repeat->x3);
-      x4= max (x4, i*width-xoff + repeat->x4);
-      y3= min (y3, repeat->y3);
-      y4= max (y4, repeat->y4);
+      x3= std::min (x3, i*width-xoff + repeat->x3);
+      x4= std::max (x4, i*width-xoff + repeat->x4);
+      y3= std::min (y3, repeat->y3);
+      y4= std::max (y4, repeat->y4);
     }
   }
 
@@ -561,10 +561,10 @@ cell_box_rep::cell_box_rep (
   x2= X2; y2= Y2;
   if (bg->get_type () != brush_none || (bl>0) || (br>0) || (bb>0) || (bt>0)) {
     // the 4*PIXEL extra space is sufficient for (shrinking factor) <= 8
-    x3= min (x3, x1 - (bl>>1) - (bl>0? PIXEL<<2: 0));
-    y3= min (y3, y1 - (bb>>1) - (bb>0? PIXEL<<2: 0));
-    x4= max (x4, x2 + (br>>1) + (br>0? PIXEL<<2: 0));
-    y4= max (y4, y2 + (bt>>1) + (bt>0? PIXEL<<2: 0));
+    x3= std::min (x3, x1 - (bl>>1) - (bl>0? PIXEL<<2: 0));
+    y3= std::min (y3, y1 - (bb>>1) - (bb>0? PIXEL<<2: 0));
+    x4= std::max (x4, x2 + (br>>1) + (br>0? PIXEL<<2: 0));
+    y4= std::max (y4, y2 + (bt>>1) + (bt>0? PIXEL<<2: 0));
   }
   finalize ();
 }

@@ -1,5 +1,5 @@
 
-#include "scheme.hpp"
+#include "guile18_scheme.hpp"
 
 SCM blackbox_tag;
 

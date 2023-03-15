@@ -85,11 +85,11 @@ edit_interface_rep::mouse_adjust_selection (SI x, SI y, int mods) {
   path p1= tree_path (sp, start_x, start_y, 0);
   path p2= tree_path (sp, end_x  , end_y  , 0);
   path p3= tree_path (sp, x      , y      , 0);
-  
+
   bool p1_p2= path_inf (p1, p2);
   bool p1_p3= path_inf (p1, p3);
   bool p2_p3= path_inf (p2, p3);
-  
+
   if (mods & ShiftMask) { // Holding shift: enlarge in direction start_ -> end_
     if (!p1_p2 && p1_p3) { // p2<p1<p3
       start_x= end_x;
@@ -233,7 +233,7 @@ edit_interface_rep::mouse_scroll (SI x, SI y, bool up) {
       double old_p = 0.0;
       if (ends (old_ys, "%")) old_p= as_double (old_ys (0, N(old_ys)-1));
       double new_p= old_p + 100.0 * ((double) dy) / ((double) (ty - cy));
-      new_p= max (min (new_p, 100.0), 0.0);
+      new_p= std::max (std::min (new_p, 100.0), 0.0);
       tree new_yt= as_string (new_p) * "%";
       if (new_yt != old_yt && is_accessible (obtain_ip (old_yt))) {
         object fun= symbol_object ("tree-set");
@@ -489,10 +489,10 @@ edit_interface_rep::mouse_any (string type, SI x, SI y, int mods, time_t t,
   if (((x > last_x && !tremble_right) || (x < last_x && tremble_right)) &&
       (abs (x - last_x) > abs (y - last_y)) &&
       type == "move") {
-    tremble_count= min (tremble_count + 1, 35);
+    tremble_count= std::min (tremble_count + 1, 35);
     tremble_right= (x > last_x);
     if (texmacs_time () - last_change > 500) {
-      tremble_count= max (tremble_count - 1, 0);
+      tremble_count= std::max (tremble_count - 1, 0);
       env_change = env_change | (THE_CURSOR + THE_FREEZE);
       last_change= texmacs_time ();
     }
@@ -555,7 +555,7 @@ edit_interface_rep::mouse_any (string type, SI x, SI y, int mods, time_t t,
     if (!over_graphics (x, y))
       eval ("(graphics-reset-context 'text-cursor)");
   }
-  
+
   if (type == "press-left" || type == "start-drag-left") {
     if (mods > 1) {
       mouse_adjusting = mods;
@@ -576,7 +576,7 @@ edit_interface_rep::mouse_any (string type, SI x, SI y, int mods, time_t t,
     send_mouse_grab (this, false);
     mouse_adjusting &= ~mouse_adjusting;
   }
-  
+
   if (type == "double-left") {
     send_mouse_grab (this, false);
     if (mouse_extra_click (x, y))
@@ -628,7 +628,7 @@ call_drop_event (string kind, SI x, SI y, SI ticket, time_t t, url base) {
   payloads->reset (ticket);
   array<object> args;
   args << object (x) << object (y) << object (relativize (doc, base));
-  call ("mouse-drop-event", args);
+  call_args ((string)"mouse-drop-event", args);
   //eval (list_object (symbol_object ("insert"), relativize (doc, base)));
   //array<object> args;
   //args << object (kind) << object (x) << object (y)
@@ -643,8 +643,8 @@ static void
 call_mouse_event (string kind, SI x, SI y, SI m, time_t t, array<double> d) {
   array<object> args;
   args << object (kind) << object (x) << object (y)
-       << object (m) << object ((double) t) << object (d);
- // call ("mouse-event", args);
+       << object (m) << object ((double) t); //<< object (d);
+  call_args ((string)"mouse-event", args);
 }
 
 static string

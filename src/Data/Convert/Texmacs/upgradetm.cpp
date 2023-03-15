@@ -1303,13 +1303,13 @@ upgrade_split (tree t, bool eq= false) {
         tree u= upgrade_split (t[i]);
         if (u == tree (FORMAT, "line separator")) sep++;
         if (u == tree (FORMAT, "next line")) {
-          nr_cols= max (sep, nr_cols);
+          nr_cols= std::max (sep, nr_cols);
           sep= 1;
           nr_rows++;
         }
         r << u;
       }
-    nr_cols= max (sep, nr_cols);
+    nr_cols= std::max (sep, nr_cols);
     if (split == "" && nr_cols == 1 && !eq) return r;
     else {
       int col=0, row=0;

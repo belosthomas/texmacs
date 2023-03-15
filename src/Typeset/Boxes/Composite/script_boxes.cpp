@@ -90,14 +90,14 @@ lim_box_rep::lim_box_rep (path ip, box r2, box lo, box hi, font fn2, bool gl):
   if (!is_nil (lo)) type += 1;
   if (!is_nil (hi)) type += 2;
   if (!is_nil (lo)) {
-    SI top= max (lo->y2, fn->y2 * script (fn->size, 1) / fn->size) + sep_lo;
+    SI top= std::max (lo->y2, fn->y2 * script (fn->size, 1) / fn->size) + sep_lo;
     Y= ref->y1;
     X= ((SI) (ref->right_slope ()* (Y+top-lo->y1))) + ((ref->x1+ref->x2)>>1);
     insert (lo, X- (lo->x2 >> 1), Y-top);
     italic_correct (lo);
   }
   if (!is_nil (hi)) {
-    SI bot= min (hi->y1, fn->y1 * script (fn->size, 1) / fn->size) - sep_hi;
+    SI bot= std::min (hi->y1, fn->y1 * script (fn->size, 1) / fn->size) - sep_hi;
     Y= ref->y2;
     X= ((SI) (ref->right_slope ()*(Y+hi->y2-bot))) + ((ref->x1+ref->x2)>>1);
     insert (hi, X- (hi->x2 >> 1), Y-bot);
@@ -205,7 +205,7 @@ dummy_script_box_rep::dummy_script_box_rep (path ip, box b1, box b2, font fn2):
   if (!is_nil (b2)) type += 2;
 
   if ((!is_nil (b1)) && (!is_nil (b2))) {
-    SI y= max (b1->y2, miny2);
+    SI y= std::max (b1->y2, miny2);
     SI d= lo_y + y + sep - hi_y - b2->y1;
     if (d > 0) {
       lo_y -= (d>>1);
@@ -224,8 +224,8 @@ dummy_script_box_rep::dummy_script_box_rep (path ip, box b1, box b2, font fn2):
   if (!is_nil (b1)) italic_restore (b1);
   if (!is_nil (b2)) italic_restore (b2);
   left_justify ();
-  y1= min (y1, fn->ysub_lo_base);
-  y2= max (y2, fn->ysup_lo_base + fn->yx);
+  y1= std::min (y1, fn->ysub_lo_base);
+  y2= std::max (y2, fn->ysup_lo_base + fn->yx);
   finalize ();
 }
 
@@ -319,9 +319,9 @@ struct side_box_rep: public composite_box_rep {
   double right_slope () {
     return bs[id_right]->right_slope (); }
   SI left_correction () {
-    return max (0, x1 - sx1(id_left) + bs[id_left]->left_correction ()); }
+    return std::max (0, x1 - sx1(id_left) + bs[id_left]->left_correction ()); }
   SI right_correction () {
-    return max (0, sx2(id_right) + bs[id_right]->right_correction () - x2); }
+    return std::max (0, sx2(id_right) + bs[id_right]->right_correction () - x2); }
   SI lsub_correction () {
     return nr_left==0? bs[0]->lsub_correction (): left_correction (); }
   SI lsup_correction () {
@@ -373,18 +373,18 @@ side_box_rep::side_box_rep (
     if (is_nil (l2)) nr_left= 0;
     else {
       nr_left= 1;
-      lsup= max (sup_hi_lim, ref->y2- (shift<<1)) - l2->y2;
+      lsup= std::max (sup_hi_lim, ref->y2- (shift<<1)) - l2->y2;
       if (lsup < sup_lo_base) lsup= sup_lo_base;
       if (lsup+ l2->y1 < sup_lo_lim) lsup= sup_lo_lim- l2->y1;
     }
   }
   else {
-    SI y= max (l1->y2, miny2);
+    SI y= std::max (l1->y2, miny2);
     if (lsub + y > sub_hi_lim) lsub= sub_hi_lim- y;
     if (is_nil (l2)) nr_left= 1;
     else {
       nr_left= 2;
-      lsup= max (sup_hi_lim, ref->y2- (shift<<1)) - l2->y2;
+      lsup= std::max (sup_hi_lim, ref->y2- (shift<<1)) - l2->y2;
       if (lsup < sup_lo_base) lsup= sup_lo_base;
       if (lsup+ l2->y1 < sup_lo_lim) lsup= sup_lo_lim- l2->y1;
       SI d= lsub + y + sep - lsup - l2->y1;
@@ -399,18 +399,18 @@ side_box_rep::side_box_rep (
     if (is_nil (r2)) nr_right= 0;
     else {
       nr_right= 1;
-      rsup= max (sup_hi_lim, ref->y2- (shift<<1)) - r2->y2;
+      rsup= std::max (sup_hi_lim, ref->y2- (shift<<1)) - r2->y2;
       if (rsup < sup_lo_base) rsup= sup_lo_base;
       if (rsup+ r2->y1 < sup_lo_lim) rsup= sup_lo_lim- r2->y1;
     }
   }
   else {
-    SI y= max (r1->y2, miny2);
+    SI y= std::max (r1->y2, miny2);
     if (rsub + y > sub_hi_lim) rsub= sub_hi_lim- y;
     if (is_nil (r2)) nr_right= 1;
     else {
       nr_right= 2;
-      rsup= max (sup_hi_lim, ref->y2- (shift<<1)) - r2->y2;
+      rsup= std::max (sup_hi_lim, ref->y2- (shift<<1)) - r2->y2;
       if (rsup < sup_lo_base) rsup= sup_lo_base;
       if (rsup+ r2->y1 < sup_lo_lim) rsup= sup_lo_lim- r2->y1;
       SI d= rsub + y + sep - rsup - r2->y1;
@@ -519,7 +519,7 @@ side_box_rep::find_child (SI x, SI y, SI delta, bool force) {
 
   if (nr_left>0) {
     if (nr_left == 1) xx= sx2(1);
-    else xx= max (sx2(1), sx2(2));
+    else xx= std::max (sx2(1), sx2(2));
     if ((x<xx) || ((x==xx) && (delta<0))) {
       if (bs[1]->accessible () || force) i= 1;
       if (nr_left == 2) {
@@ -533,7 +533,7 @@ side_box_rep::find_child (SI x, SI y, SI delta, bool force) {
 
   if (nr_right>0) {
     if (nr_right == 1) xx= sx1(k);
-    else xx= min (sx1(k), sx1(k+1));
+    else xx= std::min (sx1(k), sx1(k+1));
     if ((x>xx) || ((x==xx) && (delta>=0))) {
       if (bs[k]->accessible () || force) i= k;
       if (nr_right == 2) {
@@ -632,13 +632,13 @@ side_box_rep::find_cursor (path bp) {
   if (is_atom (bp) && (bp->item == 2)) {
     cursor cu (sx2 (1), 0);
     cu->y1= y1; cu->y2= y2;
-    if (nr_left == 2) cu->ox= max (cu->ox, sx2 (2));
+    if (nr_left == 2) cu->ox= std::max (cu->ox, sx2 (2));
     return cu;
   }
   else if (is_atom (bp) && (bp->item == 3)) {
     cursor cu (sx1 (nr_left+ 1), 0);
     cu->y1= y1; cu->y2= y2;
-    if (nr_right == 2) cu->ox= min (cu->ox, sx1 (nr_left+ 2));
+    if (nr_right == 2) cu->ox= std::min (cu->ox, sx1 (nr_left+ 2));
     return cu;
   }
   else {
@@ -665,8 +665,8 @@ side_box_rep::get_bracket_extents (SI& lo, SI& hi) {
   SI dd= fn->yx / 4;
   bs[0]->get_bracket_extents (lo, hi);
   for (i=1; i<N(bs); i++) {
-    lo= min (lo, sy1 (i) + dd);
-    hi= max (hi, sy2 (i) - dd);
+    lo= std::min (lo, sy1 (i) + dd);
+    hi= std::max (hi, sy2 (i) - dd);
   }
 }
 

@@ -87,24 +87,24 @@ poor_mono_font_rep::get_extents (string s, metric& ex) {
     SI w= ey->x2 - ey->x1;
     if (w <= mquad) {
       SI dx= x + ((wquad - w) >> 1);
-      ex->x1= min (ex->x1, ey->x1 + dx);
-      ex->x2= max (ex->x2, ey->x2 + dx);
-      ex->x3= min (ex->x3, ey->x3 + dx);
-      ex->x4= max (ex->x4, ey->x4 + dx);
+      ex->x1= std::min (ex->x1, ey->x1 + dx);
+      ex->x2= std::max (ex->x2, ey->x2 + dx);
+      ex->x3= std::min (ex->x3, ey->x3 + dx);
+      ex->x4= std::max (ex->x4, ey->x4 + dx);
     }
     else {
       double f= ((double) mquad) / ((double) w);
-      f= max (floor (f * 16.0) / 16.0, 0.01); // limit the number of factors
+      f= std::max (floor (f * 16.0) / 16.0, 0.01); // limit the number of factors
       SI dx= x + ((wquad - mquad) >> 1);
-      ex->x1= min (ex->x1, ((SI) (f * ey->x1)) + dx);
-      ex->x2= max (ex->x2, ((SI) (f * ey->x2)) + dx);
-      ex->x3= min (ex->x3, ((SI) (f * ey->x3)) + dx);
-      ex->x4= max (ex->x4, ((SI) (f * ey->x4)) + dx);
+      ex->x1= std::min (ex->x1, ((SI) (f * ey->x1)) + dx);
+      ex->x2= std::max (ex->x2, ((SI) (f * ey->x2)) + dx);
+      ex->x3= std::min (ex->x3, ((SI) (f * ey->x3)) + dx);
+      ex->x4= std::max (ex->x4, ((SI) (f * ey->x4)) + dx);
     }
-    ex->y1= min (ex->y1, ey->y1);
-    ex->y2= max (ex->y2, ey->y2);
-    ex->y3= min (ex->y3, ey->y3);
-    ex->y4= max (ex->y4, ey->y4);
+    ex->y1= std::min (ex->y1, ey->y1);
+    ex->y2= std::max (ex->y2, ey->y2);
+    ex->y3= std::min (ex->y3, ey->y3);
+    ex->y4= std::max (ex->y4, ey->y4);
     x += wquad;
   }
 }
@@ -160,7 +160,7 @@ poor_mono_font_rep::draw_fixed (renderer ren, string s, SI x, SI y, SI xk) {
     }
     else {
       double f= ((double) mquad) / ((double) w);
-      f= max (floor (f * 16.0) / 16.0, 0.01); // limit the number of factors
+      f= std::max (floor (f * 16.0) / 16.0, 0.01); // limit the number of factors
       SI dx= x + ((wquad - mquad) >> 1) + xk;
       ren->set_transformation (scaling (point (f, 1.0), point (dx, 0.0)));
       base->draw_fixed (ren, ss, 0, y);

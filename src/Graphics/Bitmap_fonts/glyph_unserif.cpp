@@ -20,8 +20,8 @@
 
 bool
 is_empty (glyph gl, int i1, int i2, int j) {
-  i1= max (i1, 0);
-  i2= min (i2, gl->width - 1);
+  i1= std::max (i1, 0);
+  i2= std::min (i2, gl->width - 1);
   for (int i= i1; i <= i2; i++)
     if (gl->get_x (i, j) != 0) return false;
   return true;
@@ -65,10 +65,10 @@ unserif (glyph gl, SI ypos, SI yrad, SI yext, SI penw, int serial) {
   if (i1 >= ww || i2 >= ww || i3 >= ww) return gl;
   bool clear_right= ((serial & 1) == 0);
   int di= ((i1 + i3) >> 1) - i2;
-  di= clear_right? max (di, 0): min (di, 0);
+  di= clear_right? std::max (di, 0): std::min (di, 0);
   i1 += di; i2 += di; i3 += di;
-  int J1= max (min (j1, xj), 0);
-  int J2= min (max (j3, xj), hh-1);
+  int J1= std::max (std::min (j1, xj), 0);
+  int J2= std::min (std::max (j3, xj), hh-1);
   bool pos= (xj > j2);
   glyph bmr= copy (gl);
   int ii, must= 0;
@@ -79,20 +79,20 @@ unserif (glyph gl, SI ypos, SI yrad, SI yext, SI penw, int serial) {
     double slope= ((double) (i3 - i1)) / ((double) (j3 - j1));
     int i= i1 + floor (slope * ((double) (j - j1)) + 0.5);
     i += clear_right? 1: -1;
-    i= max (0, min (i, ww-1));
+    i= std::max (0, std::min (i, ww-1));
     if (serial == 1)
       for (ii=0; ii<=i; ii++)
         bmr->set_x (ii, j, 0);
     else if (clear_right)
       for (ii=i; ii<ww; ii++) {
         if (is_empty (gl, ii, ii+pw-1, j) && ii-i >= must) break;
-        if (gl->get_x (ii, j) != 0) must= max (ii-i, must);
+        if (gl->get_x (ii, j) != 0) must= std::max (ii-i, must);
         bmr->set_x (ii, j, 0);
       }
     else
       for (ii=i; ii>=0; ii--) {
         if (is_empty (gl, ii-pw+1, ii, j) && i-ii >= must) break;
-        if (gl->get_x (ii, j) != 0) must= max (i-ii, must);
+        if (gl->get_x (ii, j) != 0) must= std::max (i-ii, must);
         bmr->set_x (ii, j, 0);
       }
   }
@@ -113,7 +113,7 @@ unserif (glyph gl, int kind, SI penw, int serial) {
   if (kind == UNSERIF_BOTTOM)
     yext= (gl->yoff - hh + 1) * PIXEL;
   SI mid = (gl->yoff - (hh >> 1)) * PIXEL;
-  SI yrad= max (hh/20, 1) * PIXEL;
+  SI yrad= std::max (hh/20, 1) * PIXEL;
   SI ypos= yext;
   if (ypos < mid) ypos += (hh/5) * PIXEL;
   else ypos -= (hh/5) * PIXEL;

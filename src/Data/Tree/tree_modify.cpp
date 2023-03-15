@@ -48,7 +48,7 @@ correct_concat_node (tree& t, int done) {
       if (t[1] == tree (CONCAT)) remove (t, 1, 1);
       else join (t, 0);
       remove_node (t, 0);
-      correct_concat_node (t, max (i-1, 0));
+      correct_concat_node (t, std::max (i-1, 0));
       return;
     }    
   }

@@ -14,13 +14,14 @@
 #include "tree.hpp"
 #include "parse_string.hpp"
 
-#ifdef OS_MINGW
+#ifdef WIN32
 #include "Qt/qt_sys_utils.hpp"
 #include "Windows/mingw_sys_utils.hpp"
-#include "Windows/win-utf8-compat.hpp"
 #else
 #include "Unix/unix_sys_utils.hpp"
 #endif
+
+#include <QApplication>
 
 int script_status = 1;
 
@@ -30,7 +31,7 @@ int script_status = 1;
 
 int
 system (string s, string& result, string& error) {
-#if defined (OS_MINGW)
+#if WIN32
   int r= qt_system (s, result, error);
 #else
   int r= unix_system (s, result, error);
@@ -40,7 +41,7 @@ system (string s, string& result, string& error) {
 
 int
 system (string s, string& result) {
-#if defined (OS_MINGW)
+#if WIN32
   int r= qt_system (s, result);
 #else
   int r= unix_system (s, result);
@@ -58,7 +59,7 @@ system (string s) {
     return r;
   }
   else {
-#if defined (OS_MINGW)
+#if WIN32
     // if (starts (s, "convert ")) return 1;
     return qt_system (s);
 #else
@@ -84,25 +85,26 @@ var_eval_system (string s) {
 string
 get_env (string var) {
   c_string _var (var);
-  const char* _ret= getenv (_var);
-  if (_ret==NULL) {
+  QByteArray _ret= qgetenv (_var);
+  if (_ret.isNull() || _ret.isEmpty()) {
     if (var == "PWD") return get_env ("HOME");
     return "";
   }
-  string ret (_ret);
+  string ret (_ret.data(), _ret.size());
   return ret;
   // do not delete _ret !
 }
 
 void
 set_env (string var, string with) {
-#if defined(STD_SETENV) && !defined(OS_MINGW)
+#if defined(STD_SETENV) && !WIN32
   c_string _var  (var);
   c_string _with (with);
   setenv (_var, _with, 1);
 #else
-  char* _varw= as_charp (var * "=" * with);
-  (void) putenv (_varw);
+  c_string _var  (var);
+  c_string _with (with);
+  (void) qputenv (&*_var, &*_with);
   // do not delete _varw !!!
   // -> known memory leak, but solution more complex than it is worth
 #endif
@@ -132,7 +134,7 @@ evaluate_system (array<string> arg,
   array<string> out (N(fd_out));
   array<string*> ptr (N(fd_out));
   for (int i= 0; i < N(fd_out); i++) ptr[i]= &(out[i]);
-#ifdef OS_MINGW
+#ifdef WIN32
   int ret= mingw_system (arg, fd_in, in, fd_out, ptr);
 #else
   int ret= unix_system (arg, fd_in, in, fd_out, ptr);
@@ -143,7 +145,7 @@ evaluate_system (array<string> arg,
 
 string 
 get_printing_default () {
-#if defined (OS_MINGW)
+#if WIN32
   url embedded ("$TEXMACS_PATH/bin/SumatraPDF.exe");
   if (exists (embedded))
     return sys_concretize (embedded) * " -print-dialog -exit-when-done";

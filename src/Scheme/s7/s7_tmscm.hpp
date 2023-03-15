@@ -142,7 +142,7 @@ public:
         return s7_boolean(mScheme, mSCM);
     }
 
-    int64_t to_int() override {
+    int to_int() override {
         assert(is_int());
         return s7_integer(mSCM);
     }

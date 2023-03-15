@@ -172,7 +172,7 @@ spell (tree mode, tree lan, range_set& sel, tree t,
   if (is_nil (pos1) || is_nil (pos2));
   else if (is_atomic (t))
     spell_string (lan, sel, t->label,
-                  p, max (pos1->item, 0), min (pos2->item, N(t->label)));
+                  p, std::max (pos1->item, 0), std::min (pos2->item, N(t->label)));
   else if (pos1 == path (0) && pos2 == path (1))
     spell (mode, lan, sel, t, p);
   else if (!is_atom (pos1) && !is_atom (pos2) && pos1->item == pos2->item)
@@ -180,8 +180,8 @@ spell (tree mode, tree lan, range_set& sel, tree t,
            p * pos1->item, pos1->next, pos2->next);
   else {
     int i1= 0, i2= N(t);
-    if (!is_atom (pos1)) i1= max (pos1->item, i1);
-    if (!is_atom (pos2)) i2= min (pos2->item + 1, i2);
+    if (!is_atom (pos1)) i1= std::max (pos1->item, i1);
+    if (!is_atom (pos2)) i2= std::min (pos2->item + 1, i2);
     int hits= 0;
     array<range_set> sub (N(t));
     for (int i=i1; i<i2; i++) {

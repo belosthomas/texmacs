@@ -185,7 +185,7 @@ typesetter_rep::typeset (SI& x1b, SI& y1b, SI& x2b, SI& y2b) {
   array<brush> new_bgs;
   array<rectangle> rs;
   b->collect_page_colors (new_bgs, rs);
-  for (int i=0; i<min(N(old_bgs), N(new_bgs)); i++)
+  for (int i=0; i<std::min(N(old_bgs), N(new_bgs)); i++)
     if (new_bgs[i] != old_bgs[i])
       r= least_upper_bound (r, rs[i]);
   old_bgs= new_bgs;

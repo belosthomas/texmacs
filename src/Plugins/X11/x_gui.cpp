@@ -588,7 +588,7 @@ x_gui_rep::check_event (int type) {
     status= XCheckMaskEvent (dpy, ButtonMotionMask, &ev);
     if (status) XPutBackEvent (dpy, &ev);
     return status;
-  case MENU_EVENT:
+  case TM_MENU_EVENT:
     status= XCheckMaskEvent (dpy, ButtonMotionMask|ButtonReleaseMask, &ev);
     if (status) XPutBackEvent (dpy, &ev);
     return status;

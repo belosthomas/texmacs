@@ -24,10 +24,10 @@ frame::enclose (double& x1, double& y1, double& x2, double& y2,
   for (int i=0; i<n; i++) {
     point p= p1 + (((double) i) / ((double) n)) * (p2 - p1);
     point q= (direct? operator () (p): operator [] (p));
-    x1= min (x1, q[0]);
-    y1= min (y1, q[1]);
-    x2= max (x2, q[0]);
-    y2= max (y2, q[1]);
+    x1= std::min (x1, q[0]);
+    y1= std::min (y1, q[1]);
+    x2= std::max (x2, q[0]);
+    y2= std::max (y2, q[1]);
   }
 }
 
@@ -117,9 +117,9 @@ struct an_scaling_rep: public frame_rep {
   point jacobian_of_inverse (point p, point v, bool &error) {
     (void) p; error= false; return v / magnify; }
   double direct_bound (point p, double eps) {
-    (void) p; return eps / min (abs (magnify)); }
+    (void) p; return eps / min_value (abs (magnify)); }
   double inverse_bound (point p, double eps) {
-    (void) p; return eps * max (abs (magnify)); }
+    (void) p; return eps * max_value (abs (magnify)); }
 };
 
 frame

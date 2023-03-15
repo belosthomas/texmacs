@@ -13,8 +13,11 @@
 #define SCHEME_HH
 
 #include "abstract_scheme.hpp"
+#include "Glue/glue.hpp"
 
-void initialize_scheme ();
+inline void initialize_scheme () {
+    initialize_glue();
+}
 
 #define SINGLE_SCHEME_INSTANCE 1
 #if SINGLE_SCHEME_INSTANCE
@@ -96,8 +99,8 @@ inline object object_from (patch p) {
 }
 
 inline object object_from(array<object> objlist) {
-    object obj = objlist[N(objlist) - 1];
-    for (int i = N(objlist) - 2; i >= 0; i--) {
+    object obj = scheme().null_object();
+    for (int i = N(objlist) - 1; i >= 0; i--) {
         obj = objlist[i].cons(obj);
     }
     return obj;
@@ -105,8 +108,8 @@ inline object object_from(array<object> objlist) {
 
 inline object object_from(std::vector<object> objlist) {
     object obj = scheme().null_object();
-    for (ssize_t i = objlist.size() - 1; i >= 0; i--) {
-        obj = objlist[i].cons(obj);
+    for (size_t i = objlist.size(); i >= 1; i--) {
+        obj = objlist[i - 1].cons(obj);
     }
     return obj;
 }
@@ -340,7 +343,9 @@ inline void set_preference (string var, string val) {
     return scheme().set_preference(var, val);
 }
 
-void notify_preference (string var);
+inline void notify_preference (string var) {
+    return scheme().notify_preference(var);
+}
 
 inline string get_preference (string var, string def= "default") {
     return scheme().get_preference(var, def);
@@ -420,6 +425,30 @@ template <typename... Args> inline object call(object fun, Args... args) {
     std::vector<tmscm> args_vec;
     for (auto arg : objs) {
         args_vec.push_back(arg.to_tmscm());
+    }
+    return {scheme().call_scheme (fun.to_tmscm(), args_vec)};
+}
+
+template <typename... Args> inline object call_args(string fun, std::vector<object> args) {
+    return {scheme().call_scheme (scheme().eval_scheme(fun), args)};
+}
+
+template <typename... Args> inline object call_args(string fun, array<object> args) {
+    std::vector<tmscm> args_vec;
+    for (int i = 0; i < N(args); i++) {
+        args_vec.push_back(args[i].to_tmscm());
+    }
+    return {scheme().call_scheme (scheme().eval_scheme(fun), args_vec)};
+}
+
+template <typename... Args> inline object call_args(object fun, std::vector<object> args) {
+    return {scheme().call_scheme (fun.to_tmscm(), args)};
+}
+
+template <typename... Args> inline object call_args(object fun, array<object> args) {
+    std::vector<tmscm> args_vec;
+    for (int i = 0; i < N(args); i++) {
+        args_vec.push_back(args[i].to_tmscm());
     }
     return {scheme().call_scheme (fun.to_tmscm(), args_vec)};
 }

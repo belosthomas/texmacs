@@ -1257,7 +1257,7 @@ count_occurrences (string s, string in) {
 int
 overlapping (string s1, string s2) {
   // return the longuest string being suffix of s1 and prefix of s2
-  int i= min (N(s1), N(s2)), n= N(s1);
+  int i= std::min (N(s1), N(s2)), n= N(s1);
   while (i>0) {
     if (s1(n-i, n) == s2(0, i))
       return i;
@@ -1448,7 +1448,7 @@ find_bracket_sub (tree t, dir_t dir, const string& lbr, const string& rbr,
         else if (test (t->label, pos, rbr))
           ++cnt;
         if (cnt == 0)
-          return reverse (path (min (N(t), pos), obtain_ip (t)));
+          return reverse (path (std::min (N(t), pos), obtain_ip (t)));
         int prev = pos;
         next (t->label, pos);
         if (prev == pos)
@@ -1588,7 +1588,7 @@ find_common (string s1, string s2, int& c1, int& c2) {
   c1= c2= 0;
   int n1= N(s1), n2= N(s2);
   if (n1 == 0 || n2 == 0) return;
-  int t= min (min (n1, n2), 6);
+  int t= std::min (std::min (n1, n2), 6);
   for (int k=1; k<t; k++) {
     int a1= (k*n1)/t, a2= (k*n2)/t;
     int len= find_longest (s1, s2, a1, a2);
@@ -1641,7 +1641,7 @@ distance (string s1, string s2) {
   int d= 0;
   array<int> r= differences (s1, s2);
   for (int k=0; k<N(r); k+=4)
-    d += max (r[k+1] - r[k], r[k+3] - r[k+2]);
+    d += std::max (r[k+1] - r[k], r[k+3] - r[k+2]);
   return d;
 }
 

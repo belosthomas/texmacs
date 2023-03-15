@@ -375,7 +375,7 @@ restricted_exec (edit_env env, tree t, int end) {
   if (is_func (t, ASSIGN, 2) && end == 2)
     env->exec (t);
   else if (is_document (t) || is_concat (t))
-    for (int i=0; i < min (end, 10); i++)
+    for (int i=0; i < std::min (end, 10); i++)
       restricted_exec (env, t[i], arity (t[i]));
   else if (is_compound (t, "hide-preamble", 1) ||
            is_compound (t, "show-preamble", 1))
@@ -1036,8 +1036,8 @@ edit_typeset_rep::typeset (SI& x1, SI& y1, SI& x2, SI& y2) {
   while (true) {
     SI sx1, sy1, sx2, sy2;
     typeset_sub (sx1, sy1, sx2, sy2);
-    x1= min (x1, sx1); y1= min (y1, sy1);
-    x2= max (x2, sx2); y2= max (y2, sy2);
+    x1= std::min (x1, sx1); y1= std::min (y1, sy1);
+    x2= std::max (x2, sx2); y2= std::max (y2, sy2);
     if (!env->complete) break;
     env->complete= false;
     clean_unused (env->local_ref, env->touched);

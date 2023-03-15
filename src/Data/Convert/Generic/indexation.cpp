@@ -81,7 +81,7 @@ score_computer::compute (string s, int m) {
       if (start_list[(int) (unsigned char) s[start]]) {
         string ss= locase_all (s (start, i));
         if (!score->contains (ss)) keys << ss;
-        score (ss)= min (score[ss] + m, 10000);
+        score (ss)= std::min (score[ss] + m, 10000);
         m= multiplier[ss];
       }
       else m= 1;
@@ -97,7 +97,7 @@ score_computer::compute (tree t, int m) {
     for (int i=0; i<N(t); i++) {
       string tag= as_string (L(t));
       string qtag= "<" * tag * ">";
-      if (i == 0) m= max (m, multiplier[tag]);
+      if (i == 0) m= std::max (m, multiplier[tag]);
       else m= 1;
       score(qtag)= score[qtag] + 1;
       compute (t[i], m);

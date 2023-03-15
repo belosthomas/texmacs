@@ -11,16 +11,6 @@
 
 #include "locale.hpp"
 
-#ifndef OS_MINGW
-#include <langinfo.h>
-#ifndef X11TEXMACS
-#include <locale>
-#endif
-#else
-#include <winnls.h>
-#endif
-
-
 #define outline Core_outline
 #define extend Core_extends
 #ifdef OS_MACOS
@@ -40,62 +30,6 @@
 /******************************************************************************
 * Locales
 ******************************************************************************/
-
-#ifdef OS_MINGW
-const string
-windows_locale_to_language () {
-  static string language;
-
-  if (N(language) == 0) {
-    LANGID lid= GetUserDefaultUILanguage();
-    switch(PRIMARYLANGID(lid)) {
-    case LANG_BULGARIAN:  language= "bulgarian"; break;
-    case LANG_CHINESE:	  language= "chinese"; break;
-    case LANG_CHINESE_TRADITIONAL: language= "taiwanese"; break;
-    case LANG_CROATIAN:   language= "croatian"; break;
-    case LANG_CZECH:      language= "czech"; break;
-    case LANG_DANISH:     language= "danish"; break;
-    case LANG_DUTCH:      language= "dutch"; break;
-    case LANG_ENGLISH:
-      switch(SUBLANGID(lid)) {
-      case SUBLANG_ENGLISH_UK: language= "british"; break;
-      default:            language= "english"; break;
-      }
-      break;
-    case LANG_FRENCH:     language= "french"; break;
-    case LANG_GERMAN:     language= "german"; break;
-    case LANG_GREEK:      language= "greek"; break;
-    case LANG_HUNGARIAN:  language= "hungarian"; break;
-    case LANG_ITALIAN:    language= "italian"; break;
-    case LANG_JAPANESE:   language= "japanese"; break;
-    case LANG_KOREAN:     language= "korean"; break;
-    case LANG_POLISH:     language= "polish"; break;
-    case LANG_PORTUGUESE: language= "portuguese"; break;
-    case LANG_ROMANIAN:   language= "romanian"; break;
-    case LANG_RUSSIAN:    language= "russian"; break;
-    case LANG_SLOVAK:     language= "slovak"; break;
-    case LANG_SLOVENIAN:  language= "slovene"; break;
-    case LANG_SPANISH:    language= "spanish"; break;
-    case LANG_SWEDISH:    language= "swedish"; break;
-    case LANG_UKRAINIAN:  language= "ukrainian"; break;
-    default:              language= "english"; break;
-    }
-  }
-  return language;
-}
-#endif
-
-#ifdef OS_MACOS
-string
-get_mac_language () {
-  char mac_lang[50];
-  CFLocaleRef locale= CFLocaleCopyCurrent ();
-  CFTypeRef lang= CFLocaleGetValue (locale, kCFLocaleLanguageCode);
-  CFStringGetCString ((CFStringRef) lang, mac_lang, sizeof (mac_lang), kCFStringEncodingUTF8);
-  CFRelease (locale);
-  return string (mac_lang);
-}
-#endif
 
 string
 locale_to_language (string s) {
@@ -184,47 +118,49 @@ language_to_local_ISO_charset (string s) {
   return "ISO-8859-1";
 }
 
+#include <QLocale>
+
 string
 get_locale_language () {
-#if OS_MINGW
-  return windows_locale_to_language ();
-#else
-  string env_lan= get_env ("LC_ALL");
-  if (env_lan != "") return locale_to_language (env_lan);
-  env_lan= get_env ("LC_MESSAGES");
-  if (env_lan != "") return locale_to_language (env_lan);
-  env_lan= get_env ("LANG");
-  if (env_lan != "") return locale_to_language (env_lan);
-  env_lan= get_env ("GDM_LANG");
-  if (env_lan != "") return locale_to_language (env_lan);
-#ifdef OS_MACOS
-  return locale_to_language (get_mac_language ());
-#endif
-  return "english";
-#endif
+    // Detect the language of the current locale with Qt
+
+    QLocale locale;
+    QString language = locale.name();
+
+    if (language == "en_GB") return "british";
+    if (language == "en_US") return "american";
+    if (language == "bg_BG") return "bulgarian";
+    if (language == "zh_CN") return "chinese";
+    if (language == "hr_HR") return "croatian";
+    if (language == "cs_CZ") return "czech";
+    if (language == "da_DK") return "danish";
+    if (language == "nl_NL") return "dutch";
+    if (language == "en_US") return "english";
+    if (language == "eo_EO") return "esperanto";
+    if (language == "fi_FI") return "finnish";
+    if (language == "fr_FR") return "french";
+    if (language == "de_DE") return "german";
+    if (language == "gr_GR") return "greek";
+    if (language == "hu_HU") return "hungarian";
+    if (language == "it_IT") return "italian";
+    if (language == "ja_JP") return "japanese";
+    if (language == "ko_KR") return "korean";
+    if (language == "pl_PL") return "polish";
+    if (language == "pt_PT") return "portuguese";
+    if (language == "ro_RO") return "romanian";
+    if (language == "ru_RU") return "russian";
+    if (language == "sk_SK") return "slovak";
+    if (language == "sl_SI") return "slovene";
+    if (language == "es_ES") return "spanish";
+    if (language == "sv_SV") return "swedish";
+    if (language == "zh_TW") return "taiwanese";
+    if (language == "uk_UA") return "ukrainian";
+    return "unknown";
 }
 
 string
 get_locale_charset () {
-#ifdef OS_MINGW
-  // in principle for now we use 8-bit codepage stuff in windows (at least for filenames);
-  // return language_to_local_ISO_charset (get_locale_language ());
-  return "UTF-8"; // do not change this!
-  // otherwise there is a weird problem with page width shrinking on screen
-#elif OS_MACOS
   return "UTF-8";
-#elif X11TEXMACS
-  return "UTF-8";
-#elif OS_HAIKU
-  return "UTF-8";
-#elif ANDROID
-  return "UTF-8"; // https://developer.android.com/reference/java/nio/charset/Charset.html#defaultCharset()
-#else
-  std::locale previous= std::locale::global (std::locale(""));
-  string charset= string (nl_langinfo (CODESET));
-  std::locale::global (previous);
-  return charset;
-#endif
 }
 
 /******************************************************************************

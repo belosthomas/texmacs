@@ -149,7 +149,7 @@ concater_rep::glue (box b, int ref, int arg) {
   a[arg]  = line_item (OBSOLETE_ITEM, OP_SKIP, a[arg]->b, a[arg]->penalty);
   a[ref]  = line_item (arg<ref? GLUE_LEFT_ITEM: GLUE_RIGHT_ITEM,
                        a[ref]->op_type, b,
-                       min (a[ref]->penalty, a[arg]->penalty));
+                       std::min (a[ref]->penalty, a[arg]->penalty));
   a[ref]->spc = spc;
 }
 
@@ -165,7 +165,7 @@ concater_rep::glue (box b, int ref, int arg1, int arg2) {
   }
 
   space spc = max (a[ref]->spc, max (a[arg1]->spc, a[arg2]->spc));
-  int   pen = min (a[ref]->penalty, min (a[arg1]->penalty, a[arg2]->penalty));
+  int   pen = std::min (a[ref]->penalty, std::min (a[arg1]->penalty, a[arg2]->penalty));
 
   space ref_spc= a[ref]->spc;
   a[arg1]= line_item (OBSOLETE_ITEM, OP_SKIP, a[arg1]->b, a[arg1]->penalty);
@@ -301,14 +301,14 @@ concater_rep::handle_matching (int start, int end) {
     // y2= max (y2, a[i]->b->sup_base());
     SI lo, hi;
     a[i]->b->get_bracket_extents (lo, hi);
-    y1= min (y1, lo);
-    y2= max (y2, hi);
+    y1= std::min (y1, lo);
+    y2= std::max (y2, hi);
     a[i]->penalty++;
     uninit= false;
   }
   if (uninit) {
-    y1= min (a[start]->b->y1, a[end]->b->y2);
-    y2= max (a[start]->b->y1, a[end]->b->y2);
+    y1= std::min (a[start]->b->y1, a[end]->b->y2);
+    y2= std::max (a[start]->b->y1, a[end]->b->y2);
   }
 
   for (i=start; i<=end; i++) {
@@ -339,8 +339,8 @@ concater_rep::handle_matching (int start, int end) {
         SI Y2   = y2 - (fn->sep >> 1);
         SI tol  = fn->sep << 1;
         SI drift= ((Y1 + Y2) >> 1) - mid; // fn->yfrac;
-        if (drift < 0) Y2 += min (-drift, tol) << 1;
-        else Y1 -= min (drift, tol) << 1;
+        if (drift < 0) Y2 += std::min (-drift, tol) << 1;
+        else Y1 -= std::min (drift, tol) << 1;
 
         // further adjustments when the enclosed expression is not very high
         // and for empty brackets

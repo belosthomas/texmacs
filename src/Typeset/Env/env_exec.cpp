@@ -87,7 +87,7 @@ edit_env_rep::rewrite (tree t) {
       if (!is_nil (macro_arg)) macro_arg= macro_arg->next;
       if (!is_nil (macro_src)) macro_src= macro_src->next;
 
-      int i, n= max (0, end-start);
+      int i, n= std::max (0, end-start);
       tree r (make_tree_label (t[1]->label), n);
       if (t[0]->label == "identity")
 	for (i=0; i<n; i++)
@@ -1331,9 +1331,9 @@ edit_env_rep::exec_min_max (tree t) {
       if (!is_double (next))
 	return tree (LABEL_ERROR, "bad min/max");
       if (is_func (t, MINIMUM))
-	ret= min (ret, as_double (next));
+	ret= std::min (ret, as_double (next));
       else
-	ret= max (ret, as_double (next));
+	ret= std::max (ret, as_double (next));
     }
     return as_string (ret);
   }
@@ -1572,16 +1572,16 @@ edit_env_rep::exec_range (tree t) {
   if (!(is_int (t2) && is_int (t3))) return tree (LABEL_ERROR, "bad range");
   if (is_compound (t1)) {
     if (is_tuple (t1)) {
-      int i1= max (0, as_int (t2));
-      int i2= min (N (t1), as_int (t3));
-      i2 = max (i1, i2);
+      int i1= std::max (0, as_int (t2));
+      int i2= std::min (N (t1), as_int (t3));
+      i2 = std::max (i1, i2);
       return t1 (i1, i2);
     }
     return tree (LABEL_ERROR, "bad range");
   }
-  int i1= max (0, as_int (t2));
-  int i2= min (N(t1->label), as_int (t3));
-  i2 = max (i1, i2);
+  int i1= std::max (0, as_int (t2));
+  int i2= std::min (N(t1->label), as_int (t3));
+  i2 = std::max (i1, i2);
   return t1->label (i1, i2);
 }
 

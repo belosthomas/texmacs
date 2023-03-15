@@ -599,7 +599,7 @@ packrat_parser_rep::highlight (tree t, path tp, path p1, path p2, int col) {
                "invalid selection");
     if (p1 == path (0)) p1= path (0, 0);
     if (p2 == path (1)) p2= path (N(t) - 1, right_index (t[N(t) -1]));
-    for (int i= max (0, p1->item); i <= min (p2->item, N(t)-1); i++) {
+    for (int i= std::max (0, p1->item); i <= std::min (p2->item, N(t)-1); i++) {
       path q1= (i == p1->item? p1->next: path (0));
       path q2= (i == p2->item? p2->next: path (right_index (t[i])));
       highlight (t[i], tp * i, q1, q2, col);
@@ -714,8 +714,8 @@ consistent_enlargement (tree t, int& begin, int& end) {
     while (end   < N(t) && !empty_line (t[end    ])) end++;
     if (consistent_portion (t, begin, end)) return;
     //cout << "Inconsistent " << begin << " -- " << end << "\n";
-    begin= max (0   , begin - max (end - begin, 1));
-    end  = min (N(t), end   + max (end - begin, 1));
+    begin= std::max (0   , begin - std::max (end - begin, 1));
+    end  = std::min (N(t), end   + std::max (end - begin, 1));
     //cout << "  Try " << begin << " -- " << end << "\n";
   }
 }
@@ -790,7 +790,7 @@ packrat_select (string lan, string s, tree in, path in_pos,
   if (pos1 == PACKRAT_FAILED || pos2 == PACKRAT_FAILED) return false;
   array<C> kind, begin, end;
   C pos0= pos1;
-  if ((mode == 1 && pos1 == pos2) || mode == 2) pos0= max (pos1 - 1, 0);
+  if ((mode == 1 && pos1 == pos2) || mode == 2) pos0= std::max (pos1 - 1, 0);
   par->context (sym, 0, pos0, pos2, mode, kind, begin, end);
   //for (int i=0; i<N(kind); i++)
   //  cout << i << ":\t"

@@ -124,8 +124,8 @@ latex_correspondence (string mtar, hashset<path> l, hashmap<path,path>& corr) {
       inv (p)= pos;
       int cpos= inv [cp];
       if (cpos >= 0) {
-        int b= min (pos, cpos);
-        int e= max (pos, cpos);
+        int b= std::min (pos, cpos);
+        int e= std::max (pos, cpos);
         corr (path_up (p))= path (b, e);
       }
     }

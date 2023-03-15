@@ -86,9 +86,9 @@ new_breaker_rep::new_breaker_rep (
 
   int same= 0;
   for (int i=0; i<N(l); i++) {
-    SI   bot_cor= max (0, l[i]->b->y1- fn->y1);
+    SI   bot_cor= std::max (0, l[i]->b->y1- fn->y1);
     SI   bod_cor= l[i]->b->h ();
-    SI   top_cor= max (0, fn->y2- l[i]->b->y2);
+    SI   top_cor= std::max (0, fn->y2- l[i]->b->y2);
     if (l[i]->type != PAGE_LINE_ITEM) bot_cor= bod_cor= top_cor= 0;
     body_ht  << (space (l[i]->b->h()) + l[i]->spc);
     body_cor << space (bot_cor, bod_cor, top_cor);
@@ -183,9 +183,9 @@ new_breaker_rep::make_insertion (lazy_vstream lvs, path p) {
   array<space> ins_cor;
   array<space> ins_tot;
   for (int i=0; i<N(l); i++) {
-    SI   bot_cor= max (0, l[i]->b->y1- fn->y1);
+    SI   bot_cor= std::max (0, l[i]->b->y1- fn->y1);
     SI   bod_cor= l[i]->b->h ();
-    SI   top_cor= max (0, fn->y2- l[i]->b->y2);
+    SI   top_cor= std::max (0, fn->y2- l[i]->b->y2);
     if (l[i]->type != PAGE_LINE_ITEM) bot_cor= bod_cor= top_cor= 0;
     ins_ht  << (space (l[i]->b->h()) + l[i]->spc);
     ins_cor << space (bot_cor, bod_cor, top_cor);
@@ -339,7 +339,7 @@ new_breaker_rep::find_page_breaks (path b1) {
 	if (spc->max >= height->min) pen += EXTEND_PAGE_PENALTY;
 	else {
 	  double factor=
-	    ((double) max (spc->def, 1))/((double) max (height->def, 1));
+	    ((double) std::max (spc->def, 1))/((double) std::max (height->def, 1));
 	  if (factor < 0.0 ) factor= 0.0;
 	  if (factor > 0.99) factor= 0.99;
 	  pen += vpenalty ((int) ((1.0 - factor) * TOO_SHORT_PENALTY));
@@ -349,7 +349,7 @@ new_breaker_rep::find_page_breaks (path b1) {
 	if (spc->min <= height->max) pen += REDUCE_PAGE_PENALTY;
 	else {
 	  double factor=
-	    ((double) max (spc->def, 1))/((double) max (height->def, 1));
+	    ((double) std::max (spc->def, 1))/((double) std::max (height->def, 1));
 	  if (factor < 1.0  ) factor= 1.0;
 	  if (factor > 100.0) factor= 100.0;
 	  pen += vpenalty ((int) (factor * TOO_LONG_PENALTY));
@@ -495,7 +495,7 @@ new_breaker_rep::format_pagelet (pagelet& pg, space ht, bool last_page) {
   else if (ht->max < pg->ht->min) {
     // cout << "Overfull page" << LF;
     stretch= -1.0;
-    double factor= ((double) max (pg->ht->def, 1))/((double) max (ht->def, 1));
+    double factor= ((double) std::max (pg->ht->def, 1))/((double) std::max (ht->def, 1));
     if (factor < 1.0  ) factor= 1.0;
     if (factor > 100.0) factor= 100.0;
     pen= vpenalty ((int) (factor * TOO_LONG_PENALTY));
@@ -503,7 +503,7 @@ new_breaker_rep::format_pagelet (pagelet& pg, space ht, bool last_page) {
   else {
     // cout << "Underfull page" << LF;
     stretch= 1.0;
-    double factor= ((double) max (pg->ht->def, 1))/((double) max (ht->def, 1));
+    double factor= ((double) std::max (pg->ht->def, 1))/((double) std::max (ht->def, 1));
     if (factor < 0.0 ) factor= 0.0;
     if (factor > 0.99) factor= 0.99;
     pen= vpenalty ((int) ((1.0 - factor) * TOO_SHORT_PENALTY));

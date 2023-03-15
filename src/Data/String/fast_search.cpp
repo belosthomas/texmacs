@@ -125,7 +125,7 @@ get_longest_common (string s1, string s2, int& b1, int& e1, int& b2, int& e2) {
   int bestl= 0;
   string_searcher ss1 (s1);
   string_searcher ss2 (s2);
-  for (int i= min (N(ss1->a), N(ss2->a)) - 1; i>=0; i--) {
+  for (int i= std::min (N(ss1->a), N(ss2->a)) - 1; i>=0; i--) {
     hashmap<int,array<int> > a1= ss1->a[i];
     hashmap<int,array<int> > a2= ss2->a[i];
     iterator<int> it= iterate (a1);

@@ -184,7 +184,7 @@ aqua_gui_rep::check_event (int type) {
         return check_mask(NSMouseMovedMask);
       case DRAG_EVENT:
         return check_mask(NSLeftMouseDraggedMask|NSRightMouseDraggedMask);
-      case MENU_EVENT:
+      case TM_MENU_EVENT:
         return check_mask(NSLeftMouseDownMask |
                           NSLeftMouseUpMask |
                           NSRightMouseDownMask |

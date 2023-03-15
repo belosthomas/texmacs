@@ -225,7 +225,7 @@ pager_rep::papyrus_make () {
   SI left  = (odd+even) >> 1;
   SI height= top + dtop + bot + dbot + ph;
   if (env->get_string (PAGE_MEDIUM) == "beamer")
-    height= max (height, env->page_user_height + top + bot);
+    height= std::max (height, env->page_user_height + top + bot);
   array<box> bs   (1); bs   [0]= b;
   array<SI>  bs_x (1); bs_x [0]= left;
   array<SI>  bs_y (1); bs_y [0]= -top - dtop;

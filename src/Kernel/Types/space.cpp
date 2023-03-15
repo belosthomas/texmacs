@@ -107,7 +107,7 @@ operator / (space spc, double x) {
 
 space
 max (space spc1, space spc2) {
-  return space (max (spc1->min, spc2->min),
-		max (spc1->def, spc2->def),
-		max (spc1->max, spc2->max));
+  return space (std::max (spc1->min, spc2->min),
+                std::max (spc1->def, spc2->def),
+                std::max (spc1->max, spc2->max));
 }

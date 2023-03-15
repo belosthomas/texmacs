@@ -47,8 +47,8 @@ edit_interface_rep::draw_text (renderer ren, rectangles& l) {
   if (animated_flag) anim_next= 1.0e12;
   eb->redraw (ren, eb->find_box_path (tp, tp_found), l);
   if (animated_flag) {
-    double t= max (((double) texmacs_time ()) + 25.0, eb->anim_next ());
-    anim_next= min (anim_next, t);
+    double t= std::max (((double) texmacs_time ()) + 25.0, eb->anim_next ());
+    anim_next= std::min (anim_next, t);
   }
 }
 
@@ -86,7 +86,7 @@ edit_interface_rep::draw_cursor (renderer ren) {
     cursor cu= get_cursor();
     if (!inside_active_graphics ()) {
       SI dw= 0;
-      if (tremble_count > 3) dw= min (tremble_count - 3, 25) * pixel;
+      if (tremble_count > 3) dw= std::min (tremble_count - 3, 25) * pixel;
       cu->y1 -= 2*zpixel + dw; cu->y2 += 2*zpixel + dw;
       SI x1= cu->ox + ((SI) (cu->y1 * cu->slope)), y1= cu->oy + cu->y1;
       SI x2= cu->ox + ((SI) (cu->y2 * cu->slope)), y2= cu->oy + cu->y2;
@@ -127,11 +127,11 @@ edit_interface_rep::draw_surround (renderer ren, rectangle r) {
   string medium= get_init_string (PAGE_MEDIUM);
   if (medium == "automatic") return;
   if (medium == "beamer" && full_screen) return;
-  ren->clear (r->x1, r->y1, max (r->x1, eb->x1), r->y2);
-  ren->clear (min (r->x2, eb->x2), r->y1, r->x2, r->y2);
+  ren->clear (r->x1, r->y1, std::max (r->x1, eb->x1), r->y2);
+  ren->clear (std::min (r->x2, eb->x2), r->y1, r->x2, r->y2);
   if (medium == "papyrus") return;
-  ren->clear (r->x1, r->y1, r->x2, max (r->y1, eb->y1));
-  ren->clear (r->x1, min (r->y2, eb->y2), r->x2, r->y2);
+  ren->clear (r->x1, r->y1, r->x2, std::max (r->y1, eb->y1));
+  ren->clear (r->x1, std::min (r->y2, eb->y2), r->x2, r->y2);
 }
 
 void
@@ -337,8 +337,8 @@ edit_interface_rep::handle_clear (renderer win, SI x1, SI y1, SI x2, SI y2) {
   x1= (SI) (x1 / magf); y1= (SI) (y1 / magf);
   x2= (SI) (x2 / magf); y2= (SI) (y2 / magf);
   win->set_zoom_factor (zoomf);
-  draw_background (win, max (eb->x1, x1), max (eb->y1, y1),
-                        min (eb->x2, x2), min (eb->y2, y2));
+  draw_background (win, std::max (eb->x1, x1), std::max (eb->y1, y1),
+                   std::min (eb->x2, x2), std::min (eb->y2, y2));
   draw_surround (win, rectangle (x1, y1, x2, y2));
   win->reset_zoom_factor ();
 }

@@ -74,11 +74,11 @@ lazy_paragraph_rep::lazy_paragraph_rep (edit_env env2, path ip):
 
   string ks= as_string (env->read (PAR_KERNING_STRETCH));
   if (ks == "auto") {
-    double cpl= min (max (((double) width) / max (env->fn->wfn, 1), 10.0), 40.0);
+    double cpl= std::min (std::max (((double) width) / std::max (env->fn->wfn, 1), 10.0), 40.0);
     kstretch= 1.0 / cpl;
   }
   else if (ks == "tolerant") {
-    double cpl= min (max (((double) width) / max (env->fn->wfn, 1), 10.0), 40.0);
+    double cpl= std::min (std::max (((double) width) / std::max (env->fn->wfn, 1), 10.0), 40.0);
     kstretch= 2.5 / cpl;
   }
   else if (is_double (ks)) kstretch= as_double (ks);
@@ -95,11 +95,11 @@ lazy_paragraph_rep::lazy_paragraph_rep (edit_env env2, path ip):
 
   string ef= as_string (env->read (PAR_EXPANSION));
   if (ef == "auto") {
-    double cpl= min (max (((double) width) / max (env->fn->wfn, 1), 10.0), 40.0);
+    double cpl= std::min (std::max (((double) width) / std::max (env->fn->wfn, 1), 10.0), 40.0);
     expansion= 0.7 / cpl;
   }
   else if (ef == "tolerant") {
-    double cpl= min (max (((double) width) / max (env->fn->wfn, 1), 10.0), 40.0);
+    double cpl= std::min (std::max (((double) width) / std::max (env->fn->wfn, 1), 10.0), 40.0);
     expansion= 1.75 / cpl;
   }
   else if (is_double (ef)) expansion= as_double (ef);
@@ -290,7 +290,7 @@ lazy_paragraph_rep::increase_kerning (SI dw, SI the_width) {
   SI max_w= total_width (adjusted (kstretch, first, last));
   if (obj_w >= def_w && max_w > def_w) {
     double ratio= ((double) (obj_w - def_w)) / ((double) (max_w - def_w));
-    ratio= min (ratio, 1.0);
+    ratio= std::min (ratio, 1.0);
     array<box> bs= adjusted (kstretch * ratio, first, last);
     for (int i=0; i<N(bs); i++) {
       cur_w += bs[i]->w() - items[cur_start + i]->w();
@@ -316,7 +316,7 @@ lazy_paragraph_rep::decrease_kerning (SI dw, SI the_width) {
   SI min_w= total_width (adjusted (-kreduce, first, last));
   if (obj_w <= def_w && min_w < def_w) {
     double ratio= ((double) (def_w - obj_w)) / ((double) (def_w - min_w));
-    ratio= min (ratio, 1.0);
+    ratio= std::min (ratio, 1.0);
     array<box> bs= adjusted (-kreduce * ratio, first, last);
     for (int i=0; i<N(bs); i++) {
       cur_w += bs[i]->w() - items[cur_start + i]->w();
@@ -336,7 +336,7 @@ lazy_paragraph_rep::expand_glyphs (SI dw, SI the_width) {
   SI xdw= (SI) (dw * (expansion / (kstretch + expansion)));
   SI mdw= (SI) (expansion * the_width);
   int stages= 8;
-  int stage = min (((3 * stages + 1) * xdw) / (3 * mdw), stages);
+  int stage = std::min (((3 * stages + 1) * xdw) / (3 * mdw), stages);
   if (stage <= 0) return;
   double expansion_factor= (expansion * stage) / stages;
   array<box> bs;
@@ -367,7 +367,7 @@ lazy_paragraph_rep::contract_glyphs (SI dw, SI the_width) {
   SI xdw= (SI) (dw * (contraction / (kreduce + contraction)));
   SI mdw= (SI) (contraction * the_width);
   int stages= 8;
-  int stage = min (((3 * stages + 2) * xdw) / (3 * mdw), stages);
+  int stage = std::min (((3 * stages + 2) * xdw) / (3 * mdw), stages);
   if (stage <= 0) return;
   double contraction_factor= (contraction * stage) / stages;
   array<box> bs;
@@ -602,7 +602,7 @@ lazy_paragraph_rep::handle_decorations () {
   for (i=0; i<N(decs); i++) {
     tree t= decs [i][1];
     if (t == tree (DATOMS))
-      new_decs->resize (max (0, N(new_decs)-1));
+      new_decs->resize (std::max (0, N(new_decs)-1));
     else new_decs << tuple ("0", t);
   }
   decs= new_decs;
@@ -665,7 +665,7 @@ lazy_paragraph_rep::line_end (space spc, int penalty) {
   box b= phrase_box (sss->ip, items, items_sp);
   sss->print (b, fl, nr_cols);
   sss->print (spc);
-  sss->penalty (max (penalty, min_pen));
+  sss->penalty (std::max (penalty, min_pen));
   sss->flush ();
 }
 
@@ -879,7 +879,7 @@ lazy_paragraph_rep::query (lazy_type request, format fm) {
     for (i=0; i<n-1; i++)
       w += li[i]->spc->def + li[i]->b->x2;
     if (i<n) w += li[i]->b->x2;
-    w= max (w, 1);  // width of a paragraph must be strictly positive for
+    w= std::max (w, 1);  // width of a paragraph must be strictly positive for
                     // correct positioning inside tables
     return make_format_width (w);
   }

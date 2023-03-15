@@ -101,12 +101,12 @@ struct hypot_op {
 
 struct min_op {
   template<typename C> static inline C
-  op (const C& x, const C& y) { return min (x, y); }
+  op (const C& x, const C& y) { return std::min (x, y); }
 };
 
 struct max_op {
   template<typename C> static inline C
-  op (const C& x, const C& y) { return max (x, y); }
+  op (const C& x, const C& y) { return std::max (x, y); }
 };
 
 struct copy_alpha_op {

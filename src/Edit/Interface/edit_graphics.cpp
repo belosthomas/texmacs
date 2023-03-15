@@ -508,8 +508,8 @@ edit_graphics_rep::mouse_graphics (string type, SI x, SI y, int m, time_t t,
       //call ("graphics-wheel", sx, sy);
       point lim1, lim2;
       find_limits (lim1, lim2);
-      double dx= dp[0] / max (lim2[0] - lim1[0], 0.000001);
-      double dy= dp[1] / max (lim2[1] - lim1[1], 0.000001);
+      double dx= dp[0] / std::max (lim2[0] - lim1[0], 0.000001);
+      double dy= dp[1] / std::max (lim2[1] - lim1[1], 0.000001);
       call ("graphics-wheel", as_string (dx), as_string (dy));
       return true;
     }

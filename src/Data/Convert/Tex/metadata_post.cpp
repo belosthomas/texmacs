@@ -839,7 +839,7 @@ attach_emails_in_order (tree t, bool strict) {
           if (N(inds) > N(emails))
             inds= range (inds, N(inds)-N(emails), N(inds));
           for (int l=0; l<N(emails); l++) {
-            int m= inds[min (N(inds)-1, l)];
+            int m= inds[std::min (N(inds)-1, l)];
             r[m][0] << compound ("author-email", emails[l]);
             for (int n= j; n < k; n++)
               if (is_author_without_name (r[n]))

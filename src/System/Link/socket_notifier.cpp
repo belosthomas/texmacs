@@ -10,7 +10,7 @@
 ******************************************************************************/
 #ifndef QTTEXMACS
 
-#include "config.h"
+#include "tm_config.h"
 
 #ifndef OS_MINGW
 #include <unistd.h>

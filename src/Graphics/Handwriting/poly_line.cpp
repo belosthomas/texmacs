@@ -10,6 +10,7 @@
 ******************************************************************************/
 
 #include "poly_line.hpp"
+#include "point.hpp"
 
 inline double square (double x) { return x*x; }
 
@@ -60,7 +61,7 @@ inf (point p, point q) {
   TM_ASSERT (N(p) == N(q), "unequal lengths");
   point r (N(p));
   for (int i=0; i<N(p); i++)
-    r[i]= min (p[i], q[i]);
+    r[i]= std::min (p[i], q[i]);
   return r;
 }
 
@@ -69,7 +70,7 @@ sup (point p, point q) {
   TM_ASSERT (N(p) == N(q), "unequal lengths");
   point r (N(p));
   for (int i=0; i<N(p); i++)
-    r[i]= max (p[i], q[i]);
+    r[i]= std::max (p[i], q[i]);
   return r;
 }
 
@@ -83,7 +84,7 @@ distance (point p, poly_line pl) {
   double m= 1.0e10;
   if (N(pl) == 1) return distance (p, pl[0]);
   for (int i=0; i+1<N(pl); i++)
-    m= min (m, distance (p, pl[i], pl[i+1]));
+    m= std::min (m, distance (p, pl[i], pl[i+1]));
   return m;
 }
 
@@ -142,7 +143,7 @@ normalize (poly_line pl) {
   if (N(pl) == 0) return pl;
   pl= pl - inf (pl);
   if (N(pl) == 1) return pl;
-  double sc= max (sup (pl));
+  double sc= max_value (sup (pl));
   if (sc == 0.0) return pl;
   return (1.0 / sc) * pl;
 }
@@ -175,7 +176,7 @@ double
 distance (point p, contours gl) {
   double m= 1.0e10;
   for (int i=0; i<N(gl); i++)
-    m= min (m, distance (p, gl[i]));
+    m= std::min (m, distance (p, gl[i]));
   return m;
 }
 
@@ -233,7 +234,7 @@ contours
 normalize (contours gl) {
   if (N(gl) == 0) return gl;
   gl= gl - inf (gl);
-  double sc= max (sup (gl));
+  double sc= max_value (sup (gl));
   if (sc == 0.0) return gl;
   gl= (1.0 / sc) * gl;
   return gl;
@@ -255,8 +256,8 @@ vertices (poly_line pl) {
   double todo_p= 0.0;
   for (int i=0; i+1<N(pl); i++) {
     if (t >= r[N(r)-1] + dt && t <= 1.0 - dt) {
-      double t1= max (t - dt, 0.000000001);
-      double t2= min (t + dt, 0.999999999);
+      double t1= std::max (t - dt, 0.000000001);
+      double t2= std::min (t + dt, 0.999999999);
       point  p = pl[i];
       point  p1= access (pl, t1);
       point  p2= access (pl, t2);

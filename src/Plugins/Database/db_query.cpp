@@ -204,7 +204,7 @@ database_rep::query (tree ql, db_time t, int limit) {
   if (is_tuple (ql))
     for (int i=0; i<N(ql); i++)
       sort_flag= sort_flag || is_tuple (ql[i], "order", 2);
-  ids= filter (ids, ql, t, max (limit, sort_flag? 1000: 0));
+  ids= filter (ids, ql, t, std::max (limit, sort_flag? 1000: 0));
   //cout << "filtered ids= " << ids << LF;
   for (int i=0; i<N(ql); i++) {
     if (is_tuple (ql[i], "modified", 2) &&

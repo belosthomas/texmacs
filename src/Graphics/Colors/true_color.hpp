@@ -121,14 +121,14 @@ operator / (const true_color& c, double x) {
 
 inline true_color
 min (const true_color& c1, const true_color& c2) {
-  return true_color (min (c1.r, c2.r), min (c1.g, c2.g),
-                     min (c1.b, c2.b), min (c1.a, c2.a));
+  return true_color (std::min (c1.r, c2.r), std::min (c1.g, c2.g),
+                     std::min (c1.b, c2.b), std::min (c1.a, c2.a));
 }
 
 inline true_color
 max (const true_color& c1, const true_color& c2) {
-  return true_color (max (c1.r, c2.r), min (c1.g, c2.g),
-                     max (c1.b, c2.b), min (c1.a, c2.a));
+  return true_color (std::max (c1.r, c2.r), std::min (c1.g, c2.g),
+                     std::max (c1.b, c2.b), std::min (c1.a, c2.a));
 }
 
 /******************************************************************************
@@ -221,10 +221,10 @@ copy_alpha (const true_color& c, const true_color& a) {
 
 inline true_color
 normalize (const true_color& c) {
-  return true_color (max (min (c.r, 1.0), 0.0),
-                     max (min (c.g, 1.0), 0.0),
-                     max (min (c.b, 1.0), 0.0),
-                     max (min (c.a, 1.0), 0.0));
+  return true_color (std::max (std::min (c.r, 1.0), 0.0),
+                     std::max (std::min (c.g, 1.0), 0.0),
+                     std::max (std::min (c.b, 1.0), 0.0),
+                     std::max (std::min (c.a, 1.0), 0.0));
 }
 
 inline true_color
@@ -237,13 +237,13 @@ hypot (const true_color& c1, const true_color& c2) {
 
 inline double
 max (const true_color& c) {
-  return max (c.r, max (c.g, max (c.b, c.a)));
+  return std::max (c.r, std::max (c.g, std::max (c.b, c.a)));
 }
 
 inline double
 inner_max (const true_color& c1, const true_color& c2) {
-  return max (max (c1.r * c2.r, c1.g * c2.g),
-              max (c1.b * c2.b, c1.a * c2.a));
+  return std::max (std::max (c1.r * c2.r, c1.g * c2.g),
+              std::max (c1.b * c2.b, c1.a * c2.a));
 }
 
 true_color mix (const true_color& c1, double a1,

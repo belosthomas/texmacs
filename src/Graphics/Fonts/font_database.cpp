@@ -60,7 +60,7 @@ struct font_less_eq_operator {
       return locase_less_eq (t1->label, t2->label);
     if (is_atomic (t1)) return true;
     if (is_atomic (t2)) return false;
-    for (int i=0; i<min(N(t1),N(t2)); i++) {
+    for (int i=0; i<std::min(N(t1),N(t2)); i++) {
       if (leq (t1[i], t2[i]) && t1[i] != t2[i]) return true;
       if (leq (t2[i], t1[i]) && t2[i] != t1[i]) return false;
     }
@@ -468,8 +468,8 @@ find_best_approximation (tree ff) {
         else {
           int old_sz= as_int (best[2]);
           int new_sz= as_int (ims[j][2]);
-          if (max (new_sz - ref_sz, ref_sz - new_sz) <
-              max (old_sz - ref_sz, ref_sz - old_sz))
+          if (std::max (new_sz - ref_sz, ref_sz - new_sz) <
+              std::max (old_sz - ref_sz, ref_sz - old_sz))
             best= ims[j];
         }
       }

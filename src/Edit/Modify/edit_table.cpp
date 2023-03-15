@@ -359,8 +359,8 @@ edit_table_rep::table_individualize (path fp, string var) {
         int i, j, row1, col1, row2, col2;
         with_read (st[k], nr_rows, nr_cols, row1, col1, row2, col2);
         if ((row1==row2) && (col1==col2)) continue;
-        row1= max (row1, 0); row2= min (row2, nr_rows-1);
-        col1= max (col1, 0); col2= min (col2, nr_cols-1);
+        row1= std::max (row1, 0); row2= std::min (row2, nr_rows-1);
+        col1= std::max (col1, 0); col2= std::min (col2, nr_cols-1);
         tree ins_format (TFORMAT);
         for (i=row1; i<=row2; i++)
           for (j=col1; j<=col2; j++) {
@@ -427,20 +427,20 @@ edit_table_rep::table_set_extents (path fp, int nr_rows, int nr_cols) {
   table_get_extents (fp, old_rows, old_cols);
   if (nr_rows > old_rows || nr_cols > old_cols)
     table_insert (fp, old_rows, old_cols,
-                  max (0, nr_rows - old_rows),
-                  max (0, nr_cols - old_cols));
+                  std::max (0, nr_rows - old_rows),
+                  std::max (0, nr_cols - old_cols));
   if (nr_rows < old_rows || nr_cols < old_cols)
     table_remove (fp, nr_rows, nr_cols,
-                  max (0, old_rows - nr_rows),
-                  max (0, old_cols - nr_cols));
+                  std::max (0, old_rows - nr_rows),
+                  std::max (0, old_cols - nr_cols));
 }
 
 void
 edit_table_rep::table_get_limits (
   path fp, int& i1, int& j1, int& i2, int& j2) 
 {
-  i1= max (1, as_int (table_get_format (fp, TABLE_MIN_ROWS)));
-  j1= max (1, as_int (table_get_format (fp, TABLE_MIN_COLS)));
+  i1= std::max (1, as_int (table_get_format (fp, TABLE_MIN_ROWS)));
+  j1= std::max (1, as_int (table_get_format (fp, TABLE_MIN_COLS)));
   i2= as_int (table_get_format (fp, TABLE_MAX_ROWS));
   j2= as_int (table_get_format (fp, TABLE_MAX_COLS));
   if (i2<i1) i2= 0x7fffffff;
@@ -486,24 +486,24 @@ edit_table_rep::table_remove (path fp, int row, int col, int delr, int delc) {
       if (delr>0) {
         if ((row<=i1) && (i2<row+delr)) { remove (fp * k, 1); continue; }
         if ((I1>0) && (i1>=row))
-          assign (fp * path (k, 0), as_string (I1- min (delr, i1- row)));
+          assign (fp * path (k, 0), as_string (I1- std::min (delr, i1- row)));
         if ((I1<0) && (i1<row+delr))
-          assign (fp * path (k, 0), as_string (I1+ delr+ min (0, row- 1- i1)));
+          assign (fp * path (k, 0), as_string (I1+ delr+ std::min (0, row- 1- i1)));
         if ((I2>0) && (i2>=row))
-          assign (fp * path (k, 1), as_string (I2- min (delr, i2- row)));
+          assign (fp * path (k, 1), as_string (I2- std::min (delr, i2- row)));
         if ((I2<0) && (i2<row+delr))
-          assign (fp * path (k, 1), as_string (I2+ delr+ min (0, row- 1- i2)));
+          assign (fp * path (k, 1), as_string (I2+ delr+ std::min (0, row- 1- i2)));
       }
       if (delc>0) {
         if ((col<=j1) && (j2<col+delc)) { remove (fp * k, 1); continue; }
         if ((J1>0) && (j1>=col))
-          assign (fp * path (k, 2), as_string (J1- min (delc, j1- col)));
+          assign (fp * path (k, 2), as_string (J1- std::min (delc, j1- col)));
         if ((J1<0) && (j1<col+delc))
-          assign (fp * path (k, 2), as_string (J1+ delc+ min (0, col- 1- j1)));
+          assign (fp * path (k, 2), as_string (J1+ delc+ std::min (0, col- 1- j1)));
         if ((J2>0) && (j2>=col))
-          assign (fp * path (k, 3), as_string (J2- min (delc, j2- col)));
+          assign (fp * path (k, 3), as_string (J2- std::min (delc, j2- col)));
         if ((J2<0) && (j2<col+delc))
-          assign (fp * path (k, 3), as_string (J2+ delc+ min (0, col- 1- j2)));
+          assign (fp * path (k, 3), as_string (J2+ delc+ std::min (0, col- 1- j2)));
       }
     }
 }
@@ -583,14 +583,14 @@ edit_table_rep::table_bound (
 
   for (i=0; i<nr_rows; i++)
     for (j=0; j<nr_cols; j++) {
-      int m= min (as_int (rs[i][j]), nr_rows-i);
-      int n= min (as_int (cs[i][j]), nr_cols-j);
+      int m= std::min (as_int (rs[i][j]), nr_rows-i);
+      int n= std::min (as_int (cs[i][j]), nr_cols-j);
       if ((m>1) || (n>1)) {
         if ((row1 < i+m) && (col1 < j+n) && (row2 >= i) && (col2 >= j)) {
-          row1= min (row1, i);
-          col1= min (col1, j);
-          row2= max (row2, i+m-1);
-          col2= max (col2, j+n-1);
+          row1= std::min (row1, i);
+          col1= std::min (col1, j);
+          row2= std::max (row2, i+m-1);
+          col2= std::max (col2, j+n-1);
         }
         for (ii=0; ii<m; ii++)
           for (jj=0; jj<n; jj++) {
@@ -775,10 +775,10 @@ edit_table_rep::table_get_subtable (
       int I1, I2, J1, J2, i1, i2, j1, j2;
       with_read (st[k], nr_rows, nr_cols, I1, J1, I2, J2, i1, j1, i2, j2);
       if ((i1<=row2) && (i2>=row1) && (j1<=col2) && (j2>=col1)) {
-        I1= min (max (0, i1- row1), row2- row1) + 1;
-        I2= min (max (0, i2- row1), row2- row1) + 1;
-        J1= min (max (0, j1- col1), col2- col1) + 1;
-        J2= min (max (0, j2- col1), col2- col1) + 1;
+        I1= std::min (std::max (0, i1- row1), row2- row1) + 1;
+        I2= std::min (std::max (0, i2- row1), row2- row1) + 1;
+        J1= std::min (std::max (0, j1- col1), col2- col1) + 1;
+        J2= std::min (std::max (0, j2- col1), col2- col1) + 1;
         tree with (CWITH);
         with << as_string (I1) << as_string (I2)
              << as_string (J1) << as_string (J2)
@@ -815,8 +815,8 @@ edit_table_rep::table_write_subtable (
   table_get_limits (fp, min_rows, min_cols, max_rows, max_cols);
   if ((max_rows < row + sub_rows) || (max_cols < col + sub_cols)) return;
   if ((nr_rows < row + sub_rows) || (nr_cols < col + sub_cols))
-    table_set_extents (fp, max (nr_rows, row + sub_rows),
-                           max (nr_cols, col + sub_cols));
+    table_set_extents (fp, std::max (nr_rows, row + sub_rows),
+                           std::max (nr_cols, col + sub_cols));
 
   path old_tp= tp;
   tp= fp * 0;
@@ -1039,7 +1039,7 @@ edit_table_rep::make_table (int nr_rows, int nr_cols) {
   typeset_invalidate_env (); // FIXME: dirty hack for getting correct limits
   table_get_limits (fp, i1, j1, i2, j2);
   if ((nr_rows<i1) || (nr_cols<j1)) {
-    T= empty_table (max (nr_rows, i1), max (nr_cols, j1));
+    T= empty_table (std::max (nr_rows, i1), std::max (nr_cols, j1));
     format_T= tree (TFORMAT, T);
     assign (fp, format_T);
     go_to (fp * path (N(format_T)-1, p));
@@ -1182,7 +1182,7 @@ edit_table_rep::table_remove_row (bool forward, bool flag) {
     int ncol= col;
     if ((!forward) && (col == 0)) ncol= nr_cols-1;
     if (forward && (col == nr_cols-1)) ncol= 0;
-    table_go_to (fp, max (0, row + (forward? 0: -1)), ncol, forward);
+    table_go_to (fp, std::max (0, row + (forward? 0: -1)), ncol, forward);
   }
   else {
     if (!forward) row--;
@@ -1205,7 +1205,7 @@ edit_table_rep::table_remove_column (bool forward, bool flag) {
   if (nr_cols-1 < j1) destroy_table ();
   else if (flag) {
     table_remove (fp, row, col, 0, 1);
-    int ncol= max (0, col + (forward? 0: -1));
+    int ncol= std::max (0, col + (forward? 0: -1));
     if ((!forward) && (col == 0)) ncol= nr_cols-1;
     if (forward && (col == nr_cols-1)) ncol= 0;
     table_go_to (fp, row, ncol, forward);
@@ -1255,8 +1255,8 @@ edit_table_rep::table_set_extents (int rows, int cols) {
   if (is_nil (fp)) return;
   int min_rows, min_cols, max_rows, max_cols;
   table_get_limits (fp, min_rows, min_cols, max_rows, max_cols);
-  rows= min (max_rows, max (min_rows, rows));
-  cols= min (max_cols, max (min_cols, cols));
+  rows= std::min (max_rows, std::max (min_rows, rows));
+  cols= std::min (max_cols, std::max (min_cols, cols));
   table_set_extents (fp, rows, cols);
 }
 

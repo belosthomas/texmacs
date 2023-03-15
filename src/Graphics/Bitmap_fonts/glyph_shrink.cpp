@@ -52,10 +52,10 @@ get_hor_shift (glyph gl, int xfactor, int tx) {
     for (y=0; y<gl->height; y++)
       if (gl->get_1 (x,y)) count++;
       else {
-	max_count = max (max_count, count);
+	max_count = std::max (max_count, count);
 	count     = 0;
       }
-    max_count= max (max_count, count);
+    max_count= std::max (max_count, count);
     flag[x]= (max_count>(gl->height>>1));
     // if (flag[x]) cout << "*"; else cout << " ";
   }
@@ -106,10 +106,10 @@ get_ver_shift (glyph gl, int yfactor, int ty) {
     for (x=0; x<gl->width; x++)
       if (gl->get_1 (x,y)) count++;
       else {
-	max_count = max (max_count, count);
+	max_count = std::max (max_count, count);
 	count     = 0;
       }
-    max_count= max (max_count, count);
+    max_count= std::max (max_count, count);
     flag[y]= (max_count>(gl->width>>1));
     // if (flag[y]) cout << "*"; else cout << " ";
   }

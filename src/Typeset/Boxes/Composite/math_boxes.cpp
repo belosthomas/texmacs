@@ -67,9 +67,9 @@ frac_box_rep::frac_box_rep (
   SI bar_y = fn->yfrac;
   SI bar_w = fn->wline;
   SI sep   = fn->sep;
-  SI b1_y  = min (b1->y1, sfn->y1);
-  SI b2_y  = max (b2->y2, sfn->y2);
-  SI w     = max (b1->w (), b2->w()) + 2*sep;
+  SI b1_y  = std::min (b1->y1, sfn->y1);
+  SI b2_y  = std::max (b2->y2, sfn->y2);
+  SI w     = std::max (b1->w (), b2->w()) + 2*sep;
   SI d     = sep >> 1;
 
   pencil bar_pen= pen->set_width (bar_w);
@@ -82,8 +82,8 @@ frac_box_rep::frac_box_rep (
   position ();
   italic_restore (b1);
   italic_restore (b2);
-  x1= min (0, x1);
-  x2= max (w, x2);
+  x1= std::min (0, x1);
+  x2= std::max (w, x2);
   left_justify ();
   finalize ();
 }
@@ -159,7 +159,7 @@ sqrt_box_rep::sqrt_box_rep (
       if (bh < 3*bw) Y += bh >> 1;
       else Y += (bw*3) >> 1;
     }
-    insert (b2, min (X, M- b2->x2), Y- b2->y1+ sep);
+    insert (b2, std::min (X, M- b2->x2), Y- b2->y1+ sep);
   }
   insert (sqrtb, -sqrtb->x2, 0);
   insert (line_box (decorate_middle (ip), dx, by, b1->x2, by, rpen), 0, 0);
@@ -290,11 +290,11 @@ tree_box_rep::tree_box_rep (path ip, array<box> bs, font fn2, pencil pen2):
 
   int i, n= N(bs), cw, w= 0, h= MIN_SI, x, x_0, up;
   for (i=1; i<n; i++) w += bs[i]->w();
-  for (i=1; i<n; i++) h  = max (h, max (bs[i]->y2, fn->y2) + sep);
+  for (i=1; i<n; i++) h  = std::max (h, std::max (bs[i]->y2, fn->y2) + sep);
   w += (n-2)*hsep;
   cw = w;
   x_0= 0; if (bs[0]->w()>w) { x_0= (bs[0]->w()-w)>>1; w= bs[0]->w(); }
-  up= min (bs[0]->y1, fn->y1) - sep - vsep;
+  up= std::min (bs[0]->y1, fn->y1) - sep - vsep;
 
   insert (bs[0], (w>>1)- ((bs[0]->x1+bs[0]->x2)>>1), 0);
   for (x=x_0, i=1; i<n; i++) {
@@ -307,11 +307,11 @@ tree_box_rep::tree_box_rep (path ip, array<box> bs, font fn2, pencil pen2):
   pencil tpen= pen->set_width (line_w);
   for (x=x_0, i=1; i<n; i++) {
     SI x_i= x + (bs[i]->w()>>1);
-    SI y_i= up + max (bs[i]->y2, fn->y2) + sep - h;
+    SI y_i= up + std::max (bs[i]->y2, fn->y2) + sep - h;
     SI bm = w>>1;
-    SI bw = min (bs[0]->w(), cw>>1);
+    SI bw = std::min (bs[0]->w(), cw>>1);
     SI bx = bm + ((2*i-n) * bw) / (2*n-2);
-    SI by = min (bs[0]->y1, fn->y1) - sep;
+    SI by = std::min (bs[0]->y1, fn->y1) - sep;
     insert (line_box (decorate_middle (ip), bx, by, x_i, y_i, tpen), 0, 0);
     x += bs[i]->w()+ hsep;
   }
@@ -491,8 +491,8 @@ compute_wide_accent (path ip, box b, string s,
     font sfn= fn->magnify (sx, sy);
     wideb= text_box (decorate_middle (ip), 0, s, sfn, pen);
     wideb= resize_box (decorate_middle (ip), wideb,
-                       max (wideb->x1, wideb->x3), wideb->y1,
-                       min (wideb->x2, wideb->x4), wideb->y2);
+                       std::max (wideb->x1, wideb->x3), wideb->y1,
+                       std::min (wideb->x2, wideb->x4), wideb->y2);
     if (unicode && b->right_slope () != 0)
       wideb= shift_box (decorate_middle (ip), wideb,
                         (SI) (-0.5 * b->right_slope () * fn->yx), 0);
@@ -580,13 +580,13 @@ struct wide_box_rep: public composite_box_rep {
     return ref->sub_hi_lim (level); }
   SI sup_lo_lim  (int level) {
     if (!above)
-      return max (ref->sup_lo_lim (level) - dh, box_rep::sup_lo_lim (level));
+      return std::max (ref->sup_lo_lim (level) - dh, box_rep::sup_lo_lim (level));
     return ref->sup_lo_lim (level); }
   SI sup_lo_base (int level) {
     return ref->sup_lo_base (level); }
   SI sup_hi_lim  (int level) {
     if (above)
-      return min (ref->sup_hi_lim (level) + dh, box_rep::sup_hi_lim (level));
+      return std::min (ref->sup_hi_lim (level) + dh, box_rep::sup_hi_lim (level));
     return ref->sup_hi_lim (level); }
   SI wide_correction (int mode) {
     return ref->wide_correction (mode); }
@@ -602,7 +602,7 @@ wide_box_rep::wide_box_rep (
   box hi;
   wide= compute_wide_accent (ip, ref, s, fn, pen, request_wide, above, hi, sep);
   SI X, Y, dx;
-  SI hw= max (ref->w(), hi->w()) >> 1;
+  SI hw= std::max (ref->w(), hi->w()) >> 1;
   SI m = (ref->x1 + ref->x2) >> 1;
   insert (ref, 0, 0);
   if (above) {
@@ -630,8 +630,8 @@ wide_box_rep::wide_box_rep (
   dd= fn->sep;
   x1= m- hw- dx;
   x2= m+ hw- dx;
-  x1= min (x1, ref->x1);
-  x2= max (x2, ref->x2);
+  x1= std::min (x1, ref->x1);
+  x2= std::max (x2, ref->x2);
   if (!above) y1 += fn->sep - sep;
   finalize ();
 }
@@ -676,10 +676,10 @@ wide_box_rep::get_bracket_extents (SI& lo, SI& hi) {
   ref->get_bracket_extents (slo, shi);
   if (above) {
     lo= slo;
-    hi= max (shi, hi - dd);
+    hi= std::max (shi, hi - dd);
   }
   else {
-    lo= min (slo, lo + dd);
+    lo= std::min (slo, lo + dd);
     hi= shi;
   }
 }

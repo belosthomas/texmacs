@@ -95,8 +95,8 @@ stack_box_rep::clear_incomplete (
     rectangle bound= least_upper_bound (rs);
     SI left = bound->x1, right= bound->x2;
     for (i=0; i<n; i++) {
-      left = min (left , sx3 (i));
-      right= max (right, sx4 (i));
+      left = std::min (left , sx3 (i));
+      right= std::max (right, sx4 (i));
     }
     if ((which >= 0) && (which < n)) {
       rectangle& r= access_last (rs);
@@ -145,7 +145,7 @@ stack_box_rep::find_child (SI x, SI y, SI delta, bool force) {
       if (h==1) h= 0;
       else h= (h+1) >> 1;
       if ((y < yhi) && (y < ylo)) i += h;
-      else i -= max (h, 1);
+      else i -= std::max (h, 1);
       if (i < 0  ) i= 0;
       if (i > n-2) i= n-2;
     }
@@ -181,10 +181,10 @@ stack_box_rep::find_child (SI x, SI y, SI delta, bool force) {
 	  if (y < ((ylo+yhi) >> 1)) continue;
 	for (j=0; j<N(sb1); j++)
 	  if (!outside (x- ox1- sb1->sx(j), delta, sb1[j]->x1, sb1[j]->x2))
-	    m= min (m, oy1+ sb1->sy1(j));
+	    m= std::min (m, oy1+ sb1->sy1(j));
 	for (j=0; j<N(sb2); j++)
 	  if (!outside (x- ox2- sb2->sx(j), delta, sb2[j]->x1, sb2[j]->x2))
-	    M= max (M, oy2+ sb2->sy2(j));
+	    M= std::max (M, oy2+ sb2->sy2(j));
 	if (y < ((m+M) >> 1)) continue;
       }
     }
@@ -247,7 +247,7 @@ static rectangles
 descend (rectangles l, SI y) {
   if (is_nil (l)) return l;
   rectangle& r= l->item;
-  return rectangles (rectangle (r->x1, min (r->y1, y), r->x2, r->y2),
+  return rectangles (rectangle (r->x1, std::min (r->y1, y), r->x2, r->y2),
 		     descend (l->next, y));
 }
 
@@ -255,7 +255,7 @@ static rectangles
 ascend (rectangles l, SI y) {
   if (is_nil (l)) return l;
   rectangle& r= l->item;
-  return rectangles (rectangle (r->x1, r->y1, r->x2, max (r->y2, y)),
+  return rectangles (rectangle (r->x1, r->y1, r->x2, std::max (r->y2, y)),
 		     ascend (l->next, y));
 }
 
@@ -263,7 +263,7 @@ static rectangles
 extend_left (rectangles l, SI x) {
   if (is_nil (l)) return l;
   rectangle& r= l->item;
-  return rectangles (rectangle (min (r->x1, x), r->y1, r->x2, r->y2),
+  return rectangles (rectangle (std::min (r->x1, x), r->y1, r->x2, r->y2),
 		     extend_left (l->next, x));
 }
 
@@ -271,7 +271,7 @@ static rectangles
 extend_right (rectangles l, SI x) {
   if (is_nil (l)) return l;
   rectangle& r= l->item;
-  return rectangles (rectangle (r->x1, r->y1, max (r->x2, x), r->y2),
+  return rectangles (rectangle (r->x1, r->y1, std::max (r->x2, x), r->y2),
 		     extend_right (l->next, x));
 }
 
@@ -279,7 +279,7 @@ static rectangles
 truncate_top (rectangles l, SI y) {
   if (is_nil (l)) return l;
   rectangle& r= l->item;
-  return rectangles (rectangle (r->x1, r->y1, r->x2, min (r->y2, y)),
+  return rectangles (rectangle (r->x1, r->y1, r->x2, std::min (r->y2, y)),
 		     truncate_top (l->next, y));
 }
 
@@ -287,7 +287,7 @@ static rectangles
 truncate_bottom (rectangles l, SI y) {
   if (is_nil (l)) return l;
   rectangle& r= l->item;
-  return rectangles (rectangle (r->x1, max (r->y1, y), r->x2, r->y2),
+  return rectangles (rectangle (r->x1, std::max (r->y1, y), r->x2, r->y2),
 		     truncate_bottom (l->next, y));
 }
 

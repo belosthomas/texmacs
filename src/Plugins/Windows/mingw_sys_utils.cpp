@@ -15,7 +15,7 @@
 #include "spawn.hpp"
 
 static void
-_unix_system_warn (pid_t pid, ::string which, ::string msg) {
+_unix_system_warn (int pid, ::string which, ::string msg) {
   debug_io << "unix_system, pid " << pid << ", warning: " << msg << "\n";
 }
 
@@ -90,7 +90,7 @@ mingw_system (array< ::string> arg,
     }
     for (int i= 0; i < n_in; i++) {
       if (N(str_in[i]) > pos_in[i]) {
-        int m= min (ch[i].sz, N(str_in[i]) - pos_in[i]); //do not fill the pipe
+        int m= std::min (ch[i].sz, N(str_in[i]) - pos_in[i]); //do not fill the pipe
         int o= ch[i].write (&(str_in[i][pos_in[i]]), m);
         if (o >= 0) { 
           pos_in[i] += o;

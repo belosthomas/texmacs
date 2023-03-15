@@ -9,7 +9,7 @@
 * in the root directory or <http://www.gnu.org/licenses/gpl-3.0.html>.
 ******************************************************************************/
 
-#include "config.h"
+#include "tm_config.h"
 #include "font.hpp"
 #include "converter.hpp"
 

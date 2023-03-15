@@ -251,7 +251,7 @@ popup_button_rep::handle_mouse (mouse_event ev) {
     time_t now;
     do {
       now= texmacs_time ();
-      if (check_event (MENU_EVENT)) return;
+      if (check_event (TM_MENU_EVENT)) return;
     } while ((now-entered_at) < MAP_DELAY);
     map_popup ();
   }

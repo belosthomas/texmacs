@@ -106,7 +106,7 @@ struct _ts_string {
 
   void resize (int m) {
     if (m <= n) return;
-    int new_l= max (2 * n, m);
+    int new_l= std::max (2 * n, m);
     char* new_a= (char*) _ts_malloc (new_l * sizeof (char));
     memcpy (new_a, a, n);
     _ts_free ((void*) a);
@@ -188,7 +188,7 @@ _background_write_task (void* channel_as_void_ptr) {
   if (t == 0) return (void*) NULL;
   if (n == 0) { c->status= -1; return (void*) NULL; }
   do {
-    int m= min (n, t - k);
+    int m= std::min (n, t - k);
     // cout << "writting " << m << " bytes / " << t-k << "\n";
     o= write (fd, (void*) (d + k), m);
     // cout << "written " << o << " bytes to " << fd << "\n";

@@ -227,10 +227,10 @@ edit_select_rep::select_enlarge_text () {
     int i, f= 4;
     if (i1 > 0) {
       i= i1; tm_char_backwards (s, i);
-      f= min (f, breaking_force (s[i]));
+      f= std::min (f, breaking_force (s[i]));
     }
     if (i2 < N(s))
-      f= min (f, breaking_force (s[i2]));
+      f= std::min (f, breaking_force (s[i2]));
 
     while (i1 > 0) {
       i= i1; tm_char_backwards (s, i);

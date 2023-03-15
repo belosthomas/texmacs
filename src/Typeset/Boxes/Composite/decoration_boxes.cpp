@@ -161,7 +161,7 @@ scrollbar_box_rep::message (tree type, SI x, SI y, rectangles& rs) {
     SI Y1= y1 + (span>>1);
     SI Y2= y2 - (span>>1);
     if (Y1 < Y2) p= 100.0 * ((double) (y-Y1)) / ((double) (Y2-Y1));
-    p= min (100.0, max (0.0, p));
+    p= std::min (100.0, std::max (0.0, p));
     u= tree (as_string (p) * "%");
   }
   else {
@@ -169,7 +169,7 @@ scrollbar_box_rep::message (tree type, SI x, SI y, rectangles& rs) {
     SI X1= x1 + (span>>1);
     SI X2= x2 - (span>>1);
     if (X1 < X2) p= 100.0 * ((double) (x-X1)) / ((double) (X2-X1));
-    p= max (0.0, min (100.0, p));
+    p= std::max (0.0, std::min (100.0, p));
     u= tree (as_string (p) * "%");
   }
   if (u != t && is_accessible (obtain_ip (t))) {

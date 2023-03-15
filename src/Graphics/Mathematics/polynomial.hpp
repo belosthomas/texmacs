@@ -167,7 +167,7 @@ operator - (polynomial<T> v) {
 
 template<typename T, typename Op> polynomial<T>
 binary (polynomial<T> p1, polynomial<T> p2) {
-  int i, n1= N(p1), n2=N(p2), m= min (n1, n2), n= max (n1, n2);
+  int i, n1= N(p1), n2=N(p2), m= std::min (n1, n2), n= std::max (n1, n2);
   T* a= A(p1);
   T* b= A(p2);
   T* r= tm_new_array<T> (n);

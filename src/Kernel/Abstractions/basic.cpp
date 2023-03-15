@@ -193,6 +193,10 @@ string the_exception;
 string the_report;
 string get_crash_report (const char* msg);
 
+#ifdef WIN32
+#include <windows.h>
+#endif
+
 void
 tm_throw (const char* msg) {
   the_exception= msg;
@@ -201,7 +205,9 @@ tm_throw (const char* msg) {
   cout << "-------------------------------------------------\n";
   cout << the_report << LF;
   cout << "-------------------------------------------------\n";
-  abort();
+#ifdef WIN32
+  DebugBreak();
+#endif
   throw string (msg);
 }
 

@@ -283,13 +283,13 @@ void
 edit_cursor_rep::go_page_up () {
   if (has_changed (THE_TREE+THE_ENVIRONMENT)) return;
   path sp= find_innermost_scroll (eb, tp);
-  if (is_nil (sp)) go_to (mv->ox, min (mv->oy + get_visible_height (), eb->y2));
+  if (is_nil (sp)) go_to (mv->ox, std::min (mv->oy + get_visible_height (), eb->y2));
   else {
     SI x, y, sx, sy;
     rectangle outer, inner;
     box b= eb[path_up (sp)];
     find_canvas_info (eb, sp, x, y, sx, sy, outer, inner);
-    go_to (mv->ox, min (mv->oy + b->h (), y + sy + inner->y2), false);
+    go_to (mv->ox, std::min (mv->oy + b->h (), y + sy + inner->y2), false);
   }
   select_from_cursor_if_active ();
 }
@@ -298,13 +298,13 @@ void
 edit_cursor_rep::go_page_down () {
   if (has_changed (THE_TREE+THE_ENVIRONMENT)) return;
   path sp= find_innermost_scroll (eb, tp);
-  if (is_nil (sp)) go_to (mv->ox, max (mv->oy - get_visible_height (), eb->y1));
+  if (is_nil (sp)) go_to (mv->ox, std::max (mv->oy - get_visible_height (), eb->y1));
   else {
     SI x, y, sx, sy;
     rectangle outer, inner;
     box b= eb[path_up (sp)];
     find_canvas_info (eb, sp, x, y, sx, sy, outer, inner);
-    go_to (mv->ox, max (mv->oy - b->h (), y + sy + inner->y1), false);
+    go_to (mv->ox, std::max (mv->oy - b->h (), y + sy + inner->y1), false);
   }
   select_from_cursor_if_active ();
 }
@@ -435,7 +435,7 @@ edit_cursor_rep::go_to_here () {
     mv= copy (cu);
     if (mv->slope > 0 &&
         is_atomic (subtree (et, path_up (tp)))) {
-      mv->ox += (SI) round (mv->slope * min (mv->y1, -PIXEL));
+      mv->ox += (SI) round (mv->slope * std::min (mv->y1, -PIXEL));
       mv->delta = 0;
     }
   }
@@ -455,7 +455,7 @@ edit_cursor_rep::go_to (path p) {
       mv= copy (cu);
       if (mv->slope > 0 &&
           is_atomic (subtree (et, path_up (tp)))) {
-        mv->ox += (SI) round (mv->slope * min (mv->y1, -PIXEL));
+        mv->ox += (SI) round (mv->slope * std::min (mv->y1, -PIXEL));
         mv->delta = 0;
       }
     }

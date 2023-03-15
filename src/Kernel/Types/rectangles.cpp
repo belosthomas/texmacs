@@ -76,8 +76,8 @@ translate (rectangle r, SI x, SI y) {
 
 double
 area (rectangle r) {
-  double w= max (r->x2 - r->x1, 0);
-  double h= max (r->y2 - r->y1, 0);
+  double w= std::max (r->x2 - r->x1, 0);
+  double h= std::max (r->y2 - r->y1, 0);
   return w*h;
 }
 

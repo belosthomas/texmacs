@@ -169,8 +169,8 @@ fast_find (array<path> a, path p) {
   int n= N(a), step= n, i= n>>1;
   while (step>1) {
     step= (step+1)>>1;
-    if (var_path_inf_eq (p, a[i])) i= max (0, i-step);
-    else i= min (n-1, i+step);
+    if (var_path_inf_eq (p, a[i])) i= std::max (0, i-step);
+    else i= std::min (n-1, i+step);
   }
   if (!var_path_inf_eq (p, a[i])) i= i+1;
   return i;
@@ -181,10 +181,10 @@ find_length (array<space> a, int start, SI ht) {
   int n= N(a)- start, step= n, i= (start + N(a))>>1;
   while (step>1) {
     step= (step+1)>>1;
-    if (ht <= a[i]->def) i= max (start, i-step);
-    else i= min (N(a)-1, i+step);
+    if (ht <= a[i]->def) i= std::max (start, i-step);
+    else i= std::min (N(a)-1, i+step);
   }
-  if (ht > a[i]->def) i= min (N(a)-1, i+1);
+  if (ht > a[i]->def) i= std::min (N(a)-1, i+1);
   return i;
 }
 
@@ -195,8 +195,8 @@ find_end_block (array<path> a, int start, int end) {
   while (step>1) {
     step= (step+1)>>1;
     if ((i>start) && (a[i-1] != path_add (a[start], i-1-start)))
-      i= max (start, i-step);
-    else i= min (end-1, i+step);
+      i= std::max (start, i-step);
+    else i= std::min (end-1, i+step);
   }
   if ((i>start) && (a[i-1] != path_add (a[start], i-1-start))) i--;
   return i;
@@ -278,9 +278,9 @@ page_breaker_rep::init_flows (
     }
     int  id= flow_id (fl);
     int  nr= N (flow_tot [id]);
-    SI   bot_cor= max (0, l[i]->b->y1- fn->y1);
+    SI   bot_cor= std::max (0, l[i]->b->y1- fn->y1);
     SI   bod_cor= l[i]->b->h ();
-    SI   top_cor= max (0, fn->y2- l[i]->b->y2);
+    SI   top_cor= std::max (0, fn->y2- l[i]->b->y2);
     bool cont= (nr>0) && (path_up (flow[id][nr-1]) == p);
     flow     [id] << (p * i);
     flow_ht  [id] << (space (l[i]->b->h()) + l[i]->spc);
@@ -990,7 +990,7 @@ page_breaker_rep::format_pagelet (pagelet& pg, space ht, bool last_page) {
   else if (ht->max < pg->ht->min) {
     // cout << "Overfull page" << LF;
     stretch= -1.0;
-    double factor= ((double) max (pg->ht->def, 1))/((double) max (ht->def, 1));
+    double factor= ((double) std::max (pg->ht->def, 1))/((double) std::max (ht->def, 1));
     if (factor < 1.0  ) factor= 1.0;
     if (factor > 100.0) factor= 100.0;
     pen= vpenalty ((int) (factor * TOO_LONG_PENALTY));
@@ -998,7 +998,7 @@ page_breaker_rep::format_pagelet (pagelet& pg, space ht, bool last_page) {
   else {
     // cout << "Underfull page" << LF;
     stretch= 1.0;
-    double factor= ((double) max (pg->ht->def, 1))/((double) max (ht->def, 1));
+    double factor= ((double) std::max (pg->ht->def, 1))/((double) std::max (ht->def, 1));
     if (factor < 0.0 ) factor= 0.0;
     if (factor > 0.99) factor= 0.99;
     pen= vpenalty ((int) ((1.0 - factor) * TOO_SHORT_PENALTY));
@@ -1050,9 +1050,9 @@ page_breaker_rep::make_multi_column (skeleton sk, int real_nr_cols) {
   space    ht = copy (sk[0]->ht);
   vpenalty pen= sk[0]->pen;
   for (i=1; i<nr_cols; i++) {
-    ht->min= max (ht->min, sk[i]->ht->min);
+    ht->min= std::max (ht->min, sk[i]->ht->min);
     ht->def += sk[i]->ht->def;
-    ht->max= min (ht->max, sk[i]->ht->max);
+    ht->max= std::min (ht->max, sk[i]->ht->max);
     pen += sk[i]->pen;
   }
   ht->def /= nr_cols;
@@ -1100,7 +1100,7 @@ page_breaker_rep::make_multi_column (
     if (col_end >= end) break;
     SI tot= brk_tot[col_start]->def + (col_ht / nr_cols);
     int col_end= find_length (brk_tot, col_start, tot);
-    col_end= max (col_start+1, col_end-2);
+    col_end= std::max (col_start+1, col_end-2);
     if (col == nr_cols-1) col_end= end;
     while (col_end < end) {
       if (correct_pagelet (col_start, col_end) &&
@@ -1217,7 +1217,7 @@ page_breaker_rep::make_two_column (int start, int end, path flb) {
 
 void
 page_breaker_rep::fast_break_page (int i1, int& first_end) {
-  first_end= max (i1+1, first_end);
+  first_end= std::max (i1+1, first_end);
   bool ok= false;
   int i2= first_end, n= N(flow[0]);
   while (true) {
@@ -1240,7 +1240,7 @@ page_breaker_rep::fast_break_page (int i1, int& first_end) {
 	if (spc->max >= height->min) pen += EXTEND_PAGE_PENALTY;
 	else {
 	  double factor=
-	    ((double) max (spc->def, 1))/((double) max (height->def, 1));
+	    ((double) std::max (spc->def, 1))/((double) std::max (height->def, 1));
 	  if (factor < 0.0 ) factor= 0.0;
 	  if (factor > 0.99) factor= 0.99;
 	  pen += vpenalty ((int) ((1.0 - factor) * TOO_SHORT_PENALTY));
@@ -1250,7 +1250,7 @@ page_breaker_rep::fast_break_page (int i1, int& first_end) {
 	if (spc->min <= height->max) pen += REDUCE_PAGE_PENALTY;
 	else {
 	  double factor=
-	    ((double) max (spc->def, 1))/((double) max (height->def, 1));
+	    ((double) std::max (spc->def, 1))/((double) std::max (height->def, 1));
 	  if (factor < 1.0  ) factor= 1.0;
 	  if (factor > 100.0) factor= 100.0;
 	  pen += vpenalty ((int) (factor * TOO_LONG_PENALTY));

@@ -26,36 +26,21 @@ protected:
   ~resource_ptr() {};
 public:
   R* rep;
-  static hashmap<string,pointer> instances;
+  static inline hashmap<string,pointer> instances = nullptr;
   inline R* operator ->()  { return rep; }
 };
 
-#ifdef OS_WIN32
 #define RESOURCE(PTR)                               \
-struct PTR##_rep;                                    \
-struct PTR : public resource_ptr<PTR##_rep> {       \
+class PTR##_rep;                                    \
+class PTR : public resource_ptr<PTR##_rep> {       \
+    public:                                        \
   inline PTR (PTR##_rep* rep2= NULL) { rep=rep2; }  \
   inline PTR (string s) { rep=(PTR##_rep*) instances [s]; } \
   inline ~PTR() {}                                  \
 }
-#else
-#define RESOURCE(PTR)                               \
-struct PTR##_rep;                                    \
-template<> hashmap<string,pointer> resource_ptr<PTR##_rep>::instances; \
-struct PTR : public resource_ptr<PTR##_rep> {       \
-  inline PTR (PTR##_rep* rep2= NULL) { rep=rep2; }  \
-  inline PTR (string s) { rep=(PTR##_rep*) instances [s]; } \
-  inline ~PTR() {}                                  \
-}
-#endif
 
-#ifdef OS_WIN32
-#define RESOURCE_CODE(PTR) \
-hashmap<string,pointer> resource_ptr<PTR##_rep>::instances (NULL); 
-#else
-#define RESOURCE_CODE(PTR) \
-template<> hashmap<string,pointer> resource_ptr<PTR##_rep>::instances (NULL);
-#endif
+#define RESOURCE_CODE(PTR) //\
+//template<> hashmap<string,pointer> resource_ptr<PTR##_rep>::instances;
 
 template<class R>
 inline bool is_nil (const resource_ptr<R>& res) { return res.rep == NULL; }

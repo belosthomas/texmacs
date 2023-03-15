@@ -73,14 +73,14 @@ composite_box_rep::position () {
     x1= y1= x3= y3= MAX_SI;
     x2= y2= x4= y4= -MAX_SI;
     for (i=0; i<n; i++) {
-      x1= min (x1, sx1(i));
-      y1= min (y1, sy1(i));
-      x2= max (x2, sx2(i));
-      y2= max (y2, sy2(i));
-      x3= min (x3, sx3(i));
-      y3= min (y3, sy3(i));
-      x4= max (x4, sx4(i));
-      y4= max (y4, sy4(i));
+      x1= std::min (x1, sx1(i));
+      y1= std::min (y1, sy1(i));
+      x2= std::max (x2, sx2(i));
+      y2= std::max (y2, sy2(i));
+      x3= std::min (x3, sx3(i));
+      y3= std::min (y3, sy3(i));
+      x4= std::max (x4, sx4(i));
+      y4= std::max (y4, sy4(i));
     }
   }
 }
@@ -266,15 +266,15 @@ composite_box_rep::find_box_path (path p, bool& found) {
     }
     if (path_less (reverse (sr), p)) {
       int old_start= start, old_acc= acc;
-      start= min (n-1, start+ step);
+      start= std::min (n-1, start+ step);
       acc  = start;
       while ((acc > old_start) &&
 	     (!is_accessible (bs[acc]->find_rip ()))) acc--;
       if (acc == old_start) acc= old_acc;
     }
     else {
-      start= max (0, start- step);
-      acc  = min (acc, start);
+      start= std::max (0, start- step);
+      acc  = std::min (acc, start);
     }
     if (last) break;
     if (step <= 1) last= true;
@@ -431,7 +431,7 @@ table_box_rep::adjust_kerning (int mode, double factor) {
       nx[i*cols+j]= x[i*cols+j] + dx;
     SI dw= MINUS_INFINITY;
     for (i=0; i<rows; i++)
-      dw= max (dw, cdw[i*cols+j]);
+      dw= std::max (dw, cdw[i*cols+j]);
     dx += dw;
     for (i=0; i<rows; i++) {
       int k= i*cols + j;
@@ -469,7 +469,7 @@ table_box_rep::expand_glyphs (int mode, double factor) {
       nx[i*cols+j]= x[i*cols+j] + dx;
     SI dw= MINUS_INFINITY;
     for (i=0; i<rows; i++)
-      dw= max (dw, cdw[i*cols+j]);
+      dw= std::max (dw, cdw[i*cols+j]);
     dx += dw;
     for (i=0; i<rows; i++) {
       int k= i*cols + j;

@@ -9,11 +9,10 @@
 * in the root directory or <http://www.gnu.org/licenses/gpl-3.0.html>.
 ******************************************************************************/
 
-#include <windows.h>
-#include <errno.h>
 #include "array.hpp"
 #include "spawn.hpp"
-
+#include <windows.h>
+#include <errno.h>
 
 Channel::Channel (int s):sz(s) {
  origin= -1; saved= -1; fd= -1;toBeClosed= -1; str= NULL; tid= 0; 
@@ -89,13 +88,13 @@ Channel::~Channel () {
   }
 }
 
-unsigned
+unsigned int
 bkgread (void *thatv) {
   char buf[1024];int cnt;
   Channel *that= (Channel *)thatv;
   do {
     cnt= _read (that->fd, buf, sizeof(buf));
-    if (cnt > 0) *(that->str)+= basic_string<char> (buf, cnt);
+    if (cnt > 0) *(that->str)+= std::basic_string<char> (buf, cnt);
     else if (cnt == 0) that->close ();
   } while (cnt > 0);
   return (cnt);

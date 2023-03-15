@@ -171,7 +171,7 @@ widget balloon_widget (widget w, widget help);
 
 widget text_widget (string s, int style, color col, bool tsp= true);
   // a text widget with a given style, color and transparency
-widget xpm_widget (url file_name);
+widget xpm_widget (string file_name);
   // a widget with an X pixmap icon
 widget input_text_widget (command call_back, string type, array<string> def,
 			  int style= 0, string width= "1w");

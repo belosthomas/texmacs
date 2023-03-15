@@ -137,7 +137,7 @@ virtual_font_rep::exec (scheme_tree t) {
     for (int i=1; i<N(t); i++) {
       scheme_tree a= exec (t[i]);
       if (!is_double (a)) return "error";
-      r= as_string (min (as_double (r), as_double (a)));
+      r= as_string (std::min (as_double (r), as_double (a)));
     }
     return r;
   }
@@ -236,13 +236,13 @@ virtual_font_rep::exec (scheme_tree t) {
     if (is_tuple (t, "penw")) {
       int pos1= xx1 + probe (gl, xx1, yy2,  1, 0);
       int pos2= xx2 + probe (gl, xx2, yy2, -1, 0);
-      int w   = max (pos2 - pos1 + 1, 0) * PIXEL;
+      int w   = std::max (pos2 - pos1 + 1, 0) * PIXEL;
       return as_string (((double) w) / hunit);
     }
     else {
       int pos1= yy1 + probe (gl, xx1, yy1, 0,  1);
       int pos2= yy2 + probe (gl, xx1, yy2, 0, -1);
-      int h   = max (pos2 - pos1 + 1, 0) * PIXEL;
+      int h   = std::max (pos2 - pos1 + 1, 0) * PIXEL;
       return as_string (((double) h) / vunit);
     }
   }
@@ -411,14 +411,14 @@ virtual_font_rep::supported (string c, bool svg) {
 
 static void
 outer_fit (metric& ex, metric& ey, SI x, SI y) {
-  ex->x1= min (ex->x1, x+ ey->x1);
-  ex->y1= min (ex->y1, y+ ey->y1);
-  ex->x2= max (ex->x2, x+ ey->x2);
-  ex->y2= max (ex->y2, y+ ey->y2);
-  ex->x3= min (ex->x3, x+ ey->x3);
-  ex->y3= min (ex->y3, y+ ey->y3);
-  ex->x4= max (ex->x4, x+ ey->x4);
-  ex->y4= max (ex->y4, y+ ey->y4);
+  ex->x1= std::min (ex->x1, x+ ey->x1);
+  ex->y1= std::min (ex->y1, y+ ey->y1);
+  ex->x2= std::max (ex->x2, x+ ey->x2);
+  ex->y2= std::max (ex->y2, y+ ey->y2);
+  ex->x3= std::min (ex->x3, x+ ey->x3);
+  ex->y3= std::min (ex->y3, y+ ey->y3);
+  ex->x4= std::max (ex->x4, x+ ey->x4);
+  ex->y4= std::max (ex->y4, y+ ey->y4);
 }
 
 static void

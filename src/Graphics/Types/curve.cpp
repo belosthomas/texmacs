@@ -40,8 +40,8 @@ curve_rep::bound (double t, double eps) {
   double delta= eps / ng;
   while (delta >= 1.0e-6) {
     point val1 = evaluate (t);
-    point val2 = evaluate (max (t-delta, 0.0));
-    point val3 = evaluate (min (t+delta, 1.0));
+    point val2 = evaluate (std::max (t-delta, 0.0));
+    point val3 = evaluate (std::min (t+delta, 1.0));
     if (norm (val2 - val1) <= eps+1.0e-6 &&
 	norm (val3 - val1) <= eps+1.0e-6)
       return delta;
@@ -88,7 +88,7 @@ curvet_closest_points (
     bool stored= true;
     double nprec= n0;
     bool decreasing= false;
-    double max_step= 0.5 / max (c->nr_components (), 1);
+    double max_step= 0.5 / std::max (c->nr_components (), 1);
     for (t=t1; t<=t2;) {
       point pt= c->evaluate(t);
       double n= norm (pt - p);
@@ -109,7 +109,7 @@ curvet_closest_points (
       if (stored && decreasing)
         n0= tm_infinity;
       double delta= (n - eps) / 2;
-      t += min (max_step, max (0.00001, c->bound (t, max (eps, delta))));
+      t += std::min (max_step, std::max (0.00001, c->bound (t, std::max (eps, delta))));
       nprec= n;
     }
     if (!stored && decreasing) {
@@ -287,7 +287,7 @@ struct poly_segment_rep: public curve_rep {
     a (a2), cip (cip2), n(N(a)-1) {}
   int nr_components () { return n; }
   point evaluate (double t) {
-    int i= max (min ((int) (n*t), n-1), 0);
+    int i= std::max (std::min ((int) (n*t), n-1), 0);
     return (i+1 - n*t)*a[i] + (n*t - i)*a[i+1];
   }
   void rectify_cumul (array<point>& cum, double eps) {
@@ -304,7 +304,7 @@ struct poly_segment_rep: public curve_rep {
   }
   point grad (double t, bool& error) {
     error= false;
-    int i= min ((int) (n*t), n-1);
+    int i= std::min ((int) (n*t), n-1);
     return n * (a[i+1] - a[i]);
   }
   int get_control_points (
@@ -728,7 +728,7 @@ double
 bezier_rep::bound (double t, double eps) {
   (void) t;
   double K= 3.0*norm(P[3]) + 2.0*norm(P[2]) + norm(P[1]);
-  return min (eps / (K + 1.0e-6), 1.0);
+  return std::min (eps / (K + 1.0e-6), 1.0);
 }
 
 point
@@ -982,7 +982,7 @@ arc_rep::evaluate (double t) {
 void
 arc_rep::rectify_cumul (array<point>& cum, double eps) {
   double t, step;
-  step= sqrt (2*eps / max (r1, r2) ) / tm_PI;
+  step= sqrt (2*eps / std::max (r1, r2) ) / tm_PI;
   for (t=step; t<=1.0; t+=step)
     cum << evaluate (t);
   if (t-step != 1.0)
@@ -1060,7 +1060,7 @@ struct compound_curve_rep: public curve_rep {
   double bound (double t, double eps) {
     double st= get_subtime (t);
     double dt= cs [get_index (t)]->bound (st, eps);
-    dt= min (min (dt, st + 1.0e-6), 1.0 + 1.0e-6 - st);
+    dt= std::min (std::min (dt, st + 1.0e-6), 1.0 + 1.0e-6 - st);
     return dt / N(cs);
   }
   point grad (double t, bool& error) {
@@ -1082,9 +1082,9 @@ struct compound_curve_rep: public curve_rep {
       m= cs[i1]->curvature (u1, u2);
     else
       for (int i=i1; i<=i2; i++) {
-	if (i == i1) m= max (m, cs[i]->curvature (u1, 1.0));
-	else if (i == i2) m= max (m, cs[i]->curvature (0.0, u2));
-	else m= max (m, cs[i]->curvature (0.0, 1.0));
+	if (i == i1) m= std::max (m, cs[i]->curvature (u1, 1.0));
+	else if (i == i2) m= std::max (m, cs[i]->curvature (0.0, u2));
+	else m= std::max (m, cs[i]->curvature (0.0, 1.0));
       }
     return m;
   }
@@ -1333,7 +1333,7 @@ struct recontrol_curve_rep: public curve_rep {
       cip2= cip;
       int i, n= N(a);
       abs= array<double> (n);
-      for (i=0; i<n; i++) abs[i]= i / (1.0 * max (1, n-1));
+      for (i=0; i<n; i++) abs[i]= i / (1.0 * std::max (1, n-1));
       return n; }
   array<double> find_closest_points (
     double t1, double t2, point p, double eps) {

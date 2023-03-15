@@ -482,7 +482,7 @@ edit_replace_rep::search_keypress (string s) {
         beep ();
       }
       else {
-        q= q * min (N (subtree (et, q)) - 1, last_item (p));
+        q= q * std::min (N (subtree (et, q)) - 1, last_item (p));
         search_at= end (et, q);
         go_to (copy (search_at));
       }

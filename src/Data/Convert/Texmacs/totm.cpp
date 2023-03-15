@@ -54,8 +54,8 @@ tm_writer::cr () {
     for (i=0; i<n; i++) buf << "\\ ";
   }
   buf << '\n';
-  for (i=0; i<min(tab,20); i++) buf << ' ';
-  xpos= min(tab,20);
+  for (i=0; i<std::min(tab,20); i++) buf << ' ';
+  xpos= std::min(tab,20);
 }
 
 void

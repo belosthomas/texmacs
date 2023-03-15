@@ -16,9 +16,7 @@
 //#include "string.hpp"
 #include "array.hpp"
 
-using namespace std;
-
-__stdcall unsigned bkgread(void *);
+unsigned int bkgread(void *);
 
 class Channel {
 public:

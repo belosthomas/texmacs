@@ -159,14 +159,14 @@ poor_rubber_font_rep::search_font (string s, string& r) {
     else { r= s (6, N(s)-1); num= 0; }
     //cout << "Search " << base->res_name << ", " << s
     //     << ", " << r << ", " << num << LF;
-    int nr= max (num - 5, 0);
+    int nr= std::max (num - 5, 0);
     int thin= (is_thin (r)? 1: 0);
     int code;
     if (num <= MAGNIFIED_NUMBER ||
         r == "/" || r == "\\" ||
         r == "langle" || r == "rangle" ||
         r == "llangle" || r == "rrangle") {
-      num= min (num, MAGNIFIED_NUMBER);
+      num= std::min (num, MAGNIFIED_NUMBER);
       if (N(r) > 1) r= "<" * r * ">";
       if (N(r)>1 && !base->supports (r)) {
         if (r == "<||>") r= "<emu-dbar>";

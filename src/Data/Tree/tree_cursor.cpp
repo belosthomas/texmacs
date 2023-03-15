@@ -44,12 +44,12 @@ closest_inside (tree t, path p) {
   if (is_nil (p)) return path (0);
   else if (is_atomic (t)) {
     string s= t->label;
-    int i, n= N(s), k= max (0, min (n, p->item));
+    int i, n= N(s), k= std::max (0, std::min (n, p->item));
     for (i=0; i<k; tm_char_forwards (s, i)) {}
     return i;
   }
   else if (is_atom (p) || p->item < 0 || p->item >= N(t))
-    return path (max (0, min (1, p->item)));
+    return path (std::max (0, std::min (1, p->item)));
   else if (is_func (t, RAW_DATA, 1))
     return path (0, 0);
   else if (is_func (t, AROUND, 3) && p->item == 0) return path (0);
@@ -187,7 +187,7 @@ closest_accessible (tree t, path p, int dir) {
   }
   else {
     int i, k= p->item, n= N(t);
-    if (p == path (1)) k= max (0, n-1);
+    if (p == path (1)) k= std::max (0, n-1);
     for (i=0; i<n; i++) {
       int j;
       if (dir == 0)

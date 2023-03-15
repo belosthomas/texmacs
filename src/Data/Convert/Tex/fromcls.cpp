@@ -212,12 +212,12 @@ filter_itemize (tree doc) {
           else if (s == "iv")  n = 4;
           else return r;
           r << new_list ("itemize", n, item);
-          maxlevel = max (maxlevel, n);
+          maxlevel = std::max (maxlevel, n);
         }
     }
   }
   if (maxlevel > 0) {
-    maxlevel = min (maxlevel, 4);
+    maxlevel = std::min (maxlevel, 4);
     r << tree (ASSIGN, "itemize-reduce", tree (MACRO, "nr", 
           tree (MINIMUM, tree (ARG, "nr"), as_string (maxlevel))));
   }
@@ -246,12 +246,12 @@ filter_enumerate (tree doc) {
           item = substitute (item, compound ("theenum"*s), tree (ARG, "name"));
           item = substitute (item, "enum"*s, tree (ARG, "name"));
           r << new_list ("enumerate", n, item);
-          maxlevel = max (maxlevel, n);
+          maxlevel = std::max (maxlevel, n);
         }
     }
   }
   if (maxlevel > 0) {
-    maxlevel = min (maxlevel, 4);
+    maxlevel = std::min (maxlevel, 4);
     r << tree (ASSIGN, "enumerate-reduce", tree (MACRO, "nr", 
           tree (MINIMUM, tree (ARG, "nr"), as_string (maxlevel))));
   }

@@ -326,7 +326,7 @@ edit_text_rep::remove_structure (bool forward) {
         if (pos <= last) break;
       }
       else {
-        int pos= max (start-1, 0);
+        int pos= std::max (start-1, 0);
         (void) lan->advance (t, pos);
         if (pos < last) break;
       }
@@ -335,7 +335,7 @@ edit_text_rep::remove_structure (bool forward) {
       start--;
     }
     if (forward) {
-      start= min (start+1, last);
+      start= std::min (start+1, last);
       while ((end < N(s)) && (s[end] == ' ')) end++;
     }
     else while ((start>0) && (s[start-1] == ' ')) start--;

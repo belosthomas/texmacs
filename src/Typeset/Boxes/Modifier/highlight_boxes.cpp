@@ -71,19 +71,19 @@ highlight_box_rep::highlight_box_rep (path ip, box b, box xb,
   y1= b->y1 - bpad;
   x2= b->x2 + lpad + rpad;
   y2= b->y2 + tpad;
-  x3= min (x1 - lx, b->x3 + lpad);
-  y3= min (y1 - bx, b->y3);
-  x4= max (x2 + rx, b->x4 + lpad);
-  y4= max (y2 + tx, b->y4);
+  x3= std::min (x1 - lx, b->x3 + lpad);
+  y3= std::min (y1 - bx, b->y3);
+  x4= std::max (x2 + rx, b->x4 + lpad);
+  y4= std::max (y2 + tx, b->y4);
   if (!is_nil (xb)) {
-    x1= min (x1, offx + xb->x1);
-    y1= min (y1, offy + xb->y1 - bpad);
-    x2= max (x2, offx + xb->x2 + lpad + rpad);
-    y2= max (y2, offy + xb->y2 + tpad);
-    x3= min (x3, min (x1, offx + xb->x3 + lpad));
-    y3= min (y3, min (y1, offy + xb->y3));
-    x4= max (x4, max (x2, offx + xb->x4 + lpad));
-    y4= max (y4, max (y2, offy + xb->y4));
+    x1= std::min (x1, offx + xb->x1);
+    y1= std::min (y1, offy + xb->y1 - bpad);
+    x2= std::max (x2, offx + xb->x2 + lpad + rpad);
+    y2= std::max (y2, offy + xb->y2 + tpad);
+    x3= std::min (x3, std::min (x1, offx + xb->x3 + lpad));
+    y3= std::min (y3, std::min (y1, offy + xb->y3));
+    x4= std::max (x4, std::max (x2, offx + xb->x4 + lpad));
+    y4= std::max (y4, std::max (y2, offy + xb->y4));
   }
   finalize ();
 }
@@ -301,7 +301,7 @@ rounded (array<SI>& xs, array<SI>& ys,
 void
 render_mixed (renderer ren, brush b1, brush b2,
               array<SI> xs, array<SI> ys) {
-  SI n= min (N(xs), N(ys)) - 1;
+  SI n= std::min (N(xs), N(ys)) - 1;
   for (int i=0; i < n; i++) {
     double a= (2.0 * i + 1.0) / (2.0 * n);
     brush mb= mix (b1, 1.0 - a, b2, a);
@@ -312,7 +312,7 @@ render_mixed (renderer ren, brush b1, brush b2,
 
 void
 highlight_box_rep::display_rounded (renderer& ren, int style) {
-  SI W = max (max (lw, rw), max (bw, tw));
+  SI W = std::max (std::max (lw, rw), std::max (bw, tw));
   SI l1= x1 + (W>>1) - lx;
   SI l2= x1 + lcor;
   SI r1= x2 - (W>>1) + rx;

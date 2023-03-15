@@ -1832,23 +1832,21 @@ tmg_key_press_complete (tmscm arg1) {
 }
 
 tmscm
-tmg_mouse_any (tmscm arg1, tmscm arg2, tmscm arg3, tmscm arg4, tmscm arg5, tmscm arg6) {
+tmg_mouse_any (tmscm arg1, tmscm arg2, tmscm arg3, tmscm arg4, tmscm arg5) {
   TMSCM_ASSERT_STRING (arg1, TMSCM_ARG1, "mouse-any");
   TMSCM_ASSERT_INT (arg2, TMSCM_ARG2, "mouse-any");
   TMSCM_ASSERT_INT (arg3, TMSCM_ARG3, "mouse-any");
   TMSCM_ASSERT_INT (arg4, TMSCM_ARG4, "mouse-any");
   TMSCM_ASSERT_DOUBLE (arg5, TMSCM_ARG5, "mouse-any");
-  TMSCM_ASSERT_ARRAY_DOUBLE (arg6, TMSCM_ARG6, "mouse-any");
 
   string in1= arg1->to_string();
   int in2= arg2->to_int();
   int in3= arg3->to_int();
   int in4= arg4->to_int();
   double in5= arg5->to_double();
-  array_double in6= arg6->to_array_double();
 
   // TMSCM_DEFER_INTS;
-  get_current_editor()->mouse_any (in1, in2, in3, in4, in5, in6);
+  get_current_editor()->mouse_any (in1, in2, in3, in4, in5, {});
   // TMSCM_ALLOW_INTS;
 
   return scheme().tmscm_unspefied();
@@ -3757,7 +3755,7 @@ initialize_glue_editor () {
   tmscm_install_procedure ("key-press-replace",  tmg_key_press_replace, 1, 0, 0);
   tmscm_install_procedure ("key-press-spell",  tmg_key_press_spell, 1, 0, 0);
   tmscm_install_procedure ("key-press-complete",  tmg_key_press_complete, 1, 0, 0);
-  tmscm_install_procedure ("mouse-any",  tmg_mouse_any, 6, 0, 0);
+  tmscm_install_procedure ("mouse-any",  tmg_mouse_any, 5, 0, 0);
   tmscm_install_procedure ("get-mouse-position",  tmg_get_mouse_position, 0, 0, 0);
   tmscm_install_procedure ("set-mouse-pointer",  tmg_set_mouse_pointer, 2, 0, 0);
   tmscm_install_procedure ("set-predef-mouse-pointer",  tmg_set_predef_mouse_pointer, 1, 0, 0);

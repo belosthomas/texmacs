@@ -8,14 +8,14 @@
 * It comes WITHOUT ANY WARRANTY WHATSOEVER. For details, see the file LICENSE
 * in the root directory or <http://www.gnu.org/licenses/gpl-3.0.html>.
 ******************************************************************************/
-
+#include "Qt/QTMSockets.hpp"
 #include "client_server.hpp"
 #include "socket_server.hpp"
 #include "socket_link.hpp"
 #include "scheme.hpp"
 
 #ifdef QTTEXMACS
-#include "Qt/QTMSockets.hpp"
+
 
 #define CLT_KO(c) (c == NULL || !c->alive())
 

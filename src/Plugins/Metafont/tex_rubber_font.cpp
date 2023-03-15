@@ -149,10 +149,10 @@ void
 tex_rubber_font_rep::get_partial_extents (int c, metric& ex) {
   metric ey;
   get_raw_extents (c, ey);
-  ex->x1= min (ex->x1, ey->x1); ex->y1 -= (ey->y2-ey->y1);
-  ex->x2= max (ex->x2, ey->x2);
-  ex->x3= min (ex->x3, ey->x3); ex->y3= min (ex->y3, ex->y1+ (ey->y3-ey->y1));
-  ex->x4= max (ex->x4, ey->x4); ex->y4= max (ex->y4, ex->y1+ (ey->y4-ey->y1));
+  ex->x1= std::min (ex->x1, ey->x1); ex->y1 -= (ey->y2-ey->y1);
+  ex->x2= std::max (ex->x2, ey->x2);
+  ex->x3= std::min (ex->x3, ey->x3); ex->y3= std::min (ex->y3, ex->y1+ (ey->y3-ey->y1));
+  ex->x4= std::max (ex->x4, ey->x4); ex->y4= std::max (ex->y4, ex->y1+ (ey->y4-ey->y1));
 }
 
 void
@@ -166,7 +166,7 @@ tex_rubber_font_rep::get_extents (string s, metric& ex) {
   if (i>0 && s[i-1]=='-') i--;
   string r= s (0, i) * ">";
   QN pre_c= ext->dict[r];
-  int n= max (as_int (s (i+1, N(s)-1)), 0);
+  int n= std::max (as_int (s (i+1, N(s)-1)), 0);
   if ((pre_c<tfm->bc) || (pre_c>tfm->ec)) {
     ex->x1= ex->y1= ex->x2= ex->y2= ex->x3= ex->y3= ex->x4= ex->y4= 0;
     return;
@@ -180,7 +180,7 @@ tex_rubber_font_rep::get_extents (string s, metric& ex) {
     if (tfm->top (c) == 0 && tfm->mid (c) == 0 && tfm->bot (c) == 0)
       nr_rep += tfm->list_len (pre_c) + 1;
     else if (tfm->top (c) == 0 || tfm->bot (c) == 0)
-      nr_rep += max (tfm->list_len (pre_c) - 2, 0);
+      nr_rep += std::max (tfm->list_len (pre_c) - 2, 0);
 
     ex->x1= ex->x3= ex->y3= PLUS_INFINITY;
     ex->x2= ex->x4= ex->y4= MINUS_INFINITY;
@@ -247,7 +247,7 @@ tex_rubber_font_rep::draw_fixed (renderer ren, string s, SI x, SI y) {
   if (i>0 && s[i-1]=='-') i--;
   string r= s (0, i) * ">";
   QN pre_c= ext->dict[r];
-  int n= max (as_int (s (i+1, N(s)-1)), 0);
+  int n= std::max (as_int (s (i+1, N(s)-1)), 0);
 
   // draw the character
   if ((pre_c<tfm->bc) || (pre_c>tfm->ec)) return;
@@ -259,7 +259,7 @@ tex_rubber_font_rep::draw_fixed (renderer ren, string s, SI x, SI y) {
     if (tfm->top (c) == 0 && tfm->mid (c) == 0 && tfm->bot (c) == 0)
       nr_rep += tfm->list_len (pre_c) + 1;
     else if (tfm->top (c) == 0 || tfm->bot (c) == 0)
-      nr_rep += max (tfm->list_len (pre_c) - 2, 0);
+      nr_rep += std::max (tfm->list_len (pre_c) - 2, 0);
 
     SI real_y= y; // may be necessary to round y
                   // using SI temp= x; decode (temp, y); encode (temp, y);
@@ -293,7 +293,7 @@ tex_rubber_font_rep::get_glyph (string s) {
   if (i>0 && s[i-1]=='-') i--;
   string r= s (0, i) * ">";
   QN pre_c= ext->dict[r];
-  int n= max (as_int (s (i+1, N(s)-1)), 0);
+  int n= std::max (as_int (s (i+1, N(s)-1)), 0);
   if ((pre_c<tfm->bc) || (pre_c>tfm->ec)) return font_rep::get_glyph (s);
   QN c = tfm->nth_in_list (pre_c, n);
   if (tfm->tag (c) == 3) return font_rep::get_glyph (s);
@@ -309,7 +309,7 @@ tex_rubber_font_rep::index_glyph (string s, font_metric& rm, font_glyphs& rg) {
   if (i>0 && s[i-1]=='-') i--;
   string r= s (0, i) * ">";
   QN pre_c= ext->dict[r];
-  int n= max (as_int (s (i+1, N(s)-1)), 0);
+  int n= std::max (as_int (s (i+1, N(s)-1)), 0);
   if ((pre_c<tfm->bc) || (pre_c>tfm->ec)) return -1;
   QN c = tfm->nth_in_list (pre_c, n);
   if (tfm->tag (c) == 3) return -1;
@@ -350,7 +350,7 @@ tex_rubber_font_rep::get_right_correction (string s) {
     if (i>0 && s[i-1]=='-') i--;
     string r= s (0, i) * ">";
     QN  pre_c= ext->dict[r];
-    int n    = max (as_int (s (i+1, N(s)-1)), 0);
+    int n    = std::max (as_int (s (i+1, N(s)-1)), 0);
     QN  c    = tfm->nth_in_list (pre_c, n);
     if (N(s) >= 7 && s(5,7) == "up" && s(N(s)-3,N(s)) == "-1>")
       return conv (tfm->i (c)) / 4;

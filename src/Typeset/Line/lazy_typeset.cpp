@@ -53,7 +53,7 @@ lazy_document_rep::query (lazy_type request, format fm) {
 	i==n-1? after : array<line_item> ());
       format ret_fm= par[i]->query (request, tmp_fm);
       format_width fmw= (format_width) ret_fm;
-      w= max (w, fmw->width);
+      w= std::max (w, fmw->width);
     }
     return make_format_width (w);
   }

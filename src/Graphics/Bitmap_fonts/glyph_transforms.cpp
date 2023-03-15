@@ -166,26 +166,26 @@ stretched (glyph gl, double xf, double yf) {
     int X = I + X1;
     int i1= ((int) floor (X / xf)) - x1;
     int i2= ((int) ceil  ((X + 1) / xf)) - x1;
-    i1= max (min (i1, ww-1), 0);
-    i2= max (min (i2, ww-1), 0);
+    i1= std::max (std::min (i1, ww-1), 0);
+    i2= std::max (std::min (i2, ww-1), 0);
     for (J=0; J<HH; J++) {
       int Y = J + Y1;
       int j1= ((int) floor (Y / yf)) - y1;
       int j2= ((int) ceil  ((Y + 1) / yf)) - y1;
-      j1= max (min (j1, hh-1), 0);
-      j2= max (min (j2, hh-1), 0);
+      j1= std::max (std::min (j1, hh-1), 0);
+      j2= std::max (std::min (j2, hh-1), 0);
       double sum= 0.0;
       for (i= i1; i<i2; i++)
         for (j= j1; j<j2; j++)
           if (gl->get_x (i, j)) {
             double X1b= xf * (i + x1);
             double X2b= xf * ((i + 1) + x1);
-            X1b= max (X + 0.0, X1b);
-            X2b= min (X + 1.0, X2b);
+            X1b= std::max (X + 0.0, X1b);
+            X2b= std::min (X + 1.0, X2b);
             double Y1b= yf * (j + y1);
             double Y2b= yf * ((j + 1) + y1);
-            Y1b= max (Y + 0.0, Y1b);
-            Y2b= min (Y + 1.0, Y2b);
+            Y1b= std::max (Y + 0.0, Y1b);
+            Y2b= std::min (Y + 1.0, Y2b);
             if (X1b < X2b && Y1b < Y2b)
               sum += (X2b - X1b) * (Y2b - Y1b);
           }
@@ -253,8 +253,8 @@ deepen (glyph gl, double yf, SI penw) {
         double nj2= nj1 + nw + delta;
         int J1= (int) floor (nj1 + 0.5);
         int J2= (int) floor (nj2 + 0.5);
-        J1= max (min (J1, HH), 0);
-        J2= max (min (J2, HH), 0);
+        J1= std::max (std::min (J1, HH), 0);
+        J2= std::max (std::min (J2, HH), 0);
         for (J= J1; J<J2; J++) bmr->set_x (i, J, 1);
       }
     }
@@ -322,7 +322,7 @@ struct mono_font_metric_rep: public font_metric_rep {
       else {
         SI dx= (lw - phw) >> 1;
         double f= ((double) phw) / ((double) w);
-        f= max (floor (f * 16.0) / 16.0, 0.01); // limit the number of factors
+        f= std::max (floor (f * 16.0) / 16.0, 0.01); // limit the number of factors
         r->x3= ((SI) floor (f * m->x3)) + dx;
         r->x4= ((SI) ceil  (f * m->x4)) + dx;
       }
@@ -357,7 +357,7 @@ mono (glyph gl, SI lw, SI phw) {
   else {
     SI dx= (lw - phw) >> 1;
     double f= ((double) phw) / ((double) glw);
-    f= max (floor (f * 16.0) / 16.0, 0.01); // limit the number of factors
+    f= std::max (floor (f * 16.0) / 16.0, 0.01); // limit the number of factors
     return move (stretched (gl, f, 1.0), dx, 0);
   }
 }
@@ -434,7 +434,7 @@ bolden (glyph gl, SI dpen, SI dver) {
   if (dpen <= 0) return gl;
   double slope= ((double) dver) / ((double) dpen);
   int dw= (dpen + (PIXEL/2)) / PIXEL;
-  int dh= 2 * (max (dver, -dver) / (2 * PIXEL) + 1);
+  int dh= 2 * (std::max (dver, -dver) / (2 * PIXEL) + 1);
   int i, j;
   int ww= gl->width, hh= gl->height;
   glyph bmr (ww + dw, hh + dh, gl->xoff, gl->yoff + (dh >> 1), gl->depth);
@@ -515,7 +515,7 @@ left_width (glyph gl) {
   get_line_offsets (gl, (4*hh)/10, s1, e1);
   get_line_offsets (gl, (5*hh)/10, s2, e2);
   get_line_offsets (gl, (6*hh)/10, s3, e3);
-  return min (e1-s1+1, min (e2-s2+1, e3-s3+1));
+  return std::min (e1-s1+1, std::min (e2-s2+1, e3-s3+1));
 }
 
 void
@@ -529,7 +529,7 @@ adjust_bbb_offsets (glyph gl, SI delta, int next, int prev,
 
   if (end[next] + delta < start[prev]) {
     int lo= start[prev] - delta;
-    int hi= min (end[prev] + delta + 1, ww);
+    int hi= std::min (end[prev] + delta + 1, ww);
     for (int i= lo; i < hi; i++)
       if (gl->get_x (i, next) != 0) {
 	int i1= i;
@@ -564,7 +564,7 @@ get_bbb_offsets (glyph gl, SI fat, array<int>& start, array<int>& end) {
       while (j+1<hh && start[j+1] != -1) j++;
       int j2= j;
       int m = (j1 + j2) >> 1;
-      int delta= max (1, dw/4);
+      int delta= std::max (1, dw/4);
       for (int k=m+1; k<=j2; k++)
 	adjust_bbb_offsets (gl, delta, k, k-1, start, end);
       for (int k=m-1; k>=j1; k--)
@@ -817,10 +817,10 @@ transform (glyph gl, frame fr) {
   SI x1, y1, x2, y2;
   get_bounding_box (gl, x1, y1, x2, y2);
   rectangle tr= fr (rectangle (x1, y1, x2, y2));
-  int tu1= min (tr->x1, tr->x2) / PIXEL - 1;
-  int tv1= min (tr->y1, tr->y2) / PIXEL - 1;
-  int tu2= max (tr->x1, tr->x2) / PIXEL + 1;
-  int tv2= max (tr->y1, tr->y2) / PIXEL + 1;
+  int tu1= std::min (tr->x1, tr->x2) / PIXEL - 1;
+  int tv1= std::min (tr->y1, tr->y2) / PIXEL - 1;
+  int tu2= std::max (tr->x1, tr->x2) / PIXEL + 1;
+  int tv2= std::max (tr->y1, tr->y2) / PIXEL + 1;
   int tw = tu2-tu1;
   int th = tv2-tv1;
   glyph bmr (tw, th, -tu1, tv2, gl->depth);
@@ -881,7 +881,7 @@ curly (glyph gl) {
   int padx= ww >> 2, pady= hh >> 2;
   glyph bmr (ww+2*padx, hh+2*pady, gl->xoff+padx, gl->yoff+pady, gl->depth);
   int mid= (first_in_column (gl, 0) + last_in_column (gl, 0)) >> 1;
-  int dis= max (hh - mid, mid);
+  int dis= std::max (hh - mid, mid);
   int rad= (int) ceil (1.25 * ((dis*dis + ww*ww) / (2.0 * dis)));
   bool jlo= (2*mid > dis), jhi= (2*(hh-mid) > dis);
   for (int ii=0; ii<ww+2*padx; ii++)
@@ -893,10 +893,10 @@ curly (glyph gl) {
       int val= 0;
       if (j < mid || j1 < mid)
         if (jlo && i1 >= 0 && ww > i1 && j1 >= 0 && hh > j1)
-          val= max (val, gl->get_x (i1, j1));
+          val= std::max (val, gl->get_x (i1, j1));
       if (j >= mid || j2 >= mid)
         if (jhi && i2 >= 0 && ww > i2 && j2 >= 0 && hh > j2)
-          val= max (val, gl->get_x (i2, j2));
+          val= std::max (val, gl->get_x (i2, j2));
       bmr->set_x (ii, jj, val);
     }
   bmr->lwidth= gl->lwidth;

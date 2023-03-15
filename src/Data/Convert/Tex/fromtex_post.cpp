@@ -250,7 +250,7 @@ parse_pmatrix (tree& r, tree t, int& i, string lb, string rb, string fm) {
       L << simplify_concat (E);
       for (int j=0; j<N(F); j++) L << F[j];
       V << L;
-      cols= max (cols, N(L));
+      cols= std::max (cols, N(L));
       L= tree (CONCAT);
       E= tree (CONCAT);
       F= tree (CONCAT);
@@ -375,11 +375,11 @@ parse_pmatrix (tree& r, tree t, int& i, string lb, string rb, string fm) {
     F= concat ();
     V << L;
   }
-  if ((max (cols, N(L)) * N(V)) == 0) {
+  if ((std::max (cols, N(L)) * N(V)) == 0) {
     L= tree (CONCAT, "");
     V= tree (CONCAT, tree (CONCAT, ""));
   }
-  cols= max (cols, N(L));
+  cols= std::max (cols, N(L));
   rows= N(V);
 
   int x, y;
@@ -1544,7 +1544,7 @@ reopen_envs (tree t, array< array<tree> > &envs) {
       if (m > 0) envs= range (envs, 0, m-1);
       m= N(envs);
       if (direct_level == 0) r << get_envs (envs, array<tree> ());
-      direct_level= max (direct_level-1, 0);
+      direct_level= std::max (direct_level-1, 0);
     }
     else if (is_func (t[i], SET, 2) && repeat_envs (t[i][0])) {
       r << t[i];

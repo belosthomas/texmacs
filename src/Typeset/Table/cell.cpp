@@ -41,8 +41,8 @@ cell_rep::typeset (tree fm, tree t, path iq) {
       if (vcorrect != "n") {
         SI y1= b->y1;
         SI y2= b->y2;
-        if ((vcorrect == "a") || (vcorrect == "b")) y1= min (y1, env->fn->y1);
-        if ((vcorrect == "a") || (vcorrect == "t")) y2= max (y2, env->fn->y2);
+        if ((vcorrect == "a") || (vcorrect == "b")) y1= std::min (y1, env->fn->y1);
+        if ((vcorrect == "a") || (vcorrect == "t")) y2= std::max (y2, env->fn->y2);
         b= vresize_box (iq, b, y1, y2);
       }
       if (swell > 0) swell_padding ();
@@ -148,8 +148,8 @@ extract_format (tree fm, tree* r, int n) {
           if (k1>=0) k1--; else k1+=n;
           if (k2> 0) k2--; else k2+=n;
           if ((k1 >= n) || (k2 < 0)) continue;
-          k1= max (k1, 0);
-          k2= min (k2, n-1);
+          k1= std::max (k1, 0);
+          k2= std::min (k2, n-1);
           for (k=k1; k<=k2; k++) r[k] << u;
         }
 }
@@ -298,8 +298,8 @@ cell_rep::compute_width (SI& mw, SI& lw, SI& rw, bool large) {
   }
 
   if (hmode == "exact") mw= width;
-  else if (hmode == "max") mw= max (width, mw);
-  else if (hmode == "min") mw= min (width, mw);
+  else if (hmode == "max") mw= std::max (width, mw);
+  else if (hmode == "min") mw= std::min (width, mw);
   if (mw < lw + rw) {
     SI d= lw + rw - mw;
     if (align_c == 'L' || align_c == 'O') rw -= d;
@@ -332,8 +332,8 @@ cell_rep::compute_height (SI& mh, SI& bh, SI& th) {
   }
 
   if (vmode == "exact") mh= height;
-  else if (vmode == "max") mh= max (height, mh);
-  else if (vmode == "min") mh= min (height, mh);
+  else if (vmode == "max") mh= std::max (height, mh);
+  else if (vmode == "min") mh= std::min (height, mh);
   if (mh < bh + th) {
     SI d= bh + th - mh;
     if (align_c == 'B' || align_c == 'O') th -= d;
@@ -389,15 +389,15 @@ cell_rep::swell_padding () {
   if (b->y2 > swt && (border_flags & 1) == 0) {
     SI swT= env->get_length (MATH_TOP_SWELL_END);
     double exceed= b->y2 - swt;
-    double unit  = max (swT - swt, 1);
-    double ratio = min (exceed / unit, 1.0);
+    double unit  = std::max (swT - swt, 1);
+    double ratio = std::min (exceed / unit, 1.0);
     tsep += (SI) (ratio * swell);
   }
   if (b->y1 < swb && (border_flags & 2) == 0) {
     SI swB= env->get_length (MATH_BOT_SWELL_END);
     double exceed= swb - b->y1;
-    double unit  = max (swb - swB, 1);
-    double ratio = min (exceed / unit, 1.0);
+    double unit  = std::max (swb - swB, 1);
+    double ratio = std::min (exceed / unit, 1.0);
     bsep += (SI) (ratio * swell);
   }
   swell= 0;

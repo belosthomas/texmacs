@@ -138,10 +138,10 @@ array<grid_curve>
 cartesian_rep::get_curves (point lim1, point lim2, bool b) {
   array<grid_curve> res;
   if (N(subd)<1) return res;
-  double x1= min (lim1[0], lim2[0]);
-  double y1= min (lim1[1], lim2[1]);
-  double x2= max (lim1[0], lim2[0]);
-  double y2= max (lim1[1], lim2[1]);
+  double x1= std::min (lim1[0], lim2[0]);
+  double y1= std::min (lim1[1], lim2[1]);
+  double x2= std::max (lim1[0], lim2[0]);
+  double y2= std::max (lim1[1], lim2[1]);
   double xo= center[0];
   double yo= center[1];
   int i;
@@ -150,7 +150,7 @@ cartesian_rep::get_curves (point lim1, point lim2, bool b) {
      nsub= subd[i];
      if (nsub!=0) {
        double x, y, s;
-       s= max (step/nsub, 1.0e-6);
+       s= std::max (step/nsub, 1.0e-6);
        for (x= xo; x<=x2; x+=s)
          if (x>=x1) {
            res << create_line (x, y1, x, y2, col[i]);
@@ -192,10 +192,10 @@ cartesian_rep::get_curves_around (point p, double delta, frame f) {
   point lim1= f[point (p2[0]-delta, p2[1]-delta)];
   point lim2= f[point (p2[0]+delta, p2[1]+delta)];
  
-  double x1= min (lim1[0], lim2[0]);
-  double y1= min (lim1[1], lim2[1]);
-  double x2= max (lim1[0], lim2[0]);
-  double y2= max (lim1[1], lim2[1]);
+  double x1= std::min (lim1[0], lim2[0]);
+  double y1= std::min (lim1[1], lim2[1]);
+  double x2= std::max (lim1[0], lim2[0]);
+  double y2= std::max (lim1[1], lim2[1]);
   double xo= center[0];
   double yo= center[1];
   double s = step / nsub;
@@ -204,10 +204,10 @@ cartesian_rep::get_curves_around (point p, double delta, frame f) {
   double Y1= yo + floor ((p[1] - yo) / s) * s;
   double X2= xo + ceil  ((p[0] - xo) / s) * s;
   double Y2= yo + ceil  ((p[1] - yo) / s) * s;
-  x1= min (x1, X1 - s / 10);
-  y1= min (y1, Y1 - s / 10);
-  x2= max (x2, X2 + s / 10);
-  y2= max (y2, Y2 + s / 10);
+  x1= std::min (x1, X1 - s / 10);
+  y1= std::min (y1, Y1 - s / 10);
+  x2= std::max (x2, X2 + s / 10);
+  y2= std::max (y2, Y2 + s / 10);
 
   array<grid_curve> res;
   res << create_line (X1, y1, X1, y2, c);
@@ -280,10 +280,10 @@ polar_rep::get_curves (point lim1, point lim2, bool b) {
   (void) b;
   array<grid_curve> res;
   if (N(subd)<1) return res;
-  double x1= min (lim1[0], lim2[0]);
-  double y1= min (lim1[1], lim2[1]);
-  double x2= max (lim1[0], lim2[0]);
-  double y2= max (lim1[1], lim2[1]);
+  double x1= std::min (lim1[0], lim2[0]);
+  double y1= std::min (lim1[1], lim2[1]);
+  double x2= std::max (lim1[0], lim2[0]);
+  double y2= std::max (lim1[1], lim2[1]);
   double xo= center[0];
   double yo= center[1];
   point P1, P2;
@@ -318,7 +318,7 @@ polar_rep::get_curves (point lim1, point lim2, bool b) {
     nsub= subd[i];
     if (nsub!=0) {
       SI j;
-      double s= max (step/nsub, 1.0e-6);
+      double s= std::max (step/nsub, 1.0e-6);
       for (r=0; r<=R2; r+=s)
 	if (r>=R1)
 	  res << create_arc (xo+r, yo, xo, yo+r, xo-r, yo, col[i]);
@@ -379,7 +379,7 @@ struct logarithmic_rep: public grid_rep {
   double step; // Unit length
   SI base;
   logarithmic_rep (array<SI> subd, array<string> col, point o, double st, SI b):
-    grid_rep (subd, col, o), step (max (st, 1.0e-6)), base (b) {}
+    grid_rep (subd, col, o), step (std::max (st, 1.0e-6)), base (b) {}
   operator tree () { return "logarithmic"; }
   array<grid_curve> get_curves (point lim1, point lim2, bool b);
   point find_closest_point (point p, point pmin, point pmax);
@@ -390,10 +390,10 @@ logarithmic_rep::get_curves (point lim1, point lim2, bool b) {
   (void) b;
   array<grid_curve> res;
   if (N(subd)<1) return res;
-  double x1= min (lim1[0], lim2[0]);
-  double y1= min (lim1[1], lim2[1]);
-  double x2= max (lim1[0], lim2[0]);
-  double y2= max (lim1[1], lim2[1]);
+  double x1= std::min (lim1[0], lim2[0]);
+  double y1= std::min (lim1[1], lim2[1]);
+  double x2= std::max (lim1[0], lim2[0]);
+  double y2= std::max (lim1[1], lim2[1]);
   double xo= center[0];
   double yo= center[1];
   int i;

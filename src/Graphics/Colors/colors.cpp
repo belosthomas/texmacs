@@ -117,16 +117,16 @@ color tm_background= rgb_color (160, 160, 160);
 
 void
 reverse (int& r, int& g, int& b) {
-  int m= min (r, min (g, b));
-  int M= max (r, max (g, b));
+  int m= std::min (r, std::min (g, b));
+  int M= std::max (r, std::max (g, b));
   int t= (r + g + b) / 3;
   int tt= 255 - t;
   double mu= 1.0;
   // tt= 6 * tt / 7;
   if (M != m) {
-    double lambda1= max (((double) (t - m)) / t,
+    double lambda1= std::max (((double) (t - m)) / t,
 			 ((double) (M - t)) / (255 - t));
-    double lambda2= max (((double) (t - m)) / tt,
+    double lambda2= std::max (((double) (t - m)) / tt,
 			 ((double) (M - t)) / (255 - tt));
     mu= lambda1 / lambda2;
   }

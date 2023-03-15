@@ -130,14 +130,14 @@ anim_compose_box_rep::anim_compose_box_rep (path ip, array<box> b2, player pl):
   x1= y1= x3= y3= MAX_SI;
   x2= y2= x4= y4= -MAX_SI;
   for (i=0; i<n; i++) {
-    x1= min (x1, bs[i]->x1);
-    y1= min (y1, bs[i]->y1);
-    x2= max (x2, bs[i]->x2);
-    y2= max (y2, bs[i]->y2);
-    x3= min (x3, bs[i]->x3);
-    y3= min (y3, bs[i]->y3);
-    x4= max (x4, bs[i]->x4);
-    y4= max (y4, bs[i]->y4);
+    x1= std::min (x1, bs[i]->x1);
+    y1= std::min (y1, bs[i]->y1);
+    x2= std::max (x2, bs[i]->x2);
+    y2= std::max (y2, bs[i]->y2);
+    x3= std::min (x3, bs[i]->x3);
+    y3= std::min (y3, bs[i]->y3);
+    x4= std::max (x4, bs[i]->x4);
+    y4= std::max (y4, bs[i]->y4);
   }
 
   double len= 0.0;
@@ -202,9 +202,9 @@ anim_compose_box_rep::anim_next () {
   anim_resync ();
   double r= bs[current]->anim_next ();
   if (pl->is_progressing () && current != N(bs)-1)
-    return min (r, pl->get_refresh_time (offsets[current] - anim_time ()));
+    return std::min (r, pl->get_refresh_time (offsets[current] - anim_time ()));
   if (!pl->is_progressing () && current != 0)
-    return min (r, pl->get_refresh_time (anim_time () - offsets[current-1]));
+    return std::min (r, pl->get_refresh_time (anim_time () - offsets[current-1]));
   return r;
 }
 
@@ -214,7 +214,7 @@ anim_compose_box_rep::anim_invalid () {
   anim_resync ();
   if (current != last_index) rs << box_rep::anim_invalid ();
   if (current != last_index || delay != last_delay)
-    rs << rectangle (min (x1, x3), min (y1, y3), max (x2, x4), max (y2, y4));
+    rs << rectangle (std::min (x1, x3), std::min (y1, y3), std::max (x2, x4), std::max (y2, y4));
   return rs;
 }
 
@@ -312,9 +312,9 @@ anim_repeat_box_rep::anim_next () {
   double r= bs[0]->anim_next ();
   double t= anim_time ();
   if (pl->is_progressing ())
-    r= min (r, pl->get_refresh_time ((current_it + 1.0) * duration - t));
+    r= std::min (r, pl->get_refresh_time ((current_it + 1.0) * duration - t));
   else
-    r= min (r, pl->get_refresh_time (t - current_it * duration));
+    r= std::min (r, pl->get_refresh_time (t - current_it * duration));
   return r;
 }
 
@@ -323,7 +323,7 @@ anim_repeat_box_rep::anim_invalid () {
   anim_resync ();
   rectangles rs= bs[0]->anim_invalid ();
   if (current_it != last_it)
-    rs << rectangle (min (x1, x3), min (y1, y3), max (x2, x4), max (y2, y4));
+    rs << rectangle (std::min (x1, x3), std::min (y1, y3), std::max (x2, x4), std::max (y2, y4));
   return rs;
 }
 
@@ -370,7 +370,7 @@ anim_effect_box_rep::anim_effect_box_rep (path ip, box b2, player pl, int len):
 void
 anim_effect_box_rep::anim_resync () {
   double t= anim_time ();
-  current_x= max (0.0, min (1.0, t / duration));
+  current_x= std::max (0.0, std::min (1.0, t / duration));
 }
 
 double
@@ -378,9 +378,9 @@ anim_effect_box_rep::anim_next () {
   anim_resync ();
   double r= bs[0]->anim_next ();
   if (pl->is_progressing () && 1.0 > current_x)
-    r= min (r, pl->get_refresh_time (0.0));
+    r= std::min (r, pl->get_refresh_time (0.0));
   if (!pl->is_progressing () && 0.0 < current_x)
-    r= min (r, pl->get_refresh_time (0.0));
+    r= std::min (r, pl->get_refresh_time (0.0));
   return r;
 }
 
@@ -389,7 +389,7 @@ anim_effect_box_rep::anim_invalid () {
   rectangles rs= bs[0]->anim_invalid ();
   anim_resync ();
   if (current_x != last_x)
-    rs << rectangle (min (x1, x3), min (y1, y3), max (x2, x4), max (y2, y4));
+    rs << rectangle (std::min (x1, x3), std::min (y1, y3), std::max (x2, x4), std::max (y2, y4));
   return rs;
 }
 
@@ -477,7 +477,7 @@ struct sound_box_rep: public anim_box_rep {
     rectangles rs;
     double t= anim_time ();
     if (last_played < 30.0 && t >= 30.0)
-      rs << rectangle (min (x1, x3), min (y1, y3), max (x2, x4), max (y2, y4));
+      rs << rectangle (std::min (x1, x3), std::min (y1, y3), std::max (x2, x4), std::max (y2, y4));
     return rs; }
 };
 

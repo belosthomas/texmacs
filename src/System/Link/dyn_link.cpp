@@ -12,9 +12,6 @@
 #include "dyn_link.hpp"
 #include "url.hpp"
 #include "hashmap.hpp"
-#ifndef OS_MINGW
-#include <dlfcn.h>
-#endif
 #include <TeXmacs.h>
 
 static hashmap<string,pointer> dyn_linked (NULL);

@@ -16,6 +16,7 @@
 #include "convert.hpp"
 #include "merge_sort.hpp"
 #include "iterator.hpp"
+#include "scheme.hpp"
 
 /******************************************************************************
 * Changing the user preferences
@@ -23,7 +24,6 @@
 
 bool user_prefs_modified= false;
 hashmap<string,string> user_prefs ("");
-void notify_preference (string var);
 
 bool
 has_user_preference (string var) {

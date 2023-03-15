@@ -107,7 +107,7 @@ void
 table_rep::typeset_row (int i, tree fm, tree t, path ip) {
   //ASSERT (i==0 || nr_cols == N(t), "inconsistent number of columns");
   int j;
-  nr_cols= (i==0? N(t): min (nr_cols, N(t)));
+  nr_cols= (i==0? N(t): std::min (nr_cols, N(t)));
   T[i]= tm_new_array<cell> (nr_cols);
   STACK_NEW_ARRAY (subformat, tree, nr_cols);
   extract_format (fm, subformat, nr_cols);
@@ -119,8 +119,8 @@ table_rep::typeset_row (int i, tree fm, tree t, path ip) {
     tree old= env->local_begin (CELL_COL_NR, as_string (j));
     C->typeset (subformat[j], t[j], descend (ip, j));
     env->local_end (CELL_COL_NR, old);
-    C->row_span= min (C->row_span, nr_rows- i);
-    C->col_span= min (C->col_span, nr_cols- j);
+    C->row_span= std::min (C->row_span, nr_rows- i);
+    C->col_span= std::min (C->col_span, nr_cols- j);
     if (hyphen == "y") C->row_span= 1;
   }
   STACK_DELETE_ARRAY (subformat);
@@ -228,10 +228,10 @@ table_rep::handle_decorations () {
         if (C->D->status == 1) {
           ii= i+ C->row_span- 1;
           jj= j+ C->col_span- 1;
-          ex_i1[i ]= max (ex_i1[i ], C->D->i0);
-          ex_j1[j ]= max (ex_j1[j ], C->D->j0);
-          ex_i2[ii]= max (ex_i2[ii], C->D->nr_rows- 1- C->D->i0);
-          ex_j2[jj]= max (ex_j2[jj], C->D->nr_cols- 1- C->D->j0);
+          ex_i1[i ]= std::max (ex_i1[i ], C->D->i0);
+          ex_j1[j ]= std::max (ex_j1[j ], C->D->j0);
+          ex_i2[ii]= std::max (ex_i2[ii], C->D->nr_rows- 1- C->D->i0);
+          ex_j2[jj]= std::max (ex_j2[jj], C->D->nr_cols- 1- C->D->j0);
           flag= false;
         }
       }
@@ -316,15 +316,15 @@ table_rep::merge_borders () {
       if (!is_nil (C)) {
         for (int di=0; di < C->row_span; di++) {
           int ii= i+di, jj= j, kk= ii*hh + jj;
-          horb[kk]= max (horb[kk], C->lborder);
+          horb[kk]= std::max (horb[kk], C->lborder);
           jj= j + C->col_span; kk= ii*hh + jj;
-          horb[kk]= max (horb[kk], C->rborder);
+          horb[kk]= std::max (horb[kk], C->rborder);
         }
         for (int dj=0; dj < C->col_span; dj++) {
           int ii= i, jj= j+dj, kk= ii*hh + jj;
-          verb[kk]= max (verb[kk], C->tborder);
+          verb[kk]= std::max (verb[kk], C->tborder);
           ii= i + C->row_span; kk= ii*hh + jj;
-          verb[kk]= max (verb[kk], C->bborder);
+          verb[kk]= std::max (verb[kk], C->bborder);
         }
       }
     }
@@ -336,15 +336,15 @@ table_rep::merge_borders () {
         SI lb= 0, rb= 0, bb= 0, tb= 0;
         for (int di=0; di < C->row_span; di++) {
           int ii= i+di, jj= j, kk= ii*hh + jj;
-          lb= max (horb[kk], lb);
+          lb= std::max (horb[kk], lb);
           jj= j + C->col_span; kk= ii*hh + jj;
-          rb= max (horb[kk], rb);
+          rb= std::max (horb[kk], rb);
         }
         for (int dj=0; dj < C->col_span; dj++) {
           int ii= i, jj= j+dj, kk= ii*hh + jj;
-          tb= max (verb[kk], tb);
+          tb= std::max (verb[kk], tb);
           ii= i + C->row_span; kk= ii*hh + jj;
-          bb= max (verb[kk], bb);
+          bb= std::max (verb[kk], bb);
         }
         C->lborder= lb; C->rborder= rb;
         C->bborder= bb; C->tborder= tb;
@@ -454,10 +454,10 @@ table_rep::compute_widths (SI* Mw, SI* Lw, SI* Rw, bool large) {
         C->compute_width (cmw, clw, crw, large);
         //cout << i << ", " << j << ": "
         //<< (cmw>>8) << "; " << (clw>>8) << ", " << (crw>>8) << "\n";
-        Mw[j]= max (Mw[j], cmw);
-        Lw[j]= max (Lw[j], clw);
-        Rw[j]= max (Rw[j], crw);
-        Mw[j]= max (Mw[j], Lw[j] + Rw[j]);
+        Mw[j]= std::max (Mw[j], cmw);
+        Lw[j]= std::max (Lw[j], clw);
+        Rw[j]= std::max (Rw[j], crw);
+        Mw[j]= std::max (Mw[j], Lw[j] + Rw[j]);
       }
     }
 
@@ -481,7 +481,7 @@ table_rep::compute_horizontal_parts (double* part) {
     for (i=0; i<nr_rows; i++) {
       cell C= T[i][j];
       if (!is_nil (C))
-        part[j]= max (part[j], C->hpart);
+        part[j]= std::max (part[j], C->hpart);
     }
 }
 
@@ -506,9 +506,9 @@ table_rep::position_columns () {
       compute_widths (Mw, Lw, Rw, true);
       SI max_width= sum (Mw, nr_cols);
       SI computed_width= width;
-      if (hmode == "min") computed_width= min (width, max_width);
-      if (hmode == "max") computed_width= max (width, min_width);
-      hextra= max (computed_width - min_width, 0);
+      if (hmode == "min") computed_width= std::min (width, max_width);
+      if (hmode == "max") computed_width= std::max (width, min_width);
+      hextra= std::max (computed_width - min_width, 0);
       //for (int i=0; i<nr_cols; i++)
       //cout << "Column " << i << ": " << (Mw[i]>>8) << "; "
       //<< (Lw[i]>>8) << ", " << (Rw[i]>>8) << "\n";
@@ -551,7 +551,7 @@ table_rep::position_columns () {
     int orig= col_origin;
     if (orig < 0) orig += nr_cols;
     else orig--;
-    orig= max (min (orig, nr_cols - 1), 0);
+    orig= std::max (std::min (orig, nr_cols - 1), 0);
     xoff= -sum (mw, orig) - lw[orig];
   }
   else xoff= -sum (mw, j0) - lw[j0];
@@ -585,10 +585,10 @@ table_rep::compute_heights (SI* mh, SI* bh, SI* th) {
       if ((!is_nil (C)) && (C->row_span==1)) {
         SI cmh, cbh, cth;
         C->compute_height (cmh, cbh, cth);
-        mh[i]= max (mh[i], cmh);
-        bh[i]= max (bh[i], cbh);
-        th[i]= max (th[i], cth);
-        mh[i]= max (mh[i], bh[i] + th[i]);
+        mh[i]= std::max (mh[i], cmh);
+        bh[i]= std::max (bh[i], cbh);
+        th[i]= std::max (th[i], cth);
+        mh[i]= std::max (mh[i], bh[i] + th[i]);
       }
     }
 
@@ -612,7 +612,7 @@ table_rep::compute_vertical_parts (double* part) {
     for (j=0; j<nr_cols; j++) {
       cell C= T[i][j];
       if (!is_nil (C))
-        part[i]= max (part[i], C->vpart);
+        part[i]= std::max (part[i], C->vpart);
     }
 }
 
@@ -639,9 +639,9 @@ table_rep::position_rows () {
         Th[i]= th[i];
       }
       SI computed_height= height;
-      if (vmode == "min") computed_height= min (height, min_height);
-      if (vmode == "max") computed_height= max (height, min_height);
-      vextra= max (computed_height - min_height, 0);
+      if (vmode == "min") computed_height= std::min (height, min_height);
+      if (vmode == "max") computed_height= std::max (height, min_height);
+      vextra= std::max (computed_height - min_height, 0);
       blow_up (mh, bh, th, Mh, Bh, Th, vextra, part, nr_rows);
       STACK_DELETE_ARRAY (part);
       STACK_DELETE_ARRAY (Mh);
@@ -676,7 +676,7 @@ table_rep::position_rows () {
     int orig= row_origin;
     if (orig < 0) orig += nr_rows;
     else orig--;
-    orig= max (min (orig, nr_rows - 1), 0);
+    orig= std::max (std::min (orig, nr_rows - 1), 0);
     yoff= sum (mh, orig) + th[orig];
   }
   else yoff= sum (mh, i0) + th[i0];
@@ -850,7 +850,7 @@ lazy_table_rep::query (lazy_type request, format fm) {
   if ((request == LAZY_BOX) && (fm->type == QUERY_VSTREAM_WIDTH)) {
     SI tmw, tlw, trw;
     T->compute_width (tmw, tlw, trw);
-    return make_format_width (max (tmw, 1));
+    return make_format_width (std::max (tmw, 1));
   }
   return lazy_rep::query (request, fm);
 }
@@ -866,7 +866,7 @@ lazy_table_rep::produce (lazy_type request, format fm) {
       format_vstream fs= (format_vstream) fm;
       string s= as_string (T->var[TABLE_WIDTH]);
       if (ends (s, "par"))
-        T->width= max ((SI) (as_double (s (0, N(s)-3)) * fs->width), 1);
+        T->width= std::max ((SI) (as_double (s (0, N(s)-3)) * fs->width), 1);
     }
     T->position_columns ();
     T->finish_horizontal ();

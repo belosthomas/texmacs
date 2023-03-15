@@ -79,7 +79,7 @@ class make_transparent_function_rep:
   double t;
 public:
   make_transparent_function_rep (const true_color& b2, const double& t2):
-    b (b2), t (max (min (t2, 1.0), 0.0)) {}
+    b (b2), t (std::max (std::min (t2, 1.0), 0.0)) {}
   true_color eval (const true_color& c) {
     double mr= 0.0, mg= 0.0, mb= 0.0;
     if (c.r > b.r) mr= (c.r - b.r) / (1 - b.r);
@@ -88,7 +88,7 @@ public:
     else if (c.g < b.g) mg= (b.g - c.g) / b.g;
     if (c.b > b.b) mb= (c.b - b.b) / (1 - b.b);
     else if (c.b < b.b) mb= (b.b - c.b) / b.b;
-    double a= max (mr, max (mg, mb));
+    double a= std::max (mr, std::max (mg, mb));
     if (a < t) a= a / t; else a= 1.0;
     if (a == 0) return true_color (c.r, c.g, c.b, 0);
     double nr= b.r + (c.r - b.r) / a;

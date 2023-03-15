@@ -69,7 +69,7 @@ scheme_language_rep::get_color (tree t, int start, int end) {
   static string none= "";
   if (start >= end) return none;
   string s= t->label;
-  for (int i= max (0, start-1000); i <= start; i++)
+  for (int i= std::max (0, start-1000); i <= start; i++)
     switch (s[i]) {
     case ';':
       if (i>1 && s[i-1] == '\\' && s[i-2] == '#')

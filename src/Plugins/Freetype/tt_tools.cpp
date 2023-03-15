@@ -14,19 +14,12 @@
 #include "analyze.hpp"
 #include "file.hpp"
 
-#ifdef HAVE_STDINT_H
 #include <stdint.h>
 #define U8  uint8_t
 #define U16 uint16_t
 #define U32 uint32_t
 #define F32 uint32_t
 #define U64 uint64_t
-#else
-#define U8  unsigned char
-#define U16 unsigned short
-#define U32 unsigned int
-#define U64 unsigned long long int
-#endif
 
 string strip_suffix (string name);
 
@@ -36,8 +29,8 @@ string strip_suffix (string name);
 
 string
 get_sub (string s, int i, int j) {
-  i= min (max (i, 0), N(s));
-  j= min (max (j, 0), N(s));
+  i= std::min (std::max (i, 0), N(s));
+  j= std::min (std::max (j, 0), N(s));
   return s (i, j);
 }
 

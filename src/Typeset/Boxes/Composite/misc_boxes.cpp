@@ -147,19 +147,19 @@ page_box_rep::page_box_rep (path ip2, tree p2, int nr2, brush bgc, SI w, SI h,
   composite_box_rep (ip2, bs, x, y),
   page (p2), page_nr (nr2), page_bgc (bgc), decoration (dec), old_page (0)
 {
-  x1= min (x1, 0);
-  x2= max (x2, w);
+  x1= std::min (x1, 0);
+  x2= std::max (x2, w);
   y1= -h;
   y2=  0;
-  x3= min (x3,  0);
-  x4= max (x4,  w);
-  y3= min (y3, -h);
-  y4= max (y4,  0);
+  x3= std::min (x3,  0);
+  x4= std::max (x4,  w);
+  y3= std::min (y3, -h);
+  y4= std::max (y4,  0);
   if (!is_nil (decoration)) {
-    x3= min (x3, decoration->x0+ decoration->x3);
-    x4= max (x4, decoration->x0+ decoration->x4);
-    y3= min (y3, decoration->y0+ decoration->y3);
-    y4= max (y4, decoration->y0+ decoration->y4);
+    x3= std::min (x3, decoration->x0+ decoration->x3);
+    x4= std::max (x4, decoration->x0+ decoration->x4);
+    y3= std::min (y3, decoration->y0+ decoration->y3);
+    y4= std::max (y4, decoration->y0+ decoration->y4);
   }
   finalize ();
 }
@@ -374,8 +374,8 @@ crop_marks_box_rep::crop_marks_box_rep (path ip2, box pb,
   position ();
   x1 = 0; y1 = -h;
   x2 = w; y2 = 0;
-  x3 = min (0, x3); y3 = min (-h, y3);
-  x4 = max (0, x4); y4 = max (0, y4);
+  x3 = std::min (0, x3); y3 = std::min (-h, y3);
+  x4 = std::max (0, x4); y4 = std::max (0, y4);
   finalize ();
 }
 

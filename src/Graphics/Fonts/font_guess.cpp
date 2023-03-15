@@ -27,7 +27,7 @@ bool is_category (string s);
 
 static int
 abs_int (int i) {
-  return max (i, -i);
+  return std::max (i, -i);
 }
 
 array<string>
@@ -56,12 +56,12 @@ guessed_features (string family, string style) {
 
     // begin adjustments
     int delta= 0;
-    if (oblique) delta += min (abs_int (as_int (slant)), 50) / 4;
+    if (oblique) delta += std::min (abs_int (as_int (slant)), 50) / 4;
     int asprat= 110;
     if (lasprat != "") asprat= as_int (lasprat);
     if (pasprat != "" && mono) asprat= as_int (pasprat);
     int ecart= asprat - 110;
-    ecart= max (min (ecart, 80), -40);
+    ecart= std::max (std::min (ecart, 80), -40);
     if (ecart > 0) delta += ecart / 8;
     else delta += ecart / 4;
     vf += delta;
@@ -84,7 +84,7 @@ guessed_features (string family, string style) {
 
     // begin adjustments
     int w= as_int (lvw);
-    w= min (w, 40);
+    w= std::min (w, 40);
     rat -= w/2;
     // cout << family << ", " << style << " -> " << (w/2) << "\n";
     // end adjustments
@@ -215,7 +215,7 @@ guessed_distance_families (string fam1, string fam2) {
   double d= 1000000.0;
   for (int i1=0; i1<N(stys1); i1++)
     for (int i2=0; i2<N(stys2); i2++)
-      d= min (d, guessed_distance (fam1, stys1[i1], fam2, stys2[i2]));
+      d= std::min (d, guessed_distance (fam1, stys1[i1], fam2, stys2[i2]));
   memo (key)= d;
   return d;
 }
@@ -231,7 +231,7 @@ guessed_distance (string master1, string master2) {
   double d= 1000000.0;
   for (int i1=0; i1<N(fams1); i1++)
     for (int i2=0; i2<N(fams2); i2++)
-      d= min (d, guessed_distance_families (fams1[i1], fams2[i2]));
+      d= std::min (d, guessed_distance_families (fams1[i1], fams2[i2]));
   memo (key)= d;
   //cout << "    " << master1 << ", " << master2 << " -> " << 100.0*d << "\n";
   return d;

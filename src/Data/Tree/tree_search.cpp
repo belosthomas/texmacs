@@ -309,7 +309,7 @@ search_concat (range_set& sel, tree t, tree what, path p) {
     if (search_concat (t, what, pos, 0, p, cur, p1, p2)) {
       merge (sel, simple_range (p1, p2));
       int next= (p2 / p)->item;
-      pos= max (pos+1, next);
+      pos= std::max (pos+1, next);
     }
     else pos++;
   }

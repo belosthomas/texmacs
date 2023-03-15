@@ -950,7 +950,7 @@ minimal_arity (tree t, tree var) {
   else {
     int i, n= N(t), m= 0;
     for (i=0; i<n; i++)
-      m= max (m, minimal_arity (t[i], var));
+      m= std::max (m, minimal_arity (t[i], var));
     return m;
   }
 }

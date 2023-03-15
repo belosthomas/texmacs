@@ -82,12 +82,12 @@ public:
     int nr= fn_nr [fn];
     if (starts (c, "<")) {
       if (!cht->contains (c)) cht (c)= nr;
-      else cht (c)= min (nr, cht [c]);
+      else cht (c)= std::min (nr, cht [c]);
     }
     else {
       int code= (int) (unsigned char) c[0];
       if (chv[code] == -1) chv [code]= nr;
-      else chv[code]= min (nr, chv [code]);
+      else chv[code]= std::min (nr, chv [code]);
     }
     return nr;
   }
@@ -1066,8 +1066,8 @@ smart_font_rep::resolve (string c, string fam, int attempt) {
         double hw = rat * get_up_pen_width (ch);
         double vw = rat * get_up_pen_height (ch);
         double lw = ((double) cfn->wline) / ((double) cfn->wfn);
-        hw= max (hw, 0.25 * lw);
-        vw= max (vw, 0.25 * lw);
+        hw= std::max (hw, 0.25 * lw);
+        vw= std::max (vw, 0.25 * lw);
         tree key= tuple ("poor-bbb", as_string (hw), as_string (vw));
         int nr= sm->add_font (key, REWRITE_POOR_BBB);
         initialize_font (nr);
@@ -1468,12 +1468,12 @@ smart_font_rep::get_extents (string s, metric& ex) {
       if (nr >= 0) {
         //cout << "From " << nr << " -> " << sm->fn_spec[nr] << "\n";
         fn[nr]->get_extents (r, ey);
-        ex->y1= min (ex->y1, ey->y1);
-        ex->y2= max (ex->y2, ey->y2);
-        ex->x3= min (ex->x3, ex->x2 + ey->x3);
-        ex->y3= min (ex->y3, ey->y3);
-        ex->x4= max (ex->x4, ex->x2 + ey->x4);
-        ex->y4= max (ex->y4, ey->y4);
+        ex->y1= std::min (ex->y1, ey->y1);
+        ex->y2= std::max (ex->y2, ey->y2);
+        ex->x3= std::min (ex->x3, ex->x2 + ey->x3);
+        ex->y3= std::min (ex->y3, ey->y3);
+        ex->x4= std::max (ex->x4, ex->x2 + ey->x4);
+        ex->y4= std::max (ex->y4, ey->y4);
         ex->x2 += ey->x2;
       }
     }
@@ -1626,7 +1626,7 @@ smart_font_rep::get_left_slope  (string s) {
   if (n == 0) return fn[0]->get_left_slope (s);
   string r= s;
   advance (s, i, r, nr);
-  nr= max (nr, 0);
+  nr= std::max (nr, 0);
   return fn[nr]->get_left_slope (r);
 }
 
@@ -1636,7 +1636,7 @@ smart_font_rep::get_right_slope (string s) {
   if (n == 0) return fn[0]->get_right_slope (s);
   string r= s;
   while (i<n) advance (s, i, r, nr);
-  nr= max (nr, 0);
+  nr= std::max (nr, 0);
   return fn[nr]->get_right_slope (r);
 }
 
@@ -1646,7 +1646,7 @@ smart_font_rep::get_left_correction  (string s) {
   if (n == 0) return fn[0]->get_left_correction (s);
   string r= s;
   advance (s, i, r, nr);
-  nr= max (nr, 0);
+  nr= std::max (nr, 0);
   return fn[nr]->get_left_correction (r);
 }
 
@@ -1656,7 +1656,7 @@ smart_font_rep::get_right_correction (string s) {
   if (n == 0) return fn[0]->get_right_correction (s);
   string r= s;
   while (i<n) advance (s, i, r, nr);
-  nr= max (nr, 0);
+  nr= std::max (nr, 0);
   return fn[nr]->get_right_correction (r);
 }
 
@@ -1666,7 +1666,7 @@ smart_font_rep::get_lsub_correction  (string s) {
   if (n == 0) return fn[0]->get_lsub_correction (s);
   string r= s;
   advance (s, i, r, nr);
-  nr= max (nr, 0);
+  nr= std::max (nr, 0);
   return fn[nr]->get_lsub_correction (r);
 }
 
@@ -1676,7 +1676,7 @@ smart_font_rep::get_lsup_correction  (string s) {
   if (n == 0) return fn[0]->get_lsup_correction (s);
   string r= s;
   advance (s, i, r, nr);
-  nr= max (nr, 0);
+  nr= std::max (nr, 0);
   return fn[nr]->get_lsup_correction (r);
 }
 
@@ -1686,7 +1686,7 @@ smart_font_rep::get_rsub_correction (string s) {
   if (n == 0) return fn[0]->get_rsub_correction (s);
   string r= s;
   while (i<n) advance (s, i, r, nr);
-  nr= max (nr, 0);
+  nr= std::max (nr, 0);
   return fn[nr]->get_rsub_correction (r);
 }
 
@@ -1696,7 +1696,7 @@ smart_font_rep::get_rsup_correction (string s) {
   if (n == 0) return fn[0]->get_rsup_correction (s);
   string r= s;
   while (i<n) advance (s, i, r, nr);
-  nr= max (nr, 0);
+  nr= std::max (nr, 0);
   return fn[nr]->get_rsup_correction (r);
 }
 
@@ -1706,7 +1706,7 @@ smart_font_rep::get_wide_correction (string s, int mode) {
   if (n == 0) return fn[0]->get_wide_correction (s, mode);
   string r= s;
   while (i<n) advance (s, i, r, nr);
-  nr= max (nr, 0);
+  nr= std::max (nr, 0);
   return fn[nr]->get_wide_correction (r, mode);
 }
 
@@ -1781,7 +1781,7 @@ smart_font (string family, string variant, string series, string shape,
     return smart_font_bis (family, variant, series, shape, sz, dpi, dpi);
   font fn1= smart_font_bis (family, "rm", series, shape, sz, dpi, dpi);
   font fn2= smart_font_bis (family, variant, series, shape, sz, dpi, dpi);
-  double zoom= ((double) fn1->yx) / max (((double) fn2->yx), 1.0);
+  double zoom= ((double) fn1->yx) / std::max (((double) fn2->yx), 1.0);
   if (fn1->yx < PIXEL || fn2->yx < PIXEL) zoom= 1.0;
   if (zoom > 0.975 && zoom < 1.025) return fn2;
   return fn2->magnify (zoom);

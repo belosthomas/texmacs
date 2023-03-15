@@ -43,14 +43,14 @@ graphics_box_rep::graphics_box_rep (
   composite_box_rep (ip2, bs2), f (f2), g (g2), lim1 (lim1b), lim2 (lim2b)
 {
   point flim1= f(lim1), flim2= f(lim2);
-  x1= (SI) min (flim1[0], flim2[0]);
-  y1= (SI) min (flim1[1], flim2[1]);
-  x2= (SI) max (flim1[0], flim2[0]);
-  y2= (SI) max (flim1[1], flim2[1]);
-  x3= max (x1, x3);
-  y3= max (y1, y3);
-  x4= min (x2, x4);
-  y4= min (y2, y4);
+  x1= (SI) std::min (flim1[0], flim2[0]);
+  y1= (SI) std::min (flim1[1], flim2[1]);
+  x2= (SI) std::max (flim1[0], flim2[0]);
+  y2= (SI) std::max (flim1[1], flim2[1]);
+  x3= std::max (x1, x3);
+  y3= std::max (y1, y3);
+  x4= std::min (x2, x4);
+  y4= std::min (y2, y4);
   finalize ();
 }
 
@@ -355,10 +355,10 @@ curve_box_rep::curve_box_rep (path ip2, curve c2, pencil pen2,
   x1= y1= x3= y3= MAX_SI;
   x2= y2= x4= y4= -MAX_SI;
   for (i=0; i<(n-1); i++) {
-    x1= min (x1, min ((SI) a[i][0], (SI) a[i+1][0]));
-    y1= min (y1, min ((SI) a[i][1], (SI) a[i+1][1]));
-    x2= max (x2, max ((SI) a[i][0], (SI) a[i+1][0]));
-    y2= max (y2, max ((SI) a[i][1], (SI) a[i+1][1]));
+    x1= std::min (x1, std::min ((SI) a[i][0], (SI) a[i+1][0]));
+    y1= std::min (y1, std::min ((SI) a[i][1], (SI) a[i+1][1]));
+    x2= std::max (x2, std::max ((SI) a[i][0], (SI) a[i+1][0]));
+    y2= std::max (y2, std::max ((SI) a[i][1], (SI) a[i+1][1]));
   }
   apply_style ();
   arrows= array<box>(2);
@@ -371,10 +371,10 @@ curve_box_rep::curve_box_rep (path ip2, curve c2, pencil pen2,
 		rotation_2D (point (0.0, 0.0), arg (tg));
       arrows[0]= arrows2[0]->transform (fr);
       if (!is_nil (arrows[0])) {
-	x1= min (x1, arrows[0]->x1);
-	y1= min (y1, arrows[0]->y1);
-	x2= max (x2, arrows[0]->x2);
-	y2= max (y2, arrows[0]->y2);
+	x1= std::min (x1, arrows[0]->x1);
+	y1= std::min (y1, arrows[0]->y1);
+	x2= std::max (x2, arrows[0]->x2);
+	y2= std::max (y2, arrows[0]->y2);
       }
     }
   }
@@ -385,10 +385,10 @@ curve_box_rep::curve_box_rep (path ip2, curve c2, pencil pen2,
 		rotation_2D (point (0.0, 0.0), arg (tg));
       arrows[1]= arrows2[1]->transform (fr);
       if (!is_nil (arrows[1])) {
-	x1= min (x1, arrows[1]->x1);
-	y1= min (y1, arrows[1]->y1);
-	x2= max (x2, arrows[1]->x2);
-	y2= max (y2, arrows[1]->y2);
+	x1= std::min (x1, arrows[1]->x1);
+	y1= std::min (y1, arrows[1]->y1);
+	x2= std::max (x2, arrows[1]->x2);
+	y2= std::max (y2, arrows[1]->y2);
       }
     }
   }
@@ -412,14 +412,14 @@ curve_box_rep::graphical_distance (SI x, SI y) {
     axis ax;
     ax.p0= a[i];
     ax.p1= a[i+1];
-    gd= min (gd, (SI)seg_dist (ax, p));
+    gd= std::min (gd, (SI)seg_dist (ax, p));
   }
   array<double> abs;
   array<point> pts;
   array<path> paths;
   int np= c->get_control_points (abs, pts, paths);
   for (i=0; i<np; i++)
-    gd= min (gd, (SI) norm (pts[i] - p));
+    gd= std::min (gd, (SI) norm (pts[i] - p));
   return gd;
 }
 
@@ -771,7 +771,7 @@ curve_box (path ip, curve c, double portion, pencil pen,
            array<bool> style, array<point> motif, SI style_unit,
            brush fill_br, array<box> arrows)
 {
-  if (portion < 1.0) c= truncate (c, max (portion, 1.0e-5), PIXEL / 10.0);
+  if (portion < 1.0) c= truncate (c, std::max (portion, 1.0e-5), PIXEL / 10.0);
   return tm_new<curve_box_rep> (ip, c, pen, style, motif, style_unit,
                                 fill_br, arrows);
 }

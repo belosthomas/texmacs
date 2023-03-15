@@ -180,7 +180,7 @@ move_any (tree t, path p, bool forward) {
 #ifdef SANITY_CHECKS
     ASSERT (l >= 0 && l <= N(s), "out of range");
 #else
-    l= max (min (l, N(s)), 0);
+    l= std::max (std::min (l, N(s)), 0);
 #endif
     if (forward) {
       if (l<N(s)) {
@@ -242,7 +242,7 @@ path
 closest_up (tree t, path p) {
   if (is_atomic (t)) {
     if (is_nil (p)) return path (0);
-    else return path (max (0, min (p->item, N(t->label))));
+    else return path (std::max (0, std::min (p->item, N(t->label))));
   }
   else if (is_concat (t) || is_document (t)) {
     if (N(t) == 0) return path (0);
@@ -254,7 +254,7 @@ closest_up (tree t, path p) {
   }
   else {
     if (is_nil (p)) return path (0);
-    else if (is_atom (p)) return path (max (0, min (p->item, 1)));
+    else if (is_atom (p)) return path (std::max (0, std::min (p->item, 1)));
     else if (p->item < 0) return path (0);
     else if (p->item >= N(t)) return path (1);
     else return path (p->item, closest_up (t[p->item], p->next));

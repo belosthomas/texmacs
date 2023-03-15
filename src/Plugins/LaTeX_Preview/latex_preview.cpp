@@ -145,6 +145,7 @@ latex_load_image (url image) {
   return (t);
 #else
     tm_throw("Ghostscript not available");
+    return {};
 #endif
 }
 
@@ -184,6 +185,7 @@ latex_load_preview (url wdir, bool dvips= false) {
   return r;
 #else
     tm_throw("Ghostscript not available");
+    return {};
 #endif
 }
 

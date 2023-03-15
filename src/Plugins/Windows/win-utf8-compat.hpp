@@ -23,13 +23,10 @@
 * see https://www.boost.org/users/license.html
 ******************************************************************************/
 
-#include "nowide/args.hpp"
 #include <sys/stat.h>
 
 typedef struct _stat32 struct_stat;
 
-#include "nowide/cstdio.hpp"
-#include "nowide/cenv.hpp"
 
 
 #ifndef S_ISLNK

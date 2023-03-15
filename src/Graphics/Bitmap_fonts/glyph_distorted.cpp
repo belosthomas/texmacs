@@ -64,8 +64,8 @@ distorted (glyph gl, double strength, double freq, int gnaw, SI em, int c) {
       int val= 0;
       if (i2 >= 0 && i2 < ww && j2 >= 0 && j2 < hh)
         val= gl->get_x (i2, j2);
-      if (gnaw < 0) val= min (val, gl->get_x (i, j));
-      if (gnaw > 0) val= max (val, gl->get_x (i, j));
+      if (gnaw < 0) val= std::min (val, gl->get_x (i, j));
+      if (gnaw > 0) val= std::max (val, gl->get_x (i, j));
       bmr->set_x (i, j, val);
     }
   bmr->lwidth= gl->lwidth;
