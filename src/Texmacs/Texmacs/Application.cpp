@@ -98,9 +98,11 @@ void texmacs::Application::initializeEnvironmentVariables() {
     emit initializationMessage("Initializing environment variable...");
     QString texmacsHomePath = QDir::homePath() + "/.TeXmacs";
     QString texmacsPath = QDir::homePath() + "/.TeXmacs/TeXmacs";
+    QString texmacsProgsPath = QDir::homePath() + "/.TeXmacs/TeXmacs/progs-";
 
     set_env("TEXMACS_HOME_PATH", string(texmacsHomePath.toUtf8().constData(), texmacsHomePath.toUtf8().size()));
     set_env("TEXMACS_PATH", string(texmacsPath.toUtf8().constData(), texmacsPath.toUtf8().size()));
+    set_env("TEXMACS_PROGS_PATH", string(texmacsProgsPath.toUtf8().constData(), texmacsProgsPath.toUtf8().size()) * scheme().scheme_dialect());
 
     original_path= get_env ("PATH");
     load_user_preferences ();
@@ -111,25 +113,31 @@ void texmacs::Application::initializeScheme() {
     register_all_scheme();
     auto allSchemes = get_scheme_factories();
     if (allSchemes.size() == 0) {
-        qDebug() << "TeXmacs] Error: no scheme factories registered";
+        qDebug() << "Error: No scheme factories registered";
         QApplication::exit(1);
     }
-    qDebug() << "Found Scheme : ";
-    for (auto scheme : allSchemes) {
-        qDebug() << " - " << QString::fromStdString(scheme);
+
+    if (mWantedScemeImplementation != "") {
+        qDebug() << "Using " << QString::fromStdString(mWantedScemeImplementation) << " scheme implementation";
+        use_scheme(mWantedScemeImplementation);
+    } else {
+        qDebug() << "Using " << QString::fromStdString(allSchemes[0]) << " by default";
+        use_scheme(allSchemes[0]);
     }
-    qDebug() << "Using " << QString::fromStdString(allSchemes[0]) << " by default";
-    use_scheme(allSchemes[0]);
 }
 
 void texmacs::Application::onApplicationStarted() {
     // resetTeXmacs();
     extractResources();
 
+    emit initializationMessage("Initializing Scheme...");
+    initializeScheme();
+
+    emit initializationMessage("Initializing Environment Variables...");
+    initializeEnvironmentVariables();
+
     emit initializationMessage("Loading Pixmaps...");
     mPixmapManager.loadAll();
-
-    initializeEnvironmentVariables();
 
     the_et     = tuple ();
     the_et->obs= ip_observer (path ());
@@ -138,7 +146,7 @@ void texmacs::Application::onApplicationStarted() {
     init_texmacs ();
     bench_cumul ("initialize texmacs");
 
-    initializeScheme();
+
 
     emit initializationMessage("Initializing Plugins...");
     init_plugins ();

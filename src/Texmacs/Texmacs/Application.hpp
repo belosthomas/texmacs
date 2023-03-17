@@ -67,6 +67,13 @@ namespace texmacs {
             return mPixmapManager;
         }
 
+        /**
+         * @brief Set the wanted scheme implementation.
+         */
+        inline void setWantedSchemeImplementation(const std::string &wantedSchemeImplementation) {
+            mWantedScemeImplementation = wantedSchemeImplementation;
+        }
+
     signals:
         /**
          * @brief This signal is emitted when the application is ready to be shown.
@@ -105,7 +112,6 @@ namespace texmacs {
          */
         void initializeScheme();
 
-
     protected slots:
         /**
          * @brief This function is called when Qt has finish to initialize the application. This function initialize TeXmacs.
@@ -117,6 +123,7 @@ namespace texmacs {
         server *mServer = nullptr;
         std::list<Window> mWindows;
         PixmapManager mPixmapManager;
+        std::string mWantedScemeImplementation = "";
 
     };
 

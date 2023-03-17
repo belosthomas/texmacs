@@ -245,8 +245,8 @@ release_boot_lock () {
 
 static void
 init_guile () {
-  url guile_path= "$TEXMACS_PATH/progs:$GUILE_LOAD_PATH";
-  if (!exists (guile_path * "init-texmacs-s7.scm")) {
+  url guile_path= "$TEXMACS_PROGS_PATH:$GUILE_LOAD_PATH";
+  if (!exists (guile_path * "init-texmacs.scm")) {
     boot_error << "\n";
     boot_error << "Installation problem: please send a bug report.\n";
     boot_error << "The initialization file init-texmacs-s7.scm"

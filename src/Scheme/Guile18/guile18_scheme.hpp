@@ -125,6 +125,10 @@ public:
     }
 
     void run(std::function<void()> f) {
+        if (mThread.get_id() == std::this_thread::get_id()) {
+            f();
+            return;
+        }
         *mQueue.getPushElement() = std::move(f);
         mQueue.notifyPush();
     }
@@ -142,7 +146,11 @@ class guile_scheme : public abstract_scheme {
     
 public:
     guile_scheme() : mThread() {
-
+        string init = "(read-set! keywords 'prefix)\n"
+                      "(read-enable 'positions)\n"
+                      "(debug-enable 'debug)\n"
+                      "(debug-enable 'backtrace)\n";
+        eval_scheme(init);
     }
 
     tmscm blackbox_to_tmscm(blackbox b) final {
@@ -206,8 +214,12 @@ public:
     }
 
     tmscm eval_scheme_file(string name) final {
-        c_string _file (name);
-        return guile_tmscm::mk(scm_c_primitive_load (_file));
+        std::promise<tmscm> promise;
+        mThread.run([&promise, name]() {
+            c_string _file (name);
+            promise.set_value(guile_tmscm::mk(scm_c_primitive_load (_file)));
+        });
+        return promise.get_future().get();
     }
 
     tmscm eval_scheme(string s) final {
@@ -261,7 +273,7 @@ public:
     }
 
     string scheme_dialect() {
-        return "guile";
+        return "guile-c";
     }
 
 private:

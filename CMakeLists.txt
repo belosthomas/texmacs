@@ -122,7 +122,7 @@ else()
     target_sources(texmacs PUBLIC ${Texmacs_AppSources})
     set_target_properties(texmacs PROPERTIES
         MACOSX_BUNDLE ON
-        WIN32_EXECUTABLE ON
+       # WIN32_EXECUTABLE ON
     )
     # enable QDebug
     target_compile_definitions(texmacs PUBLIC QT_MESSAGELOGCONTEXT)

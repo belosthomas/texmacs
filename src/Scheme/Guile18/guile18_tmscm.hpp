@@ -17,6 +17,8 @@ public:
         if (mProtect) {
             scm_gc_protect_object(mSCM);
         }
+        string t = type();
+        mType = std::string(t.data(), N(t));
     }
 
     ~guile_tmscm() {
@@ -151,9 +153,44 @@ public:
         return scm_ihash(mSCM, std::numeric_limits<int>::max());
     }
 
+    string type() {
+        string type = "";
+        if (scm_is_null(mSCM)) {
+            type = "null";
+        } else {
+            type = "not null";
+        }
+        if (scm_is_integer(mSCM)) {
+           type = type * "/int";
+        }
+        if (scm_is_real(mSCM)) {
+           type = type * "/double";
+        }
+        if (scm_is_string(mSCM)) {
+           type = type * "/string";
+        }
+        if (scm_is_symbol(mSCM)) {
+           type = type * "/symbol";
+        }
+        if (scm_is_pair(mSCM)) {
+           type = type * "/pair";
+        }
+        if (scm_is_true(scm_list_p(mSCM))) {
+           type = type * "/true";
+        }
+        if (scm_is_false(scm_list_p(mSCM))) {
+           type = type * "/false";
+        }
+        if (scm_is_bool(mSCM)) {
+           type = type * "/bool";
+        }
+        return type;
+    }
+
 private:
     SCM mSCM;
     bool mProtect;
+    std::string mType;
 };
 
 class guile_tmscm_null : public guile_tmscm {
