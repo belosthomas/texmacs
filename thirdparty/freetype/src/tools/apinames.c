@@ -306,7 +306,7 @@ read_header_file( FILE*  file,
       while ( *p == ' ' || *p == '\t' )
         p++;
 
-      if ( !isalpha( *p ) )
+      if ( !isalpha( (unsigned char)*p ) )
         break;
 
       /* fall-through */

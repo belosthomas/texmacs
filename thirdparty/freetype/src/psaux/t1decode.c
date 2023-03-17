@@ -22,6 +22,8 @@
 #include <freetype/internal/fthash.h>
 #include <freetype/ftoutln.h>
 
+#include <stdint.h>
+
 #include "t1decode.h"
 #include "psobjs.h"
 
@@ -1979,7 +1981,7 @@
 
         case op_callsubr:
           {
-            FT_Int  idx;
+            int64_t  idx;
 
 
             FT_TRACE4(( " callsubr" ));
