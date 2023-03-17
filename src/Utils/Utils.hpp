@@ -4,7 +4,6 @@
 #include <string>
 #include <vector>
 #include <sstream>
-#include <filesystem>
 #include <fstream>
 
 namespace texmacs {
@@ -31,12 +30,6 @@ namespace texmacs {
                 tokens.push_back(std::stoi(token));
             }
             return tokens;
-        }
-
-        inline std::string readWholeFile(const std::filesystem::path &path) {
-            std::ifstream file(path);
-            std::string str((std::istreambuf_iterator<char>(file)), std::istreambuf_iterator<char>());
-            return str;
         }
 
     }

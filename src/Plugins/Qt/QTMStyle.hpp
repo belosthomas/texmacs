@@ -16,19 +16,8 @@
 
 int qt_zoom (int sz);
 
-#ifdef Q_OS_MAC
-#define QTM_MINI_FONTSIZE 12 // also see uses of preference "gui:mini-fontsize"
-                             // toolbar creation and config should be in scheme
-#else
-#define QTM_MINI_FONTSIZE 9
-#endif
 
-#ifdef Q_OS_MAC
-#define UNIFIED_TOOLBAR
-extern bool use_unified_toolbar;
-  // enable the unified toolbar style on the mac. To work properly this requires
-  // a modification of the widget hierarchy of the main window.
-#endif
+#define QTM_MINI_FONTSIZE 9
 
   // custom style to override some Qt "features" like
   // frame around widgets in the status bar

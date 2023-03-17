@@ -31,7 +31,7 @@ public:
         if (mIsDestroyed) {
             return &mElements[mPushIndex];
         }
-        std::unique_lock lock(mMutex);
+        std::unique_lock<std::mutex> lock(mMutex);
         while (mSize == C) {
             mConditionVariable.wait_for(lock, std::chrono::milliseconds(10));
             if (mIsDestroyed) {
@@ -54,7 +54,7 @@ public:
             mElements[mPopIndex] = T();
             return &mElements[mPopIndex];
         }
-        std::unique_lock lock(mMutex);
+        std::unique_lock<std::mutex> lock(mMutex);
         while (mSize == 0) {
             mConditionVariable.wait_for(lock, std::chrono::milliseconds(10));
             if (mIsDestroyed) {

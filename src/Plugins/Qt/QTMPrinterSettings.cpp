@@ -157,7 +157,7 @@ QTMPrinterSettings::qStringToQtPaperSize(const QString &_size) {
 QStringList
 QTMPrinterSettings::getChoices(DriverChoices _which, int &_default) {
     QStringList _ret;
-    switch (_which) {
+    /*switch (_which) {
         case PageSize:
             _ret = printerOptions["PageSize"].split(" ", Qt::SkipEmptyParts);
             break;
@@ -173,7 +173,7 @@ QTMPrinterSettings::getChoices(DriverChoices _which, int &_default) {
         case Collate:
             _ret = printerOptions["Collate"].split(" ", Qt::SkipEmptyParts);
             break;
-    }
+    }*/
 
     // FIXME: this is CUPS specific (marking the default option with an asterisk)
     for (int i = 0; i < _ret.size(); ++i)

@@ -236,8 +236,8 @@ unix_system (array<string> arg,
   if (N(arg) == 0) return 0;
   string which= recompose (arg, " ");
   int n_in= N(fd_in), n_out= N(fd_out);
-  ASSERT(N(str_in)  == n_in, "size mismatch");
-  ASSERT(N(str_out) == n_out, "size mismatch");
+  TM_ASSERT(N(str_in)  == n_in, "size mismatch");
+  TM_ASSERT(N(str_out) == n_out, "size mismatch");
   array<_pipe_t> pp_in (n_in), pp_out (n_out);
   _file_actions_t file_actions;
   for (int i= 0; i < n_in; i++) {

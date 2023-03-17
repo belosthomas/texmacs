@@ -183,7 +183,7 @@ qt_tm_widget_rep::qt_tm_widget_rep(int mask, command _quit)
 #ifdef UNIFIED_TOOLBAR
 
   if (use_unified_toolbar) {
-    mw->setUnifiedTitleAndToolBarOnMac(true);
+    //mw->setUnifiedTitleAndToolBarOnMac(true);
     
     //WARNING: dumbToolBar is the toolbar installed on the top area of the
     //main widget which is  then unified in the title bar. 
@@ -907,7 +907,7 @@ qt_tm_widget_rep::set_full_screen(bool flag) {
         //HACK: we disable unified toolbar since otherwise
         //  the application will crash when we return to normal mode
         // (bug in Qt? present at least with 4.7.1)
-        mainwindow()->setUnifiedTitleAndToolBarOnMac(false);
+       // mainwindow()->setUnifiedTitleAndToolBarOnMac(false);
         mainwindow()->centralWidget()->layout()->setContentsMargins(0,0,0,0);
       }
 #endif
@@ -934,7 +934,7 @@ qt_tm_widget_rep::set_full_screen(bool flag) {
         mainwindow()->centralWidget()->layout()->setContentsMargins (0,1,0,0);
         //HACK: we reenable unified toolbar (see above HACK) 
         //  the application will crash when we return to normal mode
-        mainwindow()->setUnifiedTitleAndToolBarOnMac(true);
+       // mainwindow()->setUnifiedTitleAndToolBarOnMac(true);
       }
 #endif
     }

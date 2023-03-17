@@ -6,6 +6,7 @@
 #include <functional>
 #include <stdexcept>
 #include <iostream>
+#include <unordered_map>
 
 #include "Utils.hpp"
 
