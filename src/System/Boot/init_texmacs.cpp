@@ -22,7 +22,7 @@
 #include <direct.h>
 #endif
 
-#include <qDebug>
+#include <QDebug>
 
 tree texmacs_settings = tuple ();
 int  install_status   = 0;

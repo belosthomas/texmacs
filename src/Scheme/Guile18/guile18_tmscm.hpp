@@ -150,7 +150,7 @@ public:
     }
 
     int hash() {
-        return scm_ihash(mSCM, std::numeric_limits<int>::max());
+        return scm_ihash(mSCM, std::numeric_limits<int>::max(), NULL);
     }
 
     string type() {

@@ -1,6 +1,7 @@
 #include "Application.hpp"
 
 #include <QDebug>
+#include <QMessageBox>
 
 texmacs::Application::Application(int &argc, char **argv) : QApplication(argc, argv) {
     // Set the application informations
@@ -34,14 +35,10 @@ void texmacs::Application::loadSplashScreen() {
     mSlpashScreen.setPixmap(QPixmap(":/TeXmacs/misc/images/splash.png").scaledToWidth(primaryScreen()->size().width() / 4, Qt::SmoothTransformation));
     mSlpashScreen.show();
     connect(this, &Application::initializationMessage, this, [this](const QString& message) {
-        qDebug() << message;
+        qInfo().noquote() << message;
         mSlpashScreen.showMessage(message, Qt::AlignBottom | Qt::AlignCenter, Qt::black);
     });
     connect(this, &Application::initialized, this, [this]() {
-        int n = 0;
-        gui_open (n, nullptr);
-        mServer = new server();
-        open_window ();
         mSlpashScreen.finish(this->activeWindow());
     });
 }
@@ -76,7 +73,7 @@ void texmacs::Application::extractResources() {
         QString source_filename = it.next();
         QString destination_filename = source_filename;
         destination_filename.replace(":", destination);
-        // qDebug() << "Copying " << source_filename << " to " << destination_filename;
+        qDebug() << "Copying " << source_filename << " to " << destination_filename;
         if (it.fileInfo().isDir()) {
             QDir().mkpath(destination_filename);
         } else {
@@ -109,19 +106,18 @@ void texmacs::Application::initializeEnvironmentVariables() {
 }
 
 void texmacs::Application::initializeScheme() {
-    emit initializationMessage("Initializing Scheme...");
     register_all_scheme();
     auto allSchemes = get_scheme_factories();
-    if (allSchemes.size() == 0) {
+    if (allSchemes.empty()) {
         qDebug() << "Error: No scheme factories registered";
         QApplication::exit(1);
     }
 
-    if (mWantedScemeImplementation != "") {
-        qDebug() << "Using " << QString::fromStdString(mWantedScemeImplementation) << " scheme implementation";
+    if (!mWantedScemeImplementation.empty()) {
+        emit initializationMessage("Initializing Scheme (" + QString::fromStdString(mWantedScemeImplementation) + ")...");
         use_scheme(mWantedScemeImplementation);
     } else {
-        qDebug() << "Using " << QString::fromStdString(allSchemes[0]) << " by default";
+        emit initializationMessage("Initializing Scheme (" + QString::fromStdString(allSchemes[0]) + " by default)...");
         use_scheme(allSchemes[0]);
     }
 }
@@ -130,8 +126,13 @@ void texmacs::Application::onApplicationStarted() {
     // resetTeXmacs();
     extractResources();
 
-    emit initializationMessage("Initializing Scheme...");
-    initializeScheme();
+    try {
+        initializeScheme();
+    } catch (std::exception& e) {
+        // Open an error dialog
+        QMessageBox::critical(nullptr, "Error", "Could not initialize Scheme: " + QString(e.what()));
+        QApplication::exit(1);
+    }
 
     emit initializationMessage("Initializing Environment Variables...");
     initializeEnvironmentVariables();
@@ -139,19 +140,55 @@ void texmacs::Application::onApplicationStarted() {
     emit initializationMessage("Loading Pixmaps...");
     mPixmapManager.loadAll();
 
-    the_et     = tuple ();
-    the_et->obs= ip_observer (path ());
-    cache_initialize ();
-    bench_start ("initialize texmacs");
-    init_texmacs ();
-    bench_cumul ("initialize texmacs");
-
-
+    emit initializationMessage("Initializing TeXmacs...");
+    try {
+        the_et = tuple();
+        the_et->obs = ip_observer(path());
+        cache_initialize();
+        init_texmacs();
+    } catch (std::exception& e) {
+        // Open an error dialog
+        QMessageBox::critical(nullptr, "Error", "Could not initialize TeXmacs: " + QString(e.what()));
+        QApplication::exit(1);
+    }
 
     emit initializationMessage("Initializing Plugins...");
-    init_plugins ();
+    try {
+        init_plugins();
+    } catch (std::exception& e) {
+        // Open an error dialog
+        QMessageBox::critical(nullptr, "Error", "Could not initialize plugins: " + QString(e.what()));
+        QApplication::exit(1);
+    }
 
-    emit initializationMessage("Initializing Done ! Opening TeXMacs...");
+    emit initializationMessage("Opening Gui...");
+    try {
+        int n = 0;
+        gui_open(n, nullptr);
+    } catch (std::exception& e) {
+        // Open an error dialog
+        QMessageBox::critical(nullptr, "Error", "Could not open GUI: " + QString(e.what()));
+        QApplication::exit(1);
+    }
 
+    emit initializationMessage("Initializing Server...");
+    try {
+        mServer = new server();
+    } catch (std::exception& e) {
+        // Open an error dialog
+        QMessageBox::critical(nullptr, "Error", "Could not initialize server: " + QString(e.what()));
+        QApplication::exit(1);
+    }
+
+    emit initializationMessage("Opening Window...");
+    try {
+        open_window();
+    } catch (std::exception& e) {
+        // Open an error dialog
+        QMessageBox::critical(nullptr, "Error", "Could not open window: " + QString(e.what()));
+        QApplication::exit(1);
+    }
+
+    emit initializationMessage("Initialization complete.");
     emit initialized();
 }

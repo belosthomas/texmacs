@@ -94,6 +94,9 @@ private:
     std::atomic<bool> mIsDestroyed = false;
 };
 
+void guile_error(const char *message);
+void guile_log_function(const char *message, int len);
+
 class guile_thread {
 public:
     guile_thread() {
@@ -104,6 +107,8 @@ public:
         guile_init_mutex.lock();
         guile_init_self = this;
         scm_use_embedded_ice9();
+        set_error_callback(guile_error);
+        scm_set_log_function(guile_log_function);
         scm_with_guile (guile_thread::c_run, nullptr);
     }
 
@@ -156,9 +161,13 @@ public:
     tmscm blackbox_to_tmscm(blackbox b) final {
         std::promise<tmscm> promise;
         mThread.run([&promise, b]() {
-            SCM blackbox_smob;
-            SET_SMOB (blackbox_smob, (void*) (tm_new<blackbox> (b)), (SCM) guile_blackbox_tag());
-            promise.set_value(guile_tmscm::mk(blackbox_smob));
+            try {
+                SCM blackbox_smob;
+                SET_SMOB (blackbox_smob, (void *) (tm_new<blackbox>(b)), (SCM) guile_blackbox_tag());
+                promise.set_value(guile_tmscm::mk(blackbox_smob));
+            } catch (std::exception &e) {
+                promise.set_exception(std::current_exception());
+            }
         });
         return promise.get_future().get();
     }
@@ -193,14 +202,8 @@ public:
 
     tmscm string_to_tmscm(string s) final {
         c_string _s (s);
-#ifdef DEBUG_ON
-        if (! scm_busy) {
-#endif
         SCM r= scm_from_locale_stringn(_s, N(s));
         return guile_tmscm::mk(r);
-#ifdef DEBUG_ON
-        } else return guile_tmscm::mk(SCM_BOOL_F);
-#endif
     }
 
     tmscm symbol_to_tmscm(string s) final {
@@ -216,8 +219,12 @@ public:
     tmscm eval_scheme_file(string name) final {
         std::promise<tmscm> promise;
         mThread.run([&promise, name]() {
-            c_string _file (name);
-            promise.set_value(guile_tmscm::mk(scm_c_primitive_load (_file)));
+            try {
+                c_string _file (name);
+                promise.set_value(guile_tmscm::mk(scm_c_primitive_load (_file)));
+            } catch (std::exception &e) {
+                promise.set_exception(std::current_exception());
+            }
         });
         return promise.get_future().get();
     }
@@ -225,9 +232,13 @@ public:
     tmscm eval_scheme(string s) final {
         std::promise<tmscm> promise;
         mThread.run([&promise, s]() {
-            c_string _s(s);
-            SCM result = scm_c_eval_string(_s);
-            promise.set_value(guile_tmscm::mk(result));
+            try {
+                c_string _s(s);
+                SCM result = scm_c_eval_string(_s);
+                promise.set_value(guile_tmscm::mk(result));
+            } catch (std::exception &e) {
+                promise.set_exception(std::current_exception());
+            }
         });
         return promise.get_future().get();
     }
@@ -252,12 +263,16 @@ public:
     tmscm call_scheme_args(tmscm fun, std::vector<tmscm> _args) final {
         std::promise<tmscm> promise;
         mThread.run([&promise, fun, _args]() {
-            SCM fun_scm = tmscm_cast<guile_tmscm>(fun)->getSCM();
-            std::vector<SCM> args;
-            for (auto& arg : _args) {
-                args.push_back(tmscm_cast<guile_tmscm>(arg)->getSCM());
+            try {
+                SCM fun_scm = tmscm_cast<guile_tmscm>(fun)->getSCM();
+                std::vector<SCM> args;
+                for (auto &arg: _args) {
+                    args.push_back(tmscm_cast<guile_tmscm>(arg)->getSCM());
+                }
+                promise.set_value(guile_tmscm::mk(_call_scheme_args(fun_scm, args)));
+            } catch (std::exception &e) {
+                promise.set_exception(std::current_exception());
             }
-            return guile_tmscm::mk(_call_scheme_args(fun_scm, args));
         });
         return promise.get_future().get();
     }
