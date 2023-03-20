@@ -141,7 +141,7 @@
          (what (query-ref query "what"))
          (lan  (string-take (language-to-locale (get-output-language)) 2)))
     (cond ((== type "Scheme")
-           (srcgrep what "$TEXMACS_PATH/progs" "*.scm"))
+           (srcgrep what "$TEXMACS_PROGS_PATH" "*.scm"))
           ((== type "Styles")
            (srcgrep what "$TEXMACS_PATH/styles:$TEXMACS_PATH/packages" "*.ts"))
           ((== type "C++")

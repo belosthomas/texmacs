@@ -20,7 +20,7 @@
     <item><verbatim|$TEXMACS_PATH/langs/natural/hyphen> contains hyphenation
     patterns for various languages.
 
-    <item><verbatim|$TEXMACS_PATH/progs/fonts> contains <apply|scheme>
+    <item><verbatim|$TEXMACS_PROGS_PATH/fonts> contains <apply|scheme>
     programs for setting up the fonts.
   </itemize>
 

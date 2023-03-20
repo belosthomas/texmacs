@@ -70,7 +70,7 @@
 (define remote-client-list (list))
 
 (display "Booting TeXmacs kernel functionality\n")
-(load (url-concretize "$TEXMACS_PATH/progs/kernel/boot/boot-s7.scm"))
+(load (url-concretize "$TEXMACS_PROGS_PATH/kernel/boot/boot-s7.scm"))
 
 (inherit-modules (kernel boot compat-s7) (kernel boot abbrevs)
                  (kernel boot debug) (kernel boot srfi)

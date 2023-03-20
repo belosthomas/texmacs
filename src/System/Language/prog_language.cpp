@@ -274,7 +274,7 @@ prog_language_rep::get_color (tree t, int start, int end) {
 }
 
 bool prog_lang_exists (string s) {
-  return exists (url_system ("$TEXMACS_PATH/progs/prog/" * s * "-lang.scm"))
+  return exists (url_system ("$$TEXMACS_PROGS_PATH/prog/" * s * "-lang.scm"))
    || exists (url_system ("$TEXMACS_PATH/plugins/" * s * "/progs/" * s * "-lang.scm"))
    || exists (url_system ("$TEXMACS_PATH/plugins/code/progs/" * s * "-lang.scm"))
    || exists (url_system ("$TEXMACS_HOME_PATH/plugins/" * s * "/progs/" * s * "-lang.scm"))

@@ -52,7 +52,7 @@ get_old_settings (string s) {
 static void
 init_upgrade_scheme () {
 #ifndef OS_WIN32
-  url u= "$TEXMACS_HOME_PATH/progs";
+  url u= "$TEXMACS_PROGS_PATH";
   string prgs= as_string (u);
   if (exists (u * "Init.scm") && (!exists (u * "my-init-texmacs.scm"))) {
     system ("sed 's/Init.scm/init-texmacs.scm/'", u * "Init.scm",

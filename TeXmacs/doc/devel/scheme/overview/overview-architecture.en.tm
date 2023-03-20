@@ -47,8 +47,8 @@
   and libraries. The corresponding <value|scheme> files can be found in the
   directories
 
-  <verbatim| \ \ \ $TEXMACS_PATH/progs/kernel<new-line>
-  \ \ \ $TEXMACS_PATH/progs/utils>
+  <verbatim| \ \ \ $TEXMACS_PROGS_PATH/kernel<new-line>
+  \ \ \ $TEXMACS_PROGS_PATH/utils>
 
   Roughly speaking, the functionality provided by this second level is the
   following:
@@ -73,8 +73,8 @@
     lists.
   </itemize>
 
-  Whereas the modules in <verbatim|$TEXMACS_PATH/progs/kernel> are
-  automatically loaded, all modules in <verbatim|$TEXMACS_PATH/progs/utils>
+  Whereas the modules in <verbatim|$TEXMACS_PROGS_PATH/kernel> are
+  automatically loaded, all modules in <verbatim|$TEXMACS_PROGS_PATH/utils>
   have to be explicitly included.
 
   <paragraph*|Internal modules and plug-ins>
@@ -83,8 +83,8 @@
   <em|internal modules> which usually correspond to a particular type of
   content. For instance, the directories
 
-  <verbatim| \ \ \ $TEXMACS_PATH/progs/source<new-line>
-  \ \ \ $TEXMACS_PATH/progs/math<new-line> \ \ \ $TEXMACS_PATH/progs/table>
+  <verbatim| \ \ \ $TEXMACS_PROGS_PATH/source<new-line>
+  \ \ \ $TEXMACS_PROGS_PATH/math<new-line> \ \ \ $TEXMACS_PROGS_PATH/table>
 
   respectively contain routines for editing source code, mathematics and
   tables. Exceptions are the internal modules <verbatim|content> and

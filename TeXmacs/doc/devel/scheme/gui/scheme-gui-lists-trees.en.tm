@@ -214,7 +214,7 @@
     format with e.g. <scm|tree-\<gtr\>stree>)
 
     <paragraph|Examples>See <scm|widget10> in
-    <hlink|<verbatim|menu-test.scm>|$TEXMACS_PATH/progs/kernel/gui/menu-test.scm>
+    <hlink|<verbatim|menu-test.scm>|$TEXMACS_PROGS_PATH/kernel/gui/menu-test.scm>
     and ``<hlink|Displaying lists and trees|$TEXMACS_PATH/doc/devel/scheme/gui/scheme-gui-lists-trees.en.tm>''.
   </explain>
 

@@ -22,18 +22,18 @@
   location of the corresponding file. More precisely, <TeXmacs> searches for
   its modules in the path <verbatim|$GUILE_LOAD_PATH>, which defaults to the
   standard <name|Guile> load path, combined with
-  <verbatim|$TEXMACS_PATH/progs> and all <verbatim|progs> subdirectories in
+  <verbatim|$TEXMACS_PROGS_PATH> and all <verbatim|progs> subdirectories in
   the plug-ins. For instance, the module <verbatim|(math math-edit)>
   corresponds to the file
 
-  <verbatim| \ \ \ $TEXMACS_PATH/progs/edit/math-edit.scm>
+  <verbatim| \ \ \ $TEXMACS_PROGS_PATH/edit/math-edit.scm>
 
   The user should explicitly specify all submodules on which the module
   depends, except those modules which are loaded by default, <abbr|i.e.> all
   language extensions and utilities in the directories
 
-  <verbatim| \ \ \ $TEXMACS_PATH/progs/kernel<new-line>
-  \ \ \ $TEXMACS_PATH/progs/utils/library>
+  <verbatim| \ \ \ $TEXMACS_PROGS_PATH/kernel<new-line>
+  \ \ \ $TEXMACS_PROGS_PATH/utils/library>
 
   All symbols which are defined inside the module using <scm|define> or
   <scm|define-macro> are only visible within the module itself. In order to
@@ -71,7 +71,7 @@
   </scm-code>
 
   For more concrete examples, we recommend the user to take a look at the
-  standard initialization file <hlink|<verbatim|init-texmacs.scm>|$TEXMACS_PATH/progs/init-texmacs.scm>.
+  standard initialization file <hlink|<verbatim|init-texmacs.scm>|$TEXMACS_PROGS_PATH/init-texmacs.scm>.
 
   <label|redefinitions>On the negative side, the mechanism for lazy loading
   has the important consequence that you can no longer make assumptions on

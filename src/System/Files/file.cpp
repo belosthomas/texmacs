@@ -22,6 +22,7 @@
 
 #include <QDir>
 #include <QFile>
+#include <QDebug>
 
 #include <stddef.h>
 #include <stdio.h>

@@ -10,8 +10,8 @@
   the additional formats and converters are declared in your personal
   <verbatim|~/.TeXmacs/progs/my-init-texmacs.scm> or a dedicated plug-in.
   Some examples may be found in the directory
-  <verbatim|$TEXMACS_PATH/progs/convert>, like
-  <hlink|<verbatim|init-html.scm>|$TEXMACS_PATH/progs/convert/html/init-html.scm>.
+  <verbatim|$TEXMACS_PROGS_PATH/convert>, like
+  <hlink|<verbatim|init-html.scm>|$TEXMACS_PROGS_PATH/convert/html/init-html.scm>.
 
   <paragraph*|Declaring new formats>
 

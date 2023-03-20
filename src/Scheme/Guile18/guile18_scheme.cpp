@@ -24,4 +24,5 @@ void guile_error(const char *message) {
 
 void guile_log_function(const char *cmsg, int len) {
     std::string msg(cmsg, len);
+    qInfo().noquote() << QString::fromStdString(msg);
 }

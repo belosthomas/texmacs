@@ -207,9 +207,9 @@ init_user_dirs () {
   make_dir ("$TEXMACS_HOME_PATH/system/tmp");
   make_dir ("$TEXMACS_HOME_PATH/texts");
   make_dir ("$TEXMACS_HOME_PATH/users");
-  change_mode ("$TEXMACS_HOME_PATH/server", 7 << 6);
-  change_mode ("$TEXMACS_HOME_PATH/system", 7 << 6);
-  change_mode ("$TEXMACS_HOME_PATH/users", 7 << 6);
+  //change_mode ("$TEXMACS_HOME_PATH/server", 7 << 6);
+  //change_mode ("$TEXMACS_HOME_PATH/system", 7 << 6);
+  //change_mode ("$TEXMACS_HOME_PATH/users", 7 << 6);
   clean_temp_dirs ();
 }
 
@@ -252,7 +252,7 @@ init_guile () {
     boot_error << "Please check the values of the environment variables\n";
     boot_error << "TEXMACS_PATH and GUILE_LOAD_PATH."
                << " init-texmacs-s7.scm should\n";
-    boot_error << "be readable and in the directory $TEXMACS_PATH/progs\n";
+    boot_error << "be readable and in the directory $TEXMACS_PROGS_PATH\n";
     boot_error << "or in the directory $GUILE_LOAD_PATH\n";
     boot_error << "\n";
     TM_FAILED ("guile could not be found");

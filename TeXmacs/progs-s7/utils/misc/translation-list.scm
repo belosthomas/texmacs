@@ -295,7 +295,7 @@
   (let* ((nt (tr-load (tr-new)))
          (it (tr-load (tr-ignore)))
          (mt (ahash-table-append nt it))
-         (at (tr-search (string->url "$TEXMACS_PATH/progs")))
+         (at (tr-search (string->url "$TEXMACS_PROGS_PATH")))
          (xt (ahash-table-difference at mt)))
     (tr-save (tr-extra) xt)))
 

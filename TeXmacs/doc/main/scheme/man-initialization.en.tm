@@ -8,7 +8,7 @@
   When starting up, <TeXmacs> executes the file
 
   <\verbatim>
-    \ \ \ \ $TEXMACS_PATH/progs/init-texmacs.scm
+    \ \ \ \ $TEXMACS_PROGS_PATH/init-texmacs.scm
   </verbatim>
 
   as well as your personal initialization file
@@ -24,7 +24,7 @@
   or opening an already existing one), the file
 
   <\verbatim>
-    \ \ \ \ $TEXMACS_PATH/progs/init-buffer.scm
+    \ \ \ \ $TEXMACS_PROGS_PATH/init-buffer.scm
   </verbatim>
 
   is executed, as well as

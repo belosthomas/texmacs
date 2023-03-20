@@ -48,7 +48,7 @@
 (define (module->path module)
   "Returns the full path of the given module, without extension"
   (url-concretize
-    (string-append "$TEXMACS_PATH/progs/"
+    (string-append "$TEXMACS_PROGS_PATH/"
       (cond ((list? module)
              (string-join (map symbol->string module) "/"))
             ((symbol? module)
@@ -76,7 +76,7 @@
 
 (define (module-source-path module full?)
   (string-concatenate
-     (list (if full? (url-concretize "$TEXMACS_PATH/progs/") "")
+     (list (if full? (url-concretize "$TEXMACS_PROGS_PATH/") "")
            (string-join (map symbol->string module) "/")
             ".scm")))
 

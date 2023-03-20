@@ -268,9 +268,9 @@ get_new_view (url name) {
   url temp= get_current_view_safe ();
   set_current_view (abstract_view (vw));
   if (is_none (tm_init_buffer_file))
-    tm_init_buffer_file= "$TEXMACS_PATH/progs/init-buffer.scm";
+    tm_init_buffer_file= "$TEXMACS_PROGS_PATH/init-buffer.scm";
   if (is_none (my_init_buffer_file))
-    my_init_buffer_file= "$TEXMACS_HOME_PATH/progs/my-init-buffer.scm";
+    my_init_buffer_file= "$TEXMACS_PROGS_PATH/my-init-buffer.scm";
   if (exists (tm_init_buffer_file)) exec_file (tm_init_buffer_file);
   if (exists (my_init_buffer_file)) exec_file (my_init_buffer_file);
   set_current_view (temp);

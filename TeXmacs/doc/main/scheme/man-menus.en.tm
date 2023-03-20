@@ -21,7 +21,7 @@
   In particular, you may take a look at the files in the directory
 
   <\verbatim>
-    \ \ \ \ $TEXMACS_PATH/progs/menu
+    \ \ \ \ $TEXMACS_PROGS_PATH/menu
   </verbatim>
 
   in order to see how the standard <TeXmacs> menus are defined. In the case
