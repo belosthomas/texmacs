@@ -93,6 +93,11 @@ server_rep::server_rep () {}
 server_rep::~server_rep () {}
 
 tm_server_rep::tm_server_rep (): def_zoomf (1.0) {
+
+}
+
+void tm_server_rep::init () {
+
   the_server= tm_new<server> (this);
   initialize_scheme ();
   gui_interpose (texmacs_interpose_handler);
@@ -117,6 +122,11 @@ tm_server_rep::tm_server_rep (): def_zoomf (1.0) {
 
 tm_server_rep::~tm_server_rep () {}
 server::server (): rep (tm_new<tm_server_rep> ()) {}
+
+void server::init() {
+    dynamic_cast<tm_server_rep*>(rep)->init();
+}
+
 server_rep* tm_server_rep::get_server () { return this; }
 
 /******************************************************************************

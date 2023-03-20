@@ -187,6 +187,7 @@ void texmacs::Application::onApplicationStarted() {
     emit initializationMessage("Initializing Server...");
     try {
         mServer = new server();
+        mServer->init();
     } catch (const std::exception& e) {
         // Open an error dialog
         QMessageBox::critical(nullptr, "Error", "Could not initialize server: " + QString(e.what()));

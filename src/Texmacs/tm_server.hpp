@@ -29,6 +29,9 @@ protected:
 public:
   tm_server_rep ();
   ~tm_server_rep ();
+
+  void init();
+
   server_rep* get_server ();
 
   /* Miscellaneous routines */

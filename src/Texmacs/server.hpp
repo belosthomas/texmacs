@@ -113,6 +113,7 @@ public:
 class server {
   ABSTRACT(server);
   server ();
+  void init();
 };
 ABSTRACT_CODE(server);
 
