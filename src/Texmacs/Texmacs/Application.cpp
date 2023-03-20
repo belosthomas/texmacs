@@ -120,6 +120,14 @@ void texmacs::Application::initializeScheme() {
         emit initializationMessage("Initializing Scheme (" + QString::fromStdString(allSchemes[0]) + " by default)...");
         use_scheme(allSchemes[0]);
     }
+
+    if (scheme().scheme_dialect() == "guile-c") {
+        string init = "(read-set! keywords 'prefix)\n"
+                      "(read-enable 'positions)\n"
+                      "(debug-enable 'debug)\n"
+                      "(debug-enable 'backtrace)\n";
+        scheme().eval_scheme(init);
+    }
 }
 
 void texmacs::Application::onApplicationStarted() {
@@ -128,10 +136,12 @@ void texmacs::Application::onApplicationStarted() {
 
     try {
         initializeScheme();
-    } catch (std::exception& e) {
+    } catch (const std::exception& e) {
         // Open an error dialog
+        qDebug() << "catched exception";
         QMessageBox::critical(nullptr, "Error", "Could not initialize Scheme: " + QString(e.what()));
         QApplication::exit(1);
+        return;
     }
 
     emit initializationMessage("Initializing Environment Variables...");
@@ -146,47 +156,52 @@ void texmacs::Application::onApplicationStarted() {
         the_et->obs = ip_observer(path());
         cache_initialize();
         init_texmacs();
-    } catch (std::exception& e) {
+    } catch (const std::exception& e) {
         // Open an error dialog
         QMessageBox::critical(nullptr, "Error", "Could not initialize TeXmacs: " + QString(e.what()));
         QApplication::exit(1);
+        return;
     }
 
     emit initializationMessage("Initializing Plugins...");
     try {
         init_plugins();
-    } catch (std::exception& e) {
+    } catch (const std::exception& e) {
         // Open an error dialog
         QMessageBox::critical(nullptr, "Error", "Could not initialize plugins: " + QString(e.what()));
         QApplication::exit(1);
+        return;
     }
 
     emit initializationMessage("Opening Gui...");
     try {
         int n = 0;
         gui_open(n, nullptr);
-    } catch (std::exception& e) {
+    } catch (const std::exception& e) {
         // Open an error dialog
         QMessageBox::critical(nullptr, "Error", "Could not open GUI: " + QString(e.what()));
         QApplication::exit(1);
+        return;
     }
 
     emit initializationMessage("Initializing Server...");
     try {
         mServer = new server();
-    } catch (std::exception& e) {
+    } catch (const std::exception& e) {
         // Open an error dialog
         QMessageBox::critical(nullptr, "Error", "Could not initialize server: " + QString(e.what()));
         QApplication::exit(1);
+        return;
     }
 
     emit initializationMessage("Opening Window...");
     try {
         open_window();
-    } catch (std::exception& e) {
+    } catch (const std::exception& e) {
         // Open an error dialog
         QMessageBox::critical(nullptr, "Error", "Could not open window: " + QString(e.what()));
         QApplication::exit(1);
+        return;
     }
 
     emit initializationMessage("Initialization complete.");

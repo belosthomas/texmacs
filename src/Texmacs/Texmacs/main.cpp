@@ -4,17 +4,18 @@
 #include <QtWebView>
 
 int main(int argc, char** argv) {
-    // Qt documentation says that QtWebView must be initialized before the QApplication
-    QtWebView::initialize();
-
     // Find all the available Guile implementations
     register_all_scheme();
+
+    // Enable high dpi scaling for Qt < 5.6. This does nothing for Qt >= 5.6.
+    QApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
+    QApplication::setAttribute(Qt::AA_ShareOpenGLContexts);
 
     // Create the application
     auto app = texmacs::Application(argc, argv);
 
-    // Enable high dpi scaling for Qt < 5.6. This does nothing for Qt >= 5.6.
-    app.setAttribute(Qt::AA_EnableHighDpiScaling);
+    // Qt documentation says that QtWebView must be initialized before the QApplication
+    QtWebView::initialize();
 
     // Parse the command line arguments
     texmacs::utils::ArgsParser argsParser;

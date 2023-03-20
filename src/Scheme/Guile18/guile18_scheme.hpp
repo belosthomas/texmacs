@@ -100,16 +100,20 @@ void guile_log_function(const char *message, int len);
 class guile_thread {
 public:
     guile_thread() {
-        mThread = std::thread(&guile_thread::init, this);
+
     }
 
     void init() {
         guile_init_mutex.lock();
-        guile_init_self = this;
-        scm_use_embedded_ice9();
-        set_error_callback(guile_error);
-        scm_set_log_function(guile_log_function);
-        scm_with_guile (guile_thread::c_run, nullptr);
+        try {
+            guile_init_self = this;
+            scm_use_embedded_ice9();
+            set_error_callback(guile_error);
+            scm_set_log_function(guile_log_function);
+            scm_with_guile(guile_thread::c_run, nullptr);
+        } catch (...) {
+            mIsInitializedPromise.set_exception(std::current_exception());
+        }
     }
 
     static void* c_run(void* data) {
@@ -117,8 +121,9 @@ public:
     }
 
     void *run() {
+        mIsInitializedPromise.set_value(true);
         guile_init_mutex.unlock();
-        while (mRunning) {
+        while (true) {
             std::function<void()> f = *mQueue.getPopElement();
             if (mQueue.isDestroyed()) {
                 break;
@@ -130,6 +135,10 @@ public:
     }
 
     void run(std::function<void()> f) {
+        if (!mIsInitialized) {
+            mThread = std::thread(&guile_thread::init, this);
+            mIsInitialized = mIsInitializedPromise.get_future().get();
+        }
         if (mThread.get_id() == std::this_thread::get_id()) {
             f();
             return;
@@ -139,9 +148,10 @@ public:
     }
 
 private:
+    bool mIsInitialized = false;
     std::thread mThread;
     thread_safe_queue<std::function<void()>, 10> mQueue;
-    std::atomic<bool> mRunning;
+    std::promise<bool> mIsInitializedPromise;
 
     static guile_thread *guile_init_self;
     static std::mutex guile_init_mutex;
@@ -151,11 +161,7 @@ class guile_scheme : public abstract_scheme {
     
 public:
     guile_scheme() : mThread() {
-        string init = "(read-set! keywords 'prefix)\n"
-                      "(read-enable 'positions)\n"
-                      "(debug-enable 'debug)\n"
-                      "(debug-enable 'backtrace)\n";
-        eval_scheme(init);
+
     }
 
     tmscm blackbox_to_tmscm(blackbox b) final {
@@ -218,11 +224,11 @@ public:
 
     tmscm eval_scheme_file(string name) final {
         std::promise<tmscm> promise;
-        mThread.run([&promise, name]() {
+        mThread.run([&promise, &name]() {
             try {
                 c_string _file (name);
                 promise.set_value(guile_tmscm::mk(scm_c_primitive_load (_file)));
-            } catch (std::exception &e) {
+            } catch (...) {
                 promise.set_exception(std::current_exception());
             }
         });
@@ -236,7 +242,7 @@ public:
                 c_string _s(s);
                 SCM result = scm_c_eval_string(_s);
                 promise.set_value(guile_tmscm::mk(result));
-            } catch (std::exception &e) {
+            } catch (...) {
                 promise.set_exception(std::current_exception());
             }
         });
@@ -270,7 +276,7 @@ public:
                     args.push_back(tmscm_cast<guile_tmscm>(arg)->getSCM());
                 }
                 promise.set_value(guile_tmscm::mk(_call_scheme_args(fun_scm, args)));
-            } catch (std::exception &e) {
+            } catch (...) {
                 promise.set_exception(std::current_exception());
             }
         });
