@@ -22,6 +22,7 @@
 #include <direct.h>
 #endif
 
+#include <QDir>
 #include <QDebug>
 
 tree texmacs_settings = tuple ();
@@ -111,13 +112,10 @@ static string main_tmp_dir= "$TEXMACS_HOME_PATH/system/tmp";
 static void
 make_dir (url which) {
     string s_which = concretize(which);
-    qDebug() << "make_dir" << QString::fromStdString(std::string(s_which.data(), N(s_which)));
-  if (is_none(which))
-    return ;
-  if (!is_directory (which)) {
-    make_dir (head (which));
-    mkdir (which);
-  }
+    QDir dir(QString::fromStdString(std::string(s_which.data(), N(s_which))));
+    if (!dir.exists()) {
+        QDir().mkpath(QString::fromStdString(std::string(s_which.data(), N(s_which))));
+    }
 }
 
 static url
