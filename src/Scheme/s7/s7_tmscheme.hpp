@@ -18,152 +18,162 @@
 #include <iostream>
 #include <unordered_map>
 
-s7_pointer s7_blackbox_to_string (s7_scheme *sc, s7_pointer args);
-s7_pointer s7_free_blackbox (s7_scheme *sc, s7_pointer obj);
-s7_pointer s7_mark_blackbox (s7_scheme *sc, s7_pointer obj);
-s7_pointer s7_blackbox_is_equal(s7_scheme *sc, s7_pointer args);
+namespace texmacs {
 
-class s7_tmscheme : public abstract_scheme {
-    friend class S7Factory;
+    s7_pointer s7_blackbox_to_string(s7_scheme *sc, s7_pointer args);
 
-public:
-    s7_tmscheme();
+    s7_pointer s7_free_blackbox(s7_scheme *sc, s7_pointer obj);
 
-    ~s7_tmscheme() {
-        s7_free(mInstance);
-    }
+    s7_pointer s7_mark_blackbox(s7_scheme *sc, s7_pointer obj);
 
-    // disable copy constructor and assignment operator
-    s7_tmscheme(const s7_tmscheme&) = delete;
-    s7_tmscheme& operator=(const s7_tmscheme&) = delete;
+    s7_pointer s7_blackbox_is_equal(s7_scheme *sc, s7_pointer args);
 
-    /// TSCM Methods ///////////////////////////////////////////////////
+    class s7_tmscheme : public abstract_scheme {
+        friend class S7Factory;
 
-    tmscm blackbox_to_tmscm(blackbox b) final {
-        auto obj = s7_make_c_object (mInstance, blackboxTag(), (void*) (tm_new<blackbox> (b)));
-        return s7_tmscm::mk(mInstance, obj);
-    }
+    public:
+        s7_tmscheme();
 
-    tmscm tmscm_null() final {
-        return s7_tmscm::mk(mInstance, s7_nil(mInstance));
-    }
-
-    tmscm tmscm_true() final {
-        return s7_tmscm::mk(mInstance, s7_t(mInstance));
-    }
-
-    tmscm tmscm_false() final {
-        return s7_tmscm::mk(mInstance, s7_f(mInstance));
-    }
-
-    tmscm bool_to_tmscm(bool b) final {
-        return s7_tmscm::mk(mInstance, s7_make_boolean(mInstance, b));
-    }
-
-    tmscm int_to_tmscm(int i) final {
-        return s7_tmscm::mk(mInstance, s7_make_integer(mInstance, i));
-    }
-
-    tmscm long_to_tmscm(long l) final {
-        return s7_tmscm::mk(mInstance, s7_make_integer(mInstance, l));
-    }
-
-    tmscm double_to_tmscm(double i) final {
-        return s7_tmscm::mk(mInstance, s7_make_real(mInstance, i));
-    }
-
-    tmscm string_to_tmscm(string s) final {
-        c_string _s (s);
-        s7_pointer r = s7_make_string(mInstance, _s);
-        return s7_tmscm::mk(mInstance, r);
-    }
-
-    tmscm symbol_to_tmscm(string s) final {
-        c_string _s (s);
-        s7_pointer r = s7_make_symbol(mInstance, _s);
-        return s7_tmscm::mk(mInstance, r);
-    }
-
-    tmscm tmscm_unspefied() final {
-        return s7_tmscm::mk(mInstance, s7_unspecified(mInstance));
-    }
-
-    tmscm eval_scheme_file(string name) {
-        std::cout << "Eval Scheme File " << std::string(name.data(), N(name)) << std::endl;
-        c_string _file (name);
-        s7_pointer r = s7_load_with_environment(mInstance, _file, mUserEnv);
-        if (r == nullptr) {
-            std::cerr << "Error while loading " << _file << std::endl;
-            return tmscm_unspefied();
+        ~s7_tmscheme() {
+            s7_free(mInstance);
         }
-        return s7_tmscm::mk(mInstance, r);
-        // s7_pointer r = s7_load(mInstance, _file);
-        // return s7_tmscm::mk(mInstance, s7_eval(mInstance, r, {}));
-    }
 
-    tmscm eval_scheme(string s) {
-        std::cout << "Eval Scheme " << std::string(s.data(), N(s)) << std::endl;
+        // disable copy constructor and assignment operator
+        s7_tmscheme(const s7_tmscheme &) = delete;
 
-        c_string _s (s);
-        s7_pointer result= s7_eval_c_string_with_environment(mInstance, _s, mUserEnv);
-        return s7_tmscm::mk(mInstance, result);
-    }
+        s7_tmscheme &operator=(const s7_tmscheme &) = delete;
 
-    s7_pointer _call_scheme_args(s7_pointer fun, s7_pointer args) {
-        return s7_call(mInstance, fun, args);
-    }
+        /// TSCM Methods ///////////////////////////////////////////////////
 
-    s7_pointer _call_scheme_args(s7_pointer fun, std::vector<s7_pointer> args) {
-
-        s7_pointer l = s7_nil(mInstance);
-        for (int i = args.size() - 1; i>=0; i--) {
-            l = s7_cons(mInstance, args[i], l);
+        tmscm blackbox_to_tmscm(blackbox b) final {
+            auto obj = s7_make_c_object(mInstance, blackboxTag(), (void *) (tm_new<blackbox>(b)));
+            return s7_tmscm::mk(mInstance, obj);
         }
-        return s7_call(mInstance, fun, l);
-    }
 
-    tmscm call_scheme_args(tmscm fun, std::vector<tmscm> _args) {
-        s7_pointer fun_scm = tmscm_cast<s7_tmscm>(fun)->getSCM();
-       // assert(s7_is_function(fun_scm) || s7_is_procedure(fun_scm) || s7_is_macro(mInstance, fun_scm));
-        std::vector<s7_pointer> args;
-        for (auto& arg : _args) {
-            args.push_back(tmscm_cast<s7_tmscm>(arg)->getSCM());
+        tmscm tmscm_null() final {
+            return s7_tmscm::mk(mInstance, s7_nil(mInstance));
         }
-        return s7_tmscm::mk(mInstance, _call_scheme_args(fun_scm, args));
-    }
 
-    void install_procedure(string name, std::function<tmscm(abstract_scheme*,tmscm)> fun, int numArgs, int numOptional) final;
+        tmscm tmscm_true() final {
+            return s7_tmscm::mk(mInstance, s7_t(mInstance));
+        }
 
-    string scheme_dialect() {
-        return "s7";
-    }
+        tmscm tmscm_false() final {
+            return s7_tmscm::mk(mInstance, s7_f(mInstance));
+        }
 
-    std::function<s7_pointer(s7_scheme*, s7_pointer)> &getFunction(int id) {
-        return mProxyFunctionHolder[id];
-    }
+        tmscm bool_to_tmscm(bool b) final {
+            return s7_tmscm::mk(mInstance, s7_make_boolean(mInstance, b));
+        }
 
-    int blackboxTag() const {
-        return mBlackboxTag;
-    }
+        tmscm int_to_tmscm(int i) final {
+            return s7_tmscm::mk(mInstance, s7_make_integer(mInstance, i));
+        }
 
-private:
-    s7_scheme *mInstance;
-    std::vector<std::function<tmscm(abstract_scheme*,tmscm)>> mFunctionHolder;
-    std::vector<std::function<s7_pointer(s7_scheme*, s7_pointer)>> mProxyFunctionHolder;
-    int mBlackboxTag = 0;
-    s7_pointer mUserEnv;
-};
+        tmscm long_to_tmscm(long l) final {
+            return s7_tmscm::mk(mInstance, s7_make_integer(mInstance, l));
+        }
 
-class S7Factory : public SchemeFactory {
+        tmscm double_to_tmscm(double i) final {
+            return s7_tmscm::mk(mInstance, s7_make_real(mInstance, i));
+        }
 
-public:
-    abstract_scheme *make_scheme() final;
+        tmscm string_to_tmscm(string s) final {
+            c_string _s(s);
+            s7_pointer r = s7_make_string(mInstance, _s);
+            return s7_tmscm::mk(mInstance, r);
+        }
 
-    virtual std::string name() {
-        return "S7";
-    }
+        tmscm symbol_to_tmscm(string s) final {
+            c_string _s(s);
+            s7_pointer r = s7_make_symbol(mInstance, _s);
+            return s7_tmscm::mk(mInstance, r);
+        }
 
-};
+        tmscm tmscm_unspefied() final {
+            return s7_tmscm::mk(mInstance, s7_unspecified(mInstance));
+        }
+
+        tmscm eval_scheme_file(string name) {
+            std::cout << "Eval Scheme File " << std::string(name.data(), N(name)) << std::endl;
+            c_string _file(name);
+            s7_pointer r = s7_load_with_environment(mInstance, _file, mUserEnv);
+            if (r == nullptr) {
+                std::cerr << "Error while loading " << _file << std::endl;
+                return tmscm_unspefied();
+            }
+            return s7_tmscm::mk(mInstance, r);
+            // s7_pointer r = s7_load(mInstance, _file);
+            // return s7_tmscm::mk(mInstance, s7_eval(mInstance, r, {}));
+        }
+
+        tmscm eval_scheme(string s) {
+            std::cout << "Eval Scheme " << std::string(s.data(), N(s)) << std::endl;
+
+            c_string _s(s);
+            s7_pointer result = s7_eval_c_string_with_environment(mInstance, _s, mUserEnv);
+            return s7_tmscm::mk(mInstance, result);
+        }
+
+        s7_pointer _call_scheme_args(s7_pointer fun, s7_pointer args) {
+            return s7_call(mInstance, fun, args);
+        }
+
+        s7_pointer _call_scheme_args(s7_pointer fun, std::vector<s7_pointer> args) {
+
+            s7_pointer l = s7_nil(mInstance);
+            for (int i = args.size() - 1; i >= 0; i--) {
+                l = s7_cons(mInstance, args[i], l);
+            }
+            return s7_call(mInstance, fun, l);
+        }
+
+        tmscm call_scheme_args(tmscm fun, std::vector<tmscm> _args) {
+            s7_pointer fun_scm = tmscm_cast<s7_tmscm>(fun)->getSCM();
+            // assert(s7_is_function(fun_scm) || s7_is_procedure(fun_scm) || s7_is_macro(mInstance, fun_scm));
+            std::vector<s7_pointer> args;
+            for (auto &arg: _args) {
+                args.push_back(tmscm_cast<s7_tmscm>(arg)->getSCM());
+            }
+            return s7_tmscm::mk(mInstance, _call_scheme_args(fun_scm, args));
+        }
+
+        void install_procedure(string name, std::function<tmscm(abstract_scheme *, tmscm)> fun, int numArgs,
+                               int numOptional) final;
+
+        string scheme_dialect() {
+            return "s7";
+        }
+
+        std::function<s7_pointer(s7_scheme *, s7_pointer)> &getFunction(int id) {
+            return mProxyFunctionHolder[id];
+        }
+
+        int blackboxTag() const {
+            return mBlackboxTag;
+        }
+
+    private:
+        s7_scheme *mInstance;
+        std::vector<std::function<tmscm(abstract_scheme *, tmscm)>> mFunctionHolder;
+        std::vector<std::function<s7_pointer(s7_scheme *, s7_pointer)>> mProxyFunctionHolder;
+        int mBlackboxTag = 0;
+        s7_pointer mUserEnv;
+    };
+
+    class S7Factory : public SchemeFactory {
+
+    public:
+        abstract_scheme *make_scheme() final;
+
+        virtual std::string name() {
+            return "S7";
+        }
+
+    };
+
+}
+
 
 #endif
 

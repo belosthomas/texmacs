@@ -135,6 +135,8 @@ void texmacs::Application::onApplicationStarted() {
     extractResources();
 
     try {
+        QString texmacsProgsPath = QDir::homePath() + "/.TeXmacs/TeXmacs/progs-";
+        set_env("GUILE_LOAD_PATH", string(texmacsProgsPath.toUtf8().constData(), texmacsProgsPath.toUtf8().size()) * "guile-c");
         initializeScheme();
     } catch (const std::exception& e) {
         // Open an error dialog

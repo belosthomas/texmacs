@@ -3,6 +3,8 @@
 
 #include <QtWebView>
 
+using namespace texmacs;
+
 int main(int argc, char** argv) {
     // Find all the available Guile implementations
     register_all_scheme();

@@ -22,14 +22,14 @@ inline void initialize_scheme () {
 #define SINGLE_SCHEME_INSTANCE 1
 #if SINGLE_SCHEME_INSTANCE
 
-extern std::unique_ptr<abstract_scheme> global_scheme;
+extern std::unique_ptr<texmacs::abstract_scheme> global_scheme;
 
-inline abstract_scheme &scheme() {
+inline texmacs::abstract_scheme &scheme() {
     return *global_scheme;
 }
 
 inline void use_scheme(std::string scheme_name) {
-    global_scheme = std::unique_ptr<abstract_scheme>(make_scheme(scheme_name));
+    global_scheme = std::unique_ptr<texmacs::abstract_scheme>(texmacs::make_scheme(scheme_name));
 }
 
 inline tm_ostream& operator << (tm_ostream& out, object obj) {
@@ -464,58 +464,58 @@ inline object tmscm_to_object (tmscm  obj) {
 
 template <int requiredArgs, typename FN> inline void install_procedure (const char* name, FN fn) {
     if constexpr (requiredArgs == 0) {
-        scheme().install_procedure(name, [fn](abstract_scheme*, tmscm args) {
+        scheme().install_procedure(name, [fn](texmacs::abstract_scheme*, tmscm args) {
             return fn();
         }, requiredArgs, 0);
     }
     else if constexpr (requiredArgs == 1) {
-        scheme().install_procedure(name, [fn](abstract_scheme*, tmscm args) {
+        scheme().install_procedure(name, [fn](texmacs::abstract_scheme*, tmscm args) {
             return fn(args->car());
         }, requiredArgs, 0);
     }
     else if constexpr (requiredArgs == 2) {
-        scheme().install_procedure(name, [fn](abstract_scheme*, tmscm args) {
+        scheme().install_procedure(name, [fn](texmacs::abstract_scheme*, tmscm args) {
             return fn(args->car(), args->cdr()->car());
         }, requiredArgs, 0);
     }
     else if constexpr (requiredArgs == 3) {
-        scheme().install_procedure(name, [fn](abstract_scheme*, tmscm args) {
+        scheme().install_procedure(name, [fn](texmacs::abstract_scheme*, tmscm args) {
             return fn(args->car(), args->cdr()->car(), args->cdr()->cdr()->car());
         }, requiredArgs, 0);
     }
     else if constexpr (requiredArgs == 4) {
-        scheme().install_procedure(name, [fn](abstract_scheme*, tmscm args) {
+        scheme().install_procedure(name, [fn](texmacs::abstract_scheme*, tmscm args) {
             return fn(args->car(), args->cdr()->car(), args->cdr()->cdr()->car(), args->cdr()->cdr()->cdr()->car());
         }, requiredArgs, 0);
     }
     else if constexpr (requiredArgs == 5) {
-        scheme().install_procedure(name, [fn](abstract_scheme *, tmscm args) {
+        scheme().install_procedure(name, [fn](texmacs::abstract_scheme *, tmscm args) {
             return fn(args->car(), args->cdr()->car(), args->cdr()->cdr()->car(), args->cdr()->cdr()->cdr()->car(),
                       args->cdr()->cdr()->cdr()->cdr()->car());
         }, requiredArgs, 0);
     }
     else if constexpr (requiredArgs == 6) {
-        scheme().install_procedure(name, [fn](abstract_scheme *, tmscm args) {
+        scheme().install_procedure(name, [fn](texmacs::abstract_scheme *, tmscm args) {
             return fn(args->car(), args->cdr()->car(), args->cdr()->cdr()->car(), args->cdr()->cdr()->cdr()->car(),
                       args->cdr()->cdr()->cdr()->cdr()->car(), args->cdr()->cdr()->cdr()->cdr()->cdr()->car());
         }, requiredArgs, 0);
     }
     else if constexpr (requiredArgs == 7) {
-        scheme().install_procedure(name, [fn](abstract_scheme *, tmscm args) {
+        scheme().install_procedure(name, [fn](texmacs::abstract_scheme *, tmscm args) {
             return fn(args->car(), args->cdr()->car(), args->cdr()->cdr()->car(), args->cdr()->cdr()->cdr()->car(),
                       args->cdr()->cdr()->cdr()->cdr()->car(), args->cdr()->cdr()->cdr()->cdr()->cdr()->car(),
                       args->cdr()->cdr()->cdr()->cdr()->cdr()->cdr()->car());
         }, requiredArgs, 0);
     }
     else if constexpr (requiredArgs == 8) {
-        scheme().install_procedure(name, [fn](abstract_scheme *, tmscm args) {
+        scheme().install_procedure(name, [fn](texmacs::abstract_scheme *, tmscm args) {
             return fn(args->car(), args->cdr()->car(), args->cdr()->cdr()->car(), args->cdr()->cdr()->cdr()->car(),
                       args->cdr()->cdr()->cdr()->cdr()->car(), args->cdr()->cdr()->cdr()->cdr()->cdr()->car(),
                       args->cdr()->cdr()->cdr()->cdr()->cdr()->cdr()->car(), args->cdr()->cdr()->cdr()->cdr()->cdr()->cdr()->cdr()->car());
         }, requiredArgs, 0);
     }
     else if constexpr (requiredArgs == 9) {
-        scheme().install_procedure(name, [fn](abstract_scheme *, tmscm args) {
+        scheme().install_procedure(name, [fn](texmacs::abstract_scheme *, tmscm args) {
             return fn(args->car(), args->cdr()->car(), args->cdr()->cdr()->car(), args->cdr()->cdr()->cdr()->car(),
                       args->cdr()->cdr()->cdr()->cdr()->car(), args->cdr()->cdr()->cdr()->cdr()->cdr()->car(),
                       args->cdr()->cdr()->cdr()->cdr()->cdr()->cdr()->car(), args->cdr()->cdr()->cdr()->cdr()->cdr()->cdr()->cdr()->car(),
@@ -523,7 +523,7 @@ template <int requiredArgs, typename FN> inline void install_procedure (const ch
         }, requiredArgs, 0);
     }
     else if constexpr (requiredArgs == 10) {
-        scheme().install_procedure(name, [fn](abstract_scheme *, tmscm args) {
+        scheme().install_procedure(name, [fn](texmacs::abstract_scheme *, tmscm args) {
             return fn(args->car(), args->cdr()->car(), args->cdr()->cdr()->car(), args->cdr()->cdr()->cdr()->car(),
                       args->cdr()->cdr()->cdr()->cdr()->car(), args->cdr()->cdr()->cdr()->cdr()->cdr()->car(),
                       args->cdr()->cdr()->cdr()->cdr()->cdr()->cdr()->car(), args->cdr()->cdr()->cdr()->cdr()->cdr()->cdr()->cdr()->car(),

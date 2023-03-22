@@ -16,9 +16,9 @@
 #include <iostream>
 #include <unordered_map>
 
-std::unique_ptr<abstract_scheme> global_scheme;
+std::unique_ptr<texmacs::abstract_scheme> global_scheme;
 
-void abstract_scheme::protected_call (object cmd) {
+void texmacs::abstract_scheme::protected_call (object cmd) {
 #ifdef USE_EXCEPTIONS
     try {
 #endif
@@ -34,20 +34,20 @@ void abstract_scheme::protected_call (object cmd) {
 #endif
 }
 
-void abstract_scheme::notify_preferences_booted () {
+void texmacs::abstract_scheme::notify_preferences_booted () {
     preferences_ok= true;
 }
 
-void abstract_scheme::set_preference (string var, string val) {
+void texmacs::abstract_scheme::set_preference (string var, string val) {
     if (!preferences_ok) set_user_preference (var, val);
     else (void) call ("set-preference", object(string_to_tmscm(var)), object(string_to_tmscm(val)));
 }
 
-void abstract_scheme::notify_preference (string var) {
+void texmacs::abstract_scheme::notify_preference (string var) {
     if (preferences_ok) (void) call ("notify-preference", object(string_to_tmscm(var)));
 }
 
-string abstract_scheme::get_preference (string var, string def) {
+string texmacs::abstract_scheme::get_preference (string var, string def) {
     //std::cout << "get_preference: " << std::string(var.data(), N(var)) << " " << std::string(def.data(), N(def)) << std::endl;
     if (!preferences_ok)
         return get_user_preference (var, def);
@@ -57,13 +57,13 @@ string abstract_scheme::get_preference (string var, string def) {
     }
 }
 
-std::unordered_map<std::string, SchemeFactory*> scheme_factories;
+std::unordered_map<std::string, texmacs::SchemeFactory*> scheme_factories;
 
-void register_scheme_factory(SchemeFactory *factory) {
+void texmacs::register_scheme_factory(SchemeFactory *factory) {
     scheme_factories[factory->name()] = factory;
 }
 
-std::vector<std::string> get_scheme_factories() {
+std::vector<std::string> texmacs::get_scheme_factories() {
     std::vector<std::string> names;
     for (auto &factory : scheme_factories) {
         names.push_back(factory.first);
@@ -71,7 +71,7 @@ std::vector<std::string> get_scheme_factories() {
     return names;
 }
 
-abstract_scheme *make_scheme(std::string name) {
+texmacs::abstract_scheme *texmacs::make_scheme(std::string name) {
     auto factory = scheme_factories.find(name);
     if (factory == scheme_factories.end()) {
         return nullptr;
@@ -79,7 +79,7 @@ abstract_scheme *make_scheme(std::string name) {
     return factory->second->make_scheme();
 }
 
-void register_all_scheme() {
+void texmacs::register_all_scheme() {
 #ifdef SCHEME_REGI
     SCHEME_REGI
 #endif

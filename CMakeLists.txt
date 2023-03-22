@@ -250,7 +250,10 @@ if (ENABLE_INTERNAL_GUILE18)
     set(USE_GUILE18 ON)
     set(SCHEME_DECL "${SCHEME_DECL} void registerGuile18();")
     set(SCHEME_REGI "${SCHEME_REGI} registerGuile18();")
-    target_sources(texmacs PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/src/Scheme/Guile18/guile18_scheme.cpp")
+    target_sources(texmacs PUBLIC
+            "${CMAKE_CURRENT_SOURCE_DIR}/src/Scheme/Guile18/guile18_scheme.cpp"
+            "${CMAKE_CURRENT_SOURCE_DIR}/src/Scheme/Guile18/guile_thread.cpp"
+            )
     target_link_libraries(texmacs PUBLIC guile)
     target_compile_options(guile PUBLIC -fexceptions)
     target_link_options(guile PUBLIC -fexceptions)

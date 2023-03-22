@@ -12,13 +12,13 @@
 
 #include "s7_tmscheme.hpp"
 
-std::unordered_map<s7_scheme*, s7_tmscheme*> *s7_scheme_map = nullptr;
+std::unordered_map<s7_scheme*, texmacs::s7_tmscheme*> *s7_scheme_map = nullptr;
 
-void registerS7() {
-    register_scheme_factory(new S7Factory);
+void texmacs::registerS7() {
+    register_scheme_factory(new texmacs::S7Factory);
 }
 
-void s7_tmscheme::install_procedure(string name, std::function<tmscm(abstract_scheme*,tmscm)> fun, int numArgs, int numOptional) {
+void texmacs::s7_tmscheme::install_procedure(string name, std::function<tmscm(abstract_scheme*,tmscm)> fun, int numArgs, int numOptional) {
 
     mFunctionHolder.emplace_back(fun);
     int index = mFunctionHolder.size() - 1;
@@ -32,7 +32,7 @@ void s7_tmscheme::install_procedure(string name, std::function<tmscm(abstract_sc
 
 }
 
-abstract_scheme *S7Factory::make_scheme() {
+texmacs::abstract_scheme *texmacs::S7Factory::make_scheme() {
     s7_tmscheme *scheme = new s7_tmscheme();
     if (s7_scheme_map == nullptr) {
         s7_scheme_map = new std::unordered_map<s7_scheme*, s7_tmscheme*>();
@@ -41,11 +41,11 @@ abstract_scheme *S7Factory::make_scheme() {
     return scheme;
 }
 
-bool s7_tmscm::is_blackbox() {
+bool texmacs::s7_tmscm::is_blackbox() {
     return s7_is_c_object(mSCM) && s7_c_object_type(mSCM) == s7_scheme_map->at(mScheme)->blackboxTag();
 }
 
-s7_pointer s7_blackbox_to_string (s7_scheme *sc, s7_pointer args)
+s7_pointer texmacs::s7_blackbox_to_string (s7_scheme *sc, s7_pointer args)
 {
     auto scheme = s7_scheme_map->at(sc);
     tmscm tmscm_args = s7_tmscm::mk(sc, args);
@@ -84,7 +84,7 @@ s7_pointer s7_blackbox_to_string (s7_scheme *sc, s7_pointer args)
     return tmscm_cast<s7_tmscm>(scheme->string_to_tmscm(s))->getSCM();
 }
 
-s7_pointer s7_free_blackbox (s7_scheme *sc, s7_pointer obj)
+s7_pointer texmacs::s7_free_blackbox (s7_scheme *sc, s7_pointer obj)
 {
     blackbox *ptr = (blackbox *) s7_c_object_value (obj);
     tm_delete (ptr);
@@ -93,12 +93,12 @@ s7_pointer s7_free_blackbox (s7_scheme *sc, s7_pointer obj)
     return (NULL);
 }
 
-s7_pointer s7_mark_blackbox (s7_scheme *sc, s7_pointer obj)
+s7_pointer texmacs::s7_mark_blackbox (s7_scheme *sc, s7_pointer obj)
 {
     return (NULL);
 }
 
-s7_pointer s7_blackbox_is_equal(s7_scheme *sc, s7_pointer args)
+s7_pointer texmacs::s7_blackbox_is_equal(s7_scheme *sc, s7_pointer args)
 {
     auto scheme = s7_scheme_map->at(sc);
 
@@ -136,7 +136,7 @@ s7_pointer g_getpid (s7_scheme *sc, s7_pointer args)
     return(s7_make_integer(sc, (s7_int)QCoreApplication::applicationPid()));
 }
 
-s7_tmscheme::s7_tmscheme() {
+texmacs::s7_tmscheme::s7_tmscheme() {
     mInstance = s7_init();
     mBlackboxTag = s7_make_c_type (mInstance, "blackbox");
     s7_c_type_set_gc_free (mInstance, mBlackboxTag, s7_free_blackbox);
