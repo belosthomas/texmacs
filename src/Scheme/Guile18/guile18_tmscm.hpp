@@ -16,18 +16,13 @@ namespace texmacs {
             return make_tmscm<guile_tmscm>(std::forward<Args>(args)...);
         }
 
-        guile_tmscm(SCM scm, bool protect = true) : mSCM(scm), mProtect(protect) {
-            if (mProtect) {
-                scm_gc_protect_object(mSCM);
-            }
-            string t = type();
-            mType = std::string(t.data(), N(t));
+        guile_tmscm(SCM scm) : mSCM(scm) {
+            //string t = type();
+            //mType = std::string(t.data(), N(t));
         }
 
         ~guile_tmscm() {
-            if (mProtect) {
-                scm_gc_unprotect_object(mSCM);
-            }
+
         }
 
         SCM getSCM() const {
@@ -199,7 +194,7 @@ namespace texmacs {
     class guile_tmscm_null : public guile_tmscm {
 
     public:
-        guile_tmscm_null() : guile_tmscm(scm_list_n(SCM_UNDEFINED), false) {
+        guile_tmscm_null() : guile_tmscm(scm_list_n(SCM_UNDEFINED)) {
 
         }
 

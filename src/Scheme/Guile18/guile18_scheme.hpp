@@ -47,11 +47,11 @@ namespace texmacs {
         }
 
         tmscm tmscm_true() final {
-            return guile_tmscm::mk(SCM_BOOL_T, false);
+            return guile_tmscm::mk(SCM_BOOL_T);
         }
 
         tmscm tmscm_false() final {
-            return guile_tmscm::mk(SCM_BOOL_F, false);
+            return guile_tmscm::mk(SCM_BOOL_F);
         }
 
         tmscm bool_to_tmscm(bool b) final {
@@ -83,18 +83,18 @@ namespace texmacs {
         }
 
         tmscm tmscm_unspefied() final {
-            return guile_tmscm::mk(SCM_UNSPECIFIED, false);
+            return guile_tmscm::mk(SCM_UNSPECIFIED);
         }
 
         tmscm eval_scheme_file(string name) final {
             std::promise<tmscm> promise;
             mThread.run([&promise, &name]() {
-                try {
+              //  try {
                     c_string _file(name);
                     promise.set_value(guile_tmscm::mk(scm_c_primitive_load(_file)));
-                } catch (...) {
-                    promise.set_exception(std::current_exception());
-                }
+               // } catch (...) {
+                //    promise.set_exception(std::current_exception());
+               // }
             });
             return promise.get_future().get();
         }
