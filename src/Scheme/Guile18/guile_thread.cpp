@@ -5,13 +5,6 @@
 
 #include <QDebug>
 
-texmacs::guile_thread *guile_init_self;
-std::mutex guile_init_mutex;
-
-void* texmacs::guile_thread::c_run(void* data) {
-    return guile_init_self->run();
-}
-
 std::unordered_map<std::thread::id, QDebug*> guile_logs;
 
 void guile_error(const char *message) {
@@ -38,20 +31,20 @@ void guile_log_function(const char *cmsg, int len) {
 }
 
 void texmacs::guile_thread::init() {
-    guile_init_mutex.lock();
-    try {
-        guile_init_self = this;
-        scm_use_embedded_ice9();
-        scm_set_log_function(guile_log_function);
-        scm_with_guile(guile_thread::c_run, nullptr);
-    } catch (...) {
-        mIsInitializedPromise.set_exception(std::current_exception());
-    }
+    // compute the stack base and size of the current thread with pthread and mThreadAttr
+    int64_t stack_base;
+    run(&stack_base);
+
 }
 
-void *texmacs::guile_thread::run() {
-    mIsInitializedPromise.set_value(true);
-    guile_init_mutex.unlock();
+void *texmacs::guile_thread::run(int64_t *stack_base_manual) {
+
+    void *stack_base;
+    size_t stack_size;
+    pthread_attr_getstack(&mThreadAttr, &stack_base, &stack_size);
+
+    scm_init_guile((int64_t*)stack_base_manual, stack_size);
+
     while (true) {
         std::function<void()> f = *mQueue.getPopElement();
         if (mQueue.isDestroyed()) {
@@ -63,10 +56,23 @@ void *texmacs::guile_thread::run() {
     return nullptr;
 }
 
+void *texmacs::guile_thread::c_init(void *data) {
+    guile_thread *thread = static_cast<guile_thread*>(data);
+    thread->init();
+    return nullptr;
+}
+
 void texmacs::guile_thread::run(std::function<void()> f) {
     if (!mIsInitialized) {
-        mThread = std::thread(&guile_thread::init, this);
-        mIsInitialized = mIsInitializedPromise.get_future().get();
+        scm_use_embedded_ice9();
+        scm_set_log_function(guile_log_function);
+        set_error_callback(guile_error);
+
+        pthread_attr_init(&mThreadAttr);
+        // set the stack size to 100 MB
+        pthread_attr_setstacksize(&mThreadAttr, 100 * 1024 * 1024);
+        pthread_create(&mThreadID, &mThreadAttr, &guile_thread::c_init, this);
+        mIsInitialized = true;
     }
     if (mThread.get_id() == std::this_thread::get_id()) {
         f();

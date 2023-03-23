@@ -5,8 +5,8 @@
 #ifndef TEXMACS_SCHEME_GUILE18_GUILE_THREAD_HPP
 #define TEXMACS_SCHEME_GUILE18_GUILE_THREAD_HPP
 
-#include <thread>
 #include <future>
+#include <pthread.h>
 #include <libguile.hpp>
 #include "Utils/ThreadSafeQueue.hpp"
 
@@ -35,7 +35,7 @@ namespace texmacs {
         /**
          * @brief This function is a C proxy for the run function.
          */
-        static void* c_run(void* data);
+        static void* c_init(void* data);
 
         /**
          * Remove copy constructor and assignment operator.
@@ -48,10 +48,12 @@ namespace texmacs {
          * @brief This function is the main function of the guile thread.
          * @return
          */
-        void *run();
+        void *run(int64_t *stack_base);
 
     private:
-        std::thread::id mThreadId;
+        pthread_t mThreadID;
+        pthread_attr_t mThreadAttr;
+
         bool mIsInitialized = false;
         std::thread mThread;
         thread_safe_queue<std::function<void()>, 10> mQueue;
