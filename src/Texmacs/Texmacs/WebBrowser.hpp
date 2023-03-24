@@ -9,7 +9,7 @@
 
 #include <QVBoxLayout>
 #include <QLineEdit>
-#include <QtWebView>
+//#include <QtWebView>
 #include <QQuickWidget>
 
 namespace texmacs {
@@ -23,7 +23,7 @@ namespace texmacs {
         void loadUrl(const QString &url);
 
     private:
-        QQuickWidget mWebEngineView;
+        //QQuickWidget mWebEngineView;
         QLineEdit mUrlLineEdit;
 
         QWidget mLayoutContainer;

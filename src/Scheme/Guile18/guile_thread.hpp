@@ -55,7 +55,6 @@ namespace texmacs {
         pthread_attr_t mThreadAttr;
 
         bool mIsInitialized = false;
-        std::thread mThread;
         thread_safe_queue<std::function<void()>, 10> mQueue;
         std::promise<bool> mIsInitializedPromise;
     };

@@ -62,8 +62,13 @@ void *texmacs::guile_thread::c_init(void *data) {
     return nullptr;
 }
 
+#define GUILE_SINGLE_THREAD 1
+
+extern int *main_stack_base;
+
 void texmacs::guile_thread::run(std::function<void()> f) {
     if (!mIsInitialized) {
+#if !GUILE_SINGLE_THREAD
         scm_use_embedded_ice9();
         scm_set_log_function(guile_log_function);
         set_error_callback(guile_error);
@@ -73,11 +78,21 @@ void texmacs::guile_thread::run(std::function<void()> f) {
         pthread_attr_setstacksize(&mThreadAttr, 100 * 1024 * 1024);
         pthread_create(&mThreadID, &mThreadAttr, &guile_thread::c_init, this);
         mIsInitialized = true;
+#else
+        mThreadID = pthread_self();
+        scm_use_embedded_ice9();
+        scm_set_log_function(guile_log_function);
+        set_error_callback(guile_error);
+        scm_init_guile((int64_t*)main_stack_base, 100 * 1024 * 1024);
+#endif
     }
-    if (mThread.get_id() == std::this_thread::get_id()) {
+
+    // check if we are in the guile thread with pthread
+    if (pthread_equal(pthread_self(), mThreadID)) {
         f();
         return;
     }
+
     *mQueue.getPushElement() = std::move(f);
     mQueue.notifyPush();
 }

@@ -1,11 +1,16 @@
 #include "Application.hpp"
 #include "Utils/ArgsParser.hpp"
 
-#include <QtWebView>
+//#include <QtWebView>
 
 using namespace texmacs;
 
+int *main_stack_base;
+
 int main(int argc, char** argv) {
+    int t = 0;
+    main_stack_base = &t;
+
     // Find all the available Guile implementations
     register_all_scheme();
 
@@ -17,7 +22,7 @@ int main(int argc, char** argv) {
     auto app = texmacs::Application(argc, argv);
 
     // Qt documentation says that QtWebView must be initialized before the QApplication
-    QtWebView::initialize();
+    // QtWebView::initialize();
 
     // Parse the command line arguments
     texmacs::utils::ArgsParser argsParser;
