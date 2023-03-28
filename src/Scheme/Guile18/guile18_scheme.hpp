@@ -17,15 +17,20 @@
 #define SET_SMOB(smob,data,type)   \
 SCM_NEWSMOB (smob, SCM_UNPACK (type), data);
 
+
 namespace texmacs {
 
-    SCM &guile_blackbox_tag();
+    scm_t_bits &guile_blackbox_tag();
+
+    void initialize_smobs();
 
     class guile_scheme : public abstract_scheme {
 
     public:
         guile_scheme() : mThread() {
-
+            mThread.run([]() {
+                initialize_smobs();
+            });
         }
 
         tmscm blackbox_to_tmscm(blackbox b) final {
@@ -89,12 +94,12 @@ namespace texmacs {
         tmscm eval_scheme_file(string name) final {
             std::promise<tmscm> promise;
             mThread.run([&promise, &name]() {
-              //  try {
+                try {
                     c_string _file(name);
                     promise.set_value(guile_tmscm::mk(scm_c_primitive_load(_file)));
-               // } catch (...) {
-                //    promise.set_exception(std::current_exception());
-               // }
+                } catch (...) {
+                    promise.set_exception(std::current_exception());
+                }
             });
             return promise.get_future().get();
         }

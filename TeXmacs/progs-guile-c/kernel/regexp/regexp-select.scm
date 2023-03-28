@@ -271,7 +271,7 @@
     (map cadr sols)))
 
 (with-module texmacs-user
-  (define-public (select . args) (apply tm-select args)))
+	(define-public (select . args) (apply tm-select args)))
 
 (define-public (tm-ref t . l)
   (and (tm? t)

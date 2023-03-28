@@ -6,7 +6,7 @@
 
 namespace texmacs {
 
-    SCM &guile_blackbox_tag();
+    scm_t_bits &guile_blackbox_tag();
 
     class guile_tmscm : public abstract_tmscm {
 
@@ -17,8 +17,8 @@ namespace texmacs {
         }
 
         guile_tmscm(SCM scm) : mSCM(scm) {
-            //string t = type();
-            //mType = std::string(t.data(), N(t));
+            string t = type();
+            mType = std::string(t.data(), N(t));
         }
 
         ~guile_tmscm() {
@@ -112,7 +112,7 @@ namespace texmacs {
         }
 
         bool is_blackbox() override {
-            return (SCM_NIMP (mSCM) && ((SCM_CAR (mSCM)) == guile_blackbox_tag()));
+            return (SCM_NIMP (mSCM) && (((scm_t_bits)SCM_CAR (mSCM)) == guile_blackbox_tag()));
         }
 
         blackbox to_blackbox() override {
@@ -155,6 +155,7 @@ namespace texmacs {
             string type = "";
             if (scm_is_null(mSCM)) {
                 type = "null";
+                return type;
             } else {
                 type = "not null";
             }
@@ -165,7 +166,7 @@ namespace texmacs {
                 type = type * "/double";
             }
             if (scm_is_string(mSCM)) {
-                type = type * "/string";
+                type = type * "/string:'" * to_string() * "'";
             }
             if (scm_is_symbol(mSCM)) {
                 type = type * "/symbol";
@@ -182,12 +183,17 @@ namespace texmacs {
             if (scm_is_bool(mSCM)) {
                 type = type * "/bool";
             }
+            if (SCM_NIMP (mSCM)) {
+                type = type * "/nimp";
+            }
+            if (SCM_IMP (mSCM)) {
+                type = type * "/imp";
+            }
             return type;
         }
 
     private:
         SCM mSCM;
-        bool mProtect;
         std::string mType;
     };
 

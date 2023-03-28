@@ -96,9 +96,9 @@
 ;; (set! primitive-load new-primitive-load)
 
 ;(display "Booting TeXmacs kernel functionality\n")
-
-
-(load "kernel/boot/boot.scm")
+(if (os-mingw?)
+    (load "kernel/boot/boot.scm")
+    (load (url-concretize "$TEXMACS_PATH/progs/kernel/boot/boot.scm")))
 (inherit-modules (kernel boot compat) (kernel boot abbrevs)
                  (kernel boot debug) (kernel boot srfi)
                  (kernel boot ahash-table) (kernel boot prologue))

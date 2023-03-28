@@ -774,8 +774,7 @@ tmg_cpp_has_preferenceP (tmscm arg1) {
   return scheme().bool_to_tmscm (out);
 }
 
-tmscm
-tmg_cpp_get_preference (tmscm arg1, tmscm arg2) {
+inline tmscm tmg_cpp_get_preference (tmscm arg1, tmscm arg2) {
   TMSCM_ASSERT_STRING (arg1, TMSCM_ARG1, "cpp-get-preference");
   TMSCM_ASSERT_STRING (arg2, TMSCM_ARG2, "cpp-get-preference");
 
@@ -789,8 +788,7 @@ tmg_cpp_get_preference (tmscm arg1, tmscm arg2) {
   return scheme().string_to_tmscm (out);
 }
 
-tmscm
-tmg_cpp_set_preference (tmscm arg1, tmscm arg2) {
+inline tmscm tmg_cpp_set_preference (tmscm arg1, tmscm arg2) {
   TMSCM_ASSERT_STRING (arg1, TMSCM_ARG1, "cpp-set-preference");
   TMSCM_ASSERT_STRING (arg2, TMSCM_ARG2, "cpp-set-preference");
 
@@ -804,8 +802,7 @@ tmg_cpp_set_preference (tmscm arg1, tmscm arg2) {
   return scheme().tmscm_unspefied();
 }
 
-tmscm
-tmg_cpp_reset_preference (tmscm arg1) {
+inline tmscm tmg_cpp_reset_preference (tmscm arg1) {
   TMSCM_ASSERT_STRING (arg1, TMSCM_ARG1, "cpp-reset-preference");
 
   string in1= arg1->to_string();
@@ -817,8 +814,7 @@ tmg_cpp_reset_preference (tmscm arg1) {
   return scheme().tmscm_unspefied();
 }
 
-tmscm
-tmg_save_preferences () {
+inline tmscm tmg_save_preferences () {
   // TMSCM_DEFER_INTS;
   save_user_preferences ();
   // TMSCM_ALLOW_INTS;

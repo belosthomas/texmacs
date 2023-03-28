@@ -221,8 +221,7 @@ tmscm_to_tree_label (tmscm p) {
 #define TMSCM_ASSERT_TREE(t,arg,rout) TMSCM_ASSERT (tmscm_is_tree (t), t, arg, rout)
 
 
-bool
-tmscm_is_tree (tmscm u) {
+bool tmscm_is_tree (tmscm u) {
   return (u->is_blackbox() && 
          (type_box (u->to_blackbox()) == type_helper<tree>::id));
 }
@@ -232,8 +231,7 @@ tree_to_tmscm (tree o) {
   return scheme().blackbox_to_tmscm (close_box<tree> (o));
 }
 
-tree
-tmscm_to_tree (tmscm obj) {
+tree tmscm_to_tree (tmscm obj) {
   return open_box<tree>(obj->to_blackbox());
 }
 

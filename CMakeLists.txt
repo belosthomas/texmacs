@@ -1,22 +1,3 @@
-
-###############################################################################
-#
-# MODULE      : CMakeLists.txt
-# DESCRIPTION : CMake file for TeXmacs
-# COPYRIGHT   : (C) 2008-2009  Massimiliano Gubinelli
-#               (C) 2017-2020  Darcy Shen
-#               (C) 2023       Liza Belos
-#
-# This software falls under the GNU general public license version 3 or later.
-# It comes WITHOUT ANY WARRANTY WHATSOEVER. For details, see the file LICENSE
-# in the root directory or <http://www.gnu.org/licenses/gpl-3.0.html>.
-
-
-# The name of our project is "TEXMACS". CMakeLists files in this project can
-# refer to the root source directory of the project as ${TEXMACS_SOURCE_DIR} and
-# to the root binary directory of the project as ${TEXMACS_BINARY_DIR}.
-
-
 cmake_minimum_required(VERSION 3.13)
 project(TeXmacs
         VERSION 2.1.2
@@ -43,17 +24,31 @@ set (TEXMACS_REVISION ${TEXMACS_VERSION})
 
 add_definitions(-DWIN32_LEAN_AND_MEAN)
 
-find_package(Qt6 COMPONENTS Core Gui Widgets PrintSupport Svg OpenGL QuickWidgets)
-if (NOT Qt6_FOUND)
-    message(WARNING "Qt6 not found. Trying Qt5...")
+# add an option for the qt version and set the default value to 5
+option(QT_VERSION "Qt version to use" "5")
+
+if (QT_VERSION STREQUAL "5" OR NOT QT_VERSION)
+    message(STATUS "Using Qt5")
     find_package(Qt5 COMPONENTS Core Gui Widgets PrintSupport Svg OpenGL QuickWidgets)
     if (NOT Qt5_FOUND)
-        message(FATAL_ERROR "Qt5 or Qt6 is required to build TeXmacs")
+        message(FATAL_ERROR "Qt5 not found. Please specify the -DQt5_DIR (exemple -DQt5_DIR=D:/Qt/5.15.2/msvc2019_64/lib/cmake) variable or set the -DQT_VERSION option to 6")
     else()
         message(STATUS "Found Qt5 !")
     endif()
-else()
-    message(STATUS "Found Qt 6 !")
+endif()
+
+if (QT_VERSION STREQUAL "6")
+    message(STATUS "Using Qt6")
+    find_package(Qt6 COMPONENTS Core Gui Widgets PrintSupport Svg OpenGL QuickWidgets)
+    if (NOT Qt6_FOUND)
+        message(FATAL_ERROR "Qt6 not found. Please specify the -DQt6_DIR variable or set the -DQT_VERSION option to 5")
+    else()
+        message(STATUS "Found Qt6 !")
+    endif()
+endif()
+
+if (NOT Qt6_FOUND AND NOT Qt5_FOUND)
+    message(FATAL_ERROR "Qt not found. Please specify the -DQt5_DIR or -DQt6_DIR variable or set the -DQT_VERSION option to 5 or 6")
 endif()
 
 if (Qt6_FOUND)

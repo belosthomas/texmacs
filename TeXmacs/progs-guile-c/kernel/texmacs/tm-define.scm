@@ -258,9 +258,9 @@
                              (ahash-ref tm-defined-module ',var)))
            ,@(map property-rewrite cur-props))
         `(begin
-           (when (nnull? cur-conds)
-             (display* "warning: conditional master routine " ',var "\n")
-             (display* "   " ',nval "\n"))
+           ;;(when (nnull? cur-conds)
+           ;;  (display* "warning: conditional master routine " ',var "\n")
+           ;;  (display* "   " ',nval "\n"))
            ;;(display* "Defined " ',var "\n")
            ;;(if (nnull? cur-conds) (display* "   " ',nval "\n"))
            (set! temp-module ,(current-module))

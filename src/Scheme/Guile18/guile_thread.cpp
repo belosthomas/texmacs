@@ -6,9 +6,19 @@
 #include <QDebug>
 
 std::unordered_map<std::thread::id, QDebug*> guile_logs;
+std::unordered_map<std::thread::id, QString> guile_last_messages;
 
-void guile_error(const char *message) {
-    throw std::runtime_error(message);
+void guile_error() {
+    auto thread_id = std::this_thread::get_id();
+
+    // delete guile_logs[thread_id];
+    if (guile_logs.find(thread_id) != guile_logs.end()) {
+        delete guile_logs[thread_id];
+        guile_logs.erase(thread_id);
+    }
+
+    QString message = guile_last_messages[thread_id];
+    throw std::runtime_error(message.toStdString());
 }
 
 void guile_log_function(const char *cmsg, int len) {
@@ -25,6 +35,7 @@ void guile_log_function(const char *cmsg, int len) {
 
     qsizetype last = str.lastIndexOf("\n");
     *guile_logs[thread_id] << str.left(last);
+    guile_last_messages[thread_id] = str.left(last);
     delete guile_logs[thread_id];
     guile_logs[thread_id] = new QDebug(qInfo().noquote().nospace());
     *guile_logs[thread_id] << str.right(str.length() - last - 1);

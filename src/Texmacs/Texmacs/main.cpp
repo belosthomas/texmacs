@@ -1,5 +1,6 @@
 #include "Application.hpp"
 #include "Utils/ArgsParser.hpp"
+#include "Utils/PlatformDependant.hpp"
 
 //#include <QtWebView>
 
@@ -8,6 +9,10 @@ using namespace texmacs;
 int *main_stack_base;
 
 int main(int argc, char** argv) {
+
+    texmacs::setStackLimit(100000000);
+
+    // Set the main stack base
     int t = 0;
     main_stack_base = &t;
 

@@ -25,31 +25,6 @@
 bool user_prefs_modified= false;
 hashmap<string,string> user_prefs ("");
 
-bool
-has_user_preference (string var) {
-  return user_prefs->contains (var);
-}
-
-void
-set_user_preference (string var, string val) {
-  if (val == "default") user_prefs->reset (var);
-  else user_prefs (var)= val;
-  user_prefs_modified= true;
-  notify_preference (var);
-}
-
-void
-reset_user_preference (string var) {
-  user_prefs->reset (var);
-  user_prefs_modified= true;
-  notify_preference (var);
-}
-
-string
-get_user_preference (string var, string val) {
-  if (user_prefs->contains (var)) return user_prefs[var];
-  else return val;
-}
 
 /******************************************************************************
 * Loading and saving user preferences
