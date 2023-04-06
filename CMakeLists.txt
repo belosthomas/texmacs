@@ -38,7 +38,7 @@ option(QT_VERSION "Qt version to use" "6")
 
 if (QT_VERSION STREQUAL "5" OR NOT QT_VERSION)
     message(STATUS "Using Qt5")
-    find_package(Qt5 COMPONENTS Core Gui Widgets PrintSupport Svg OpenGL QuickWidgets VERSION 5.15)
+    find_package(Qt5 COMPONENTS Core Gui Widgets PrintSupport Svg OpenGL QuickWidgets)
     if (NOT Qt5_FOUND)
         message(FATAL_ERROR "Qt5.15 or higher version not found. Please specify the -DQt5_DIR (exemple -DQt5_DIR=D:/Qt/5.15.2/msvc2019_64/lib/cmake) variable or set the -DQT_VERSION option to 6")
     else()
