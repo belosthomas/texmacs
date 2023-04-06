@@ -205,9 +205,6 @@ tm_throw (const char* msg) {
   cout << "-------------------------------------------------\n";
   cout << the_report << LF;
   cout << "-------------------------------------------------\n";
-#ifdef WIN32
-  DebugBreak();
-#endif
   throw string (msg);
 }
 

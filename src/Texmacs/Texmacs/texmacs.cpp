@@ -460,7 +460,7 @@ TeXmacs_main (int argc, char** argv) {
       string b= scm_quote (as_string (u));
       string cmd= "(load-buffer " * b * " " * where * ")";
       where= " :new-window";
-      exec_delayed (scheme_cmd (cmd));
+      exec_delayed (scheme_cmd (cmd), cmd);
     }
     if      ((s == "-c") || (s == "-convert")) i+=2;
     else if ((s == "-b") || (s == "-initialize-buffer") ||
@@ -476,7 +476,7 @@ TeXmacs_main (int argc, char** argv) {
     if (DEBUG_STD) debug_boot << "Loading welcome message...\n";
     string cmd= "(load-help-article \"about/welcome/new-welcome\")";
     // FIXME: force to load welcome message into new window
-    exec_delayed (scheme_cmd (cmd));
+    exec_delayed (scheme_cmd (cmd), cmd);
   }
   else if (install_status == 2) {
     if (DEBUG_STD) debug_boot << "Loading upgrade message...\n";
@@ -484,7 +484,7 @@ TeXmacs_main (int argc, char** argv) {
     string b= scm_quote (as_string (u));
     string cmd= "(load-buffer " * b * " " * where * ")";
     where= " :new-window";
-    exec_delayed (scheme_cmd (cmd));
+    exec_delayed (scheme_cmd (cmd), cmd);
   }
   if (number_buffers () == 0) {
     if (DEBUG_STD) debug_boot << "Creating 'no name' buffer...\n";
@@ -506,7 +506,7 @@ TeXmacs_main (int argc, char** argv) {
   if (!disable_error_recovery) signal (SIGSEGV, clean_exit_on_segfault);
   if (start_server_flag) server_start ();
   release_boot_lock ();
-  if (N(extra_init_cmd) > 0) exec_delayed (scheme_cmd (extra_init_cmd));
+  if (N(extra_init_cmd) > 0) exec_delayed (scheme_cmd (extra_init_cmd), extra_init_cmd);
   gui_start_loop ();
 
   if (DEBUG_STD) debug_boot << "Stopping server...\n";

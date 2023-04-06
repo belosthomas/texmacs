@@ -102,17 +102,17 @@
   (link edu-insert-menu))
 
 (menu-bind edu-view-icons
-  (=> (balloon (icon "tm_view.xpm") "Select view mode")
+  (=> (balloon (icon "tm_view") "Select view mode")
       (link edu-view-mode-menu)))
 
 (menu-bind edu-insert-icons
-  (=> (balloon (icon "tm_question.xpm") "Insert a question")
+  (=> (balloon (icon "tm_question") "Insert a question")
       (link question-menu))
-  (=> (balloon (icon "tm_answer.xpm") "Insert an answer")
+  (=> (balloon (icon "tm_answer") "Insert an answer")
       (link answer-menu))
-  (=> (balloon (icon "tm_gap.xpm") "Insert a gap")
+  (=> (balloon (icon "tm_gap") "Insert a gap")
       (link gap-menu))
-  (=> (balloon (icon "tm_mc.xpm") "Insert a multiple choice")
+  (=> (balloon (icon "tm_mc") "Insert a multiple choice")
       (link mc-menu)))
 
 (menu-bind text-extra-icons

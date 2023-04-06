@@ -14,6 +14,8 @@
 #include "std_environment.hpp"
 #include "vars.hpp"
 #include "scheme.hpp"
+#include "new_buffer.hpp"
+#include "Typeset/env.hpp"
 
 extern int script_status;
 
@@ -93,7 +95,7 @@ rewrite_impl (tree t) {
       bool secure= as_bool (std_env ["secure"]);
       if (!secure && script_status < 2) {
 	if (!as_bool (call ("secure?", expr)))
-	  return tree (ERROR, "insecure script");
+	  return tree (LABEL_ERROR, "insecure script");
       }
       environment old_env= reenter_rewrite_env;
       reenter_rewrite_env= std_env;
@@ -139,7 +141,7 @@ rewrite_impl (tree t) {
     }
   case WITH_PACKAGE:
     {
-      string file_name= exec_string (t[0]);
+      string file_name= evaluate_string (t[0]);
       return with_package_definitions (file_name, t[1]);
     }
   case REWRITE_INACTIVE:

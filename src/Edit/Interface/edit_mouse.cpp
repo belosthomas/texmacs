@@ -238,7 +238,7 @@ edit_interface_rep::mouse_scroll (SI x, SI y, bool up) {
       if (new_yt != old_yt && is_accessible (obtain_ip (old_yt))) {
         object fun= symbol_object ("tree-set");
         object cmd= list_object (fun, old_yt, new_yt);
-        exec_delayed (scheme_cmd (cmd));
+        exec_delayed (scheme_cmd (cmd), "tree-set old_yt, new_yt");
         temp_invalid_cursor= true;
       }
     }

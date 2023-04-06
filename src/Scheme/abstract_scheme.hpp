@@ -11,6 +11,8 @@
 #ifndef ABSTRACT_SCHEME_HPP
 #define ABSTRACT_SCHEME_HPP
 
+#include "scheme_config.hpp"
+
 #include <memory>
 #include <vector>
 #include <string>
@@ -72,8 +74,7 @@ namespace texmacs {
 
         virtual tmscm call_scheme_args(tmscm fun, std::vector<tmscm> args) = 0;
 
-        virtual void install_procedure(string name, std::function<tmscm(abstract_scheme *, tmscm)> fun, int numArgs,
-                                       int numOptional) = 0;
+        virtual void install_procedure(string name, std::function<tmscm(abstract_scheme *, tmscm)> fun, int numArgs, int numOptional) = 0;
 
         virtual string scheme_dialect() = 0;
 

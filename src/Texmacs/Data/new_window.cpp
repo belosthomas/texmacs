@@ -73,7 +73,7 @@ public:
   inline void apply () {
     object cmd= list_object (symbol_object ("safely-kill-window"),
                              object (*id));
-    exec_delayed (scheme_cmd (cmd)); }
+    exec_delayed (scheme_cmd (cmd), "safely-kill-window id"); }
   tm_ostream& print (tm_ostream& out) { return out << "kill window"; }
 };
 

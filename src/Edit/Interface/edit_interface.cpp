@@ -401,7 +401,7 @@ edit_interface_rep::cursor_visible () {
           if (new_xt != old_xt && is_accessible (obtain_ip (old_xt))) {
             object fun= symbol_object ("tree-set");
             object cmd= list_object (fun, old_xt, new_xt);
-            exec_delayed (scheme_cmd (cmd));
+            exec_delayed (scheme_cmd (cmd), "tree-set old_xt new_xt");
             temp_invalid_cursor= true;
           }
         }
@@ -422,7 +422,7 @@ edit_interface_rep::cursor_visible () {
           if (new_yt != old_yt && is_accessible (obtain_ip (old_yt))) {
             object fun= symbol_object ("tree-set");
             object cmd= list_object (fun, old_yt, new_yt);
-            exec_delayed (scheme_cmd (cmd));
+            exec_delayed (scheme_cmd (cmd), "tree-set old_yt new_yt");
             temp_invalid_cursor= true;
           }
         }
@@ -606,10 +606,10 @@ edit_interface_rep::change_time () {
 void
 edit_interface_rep::update_menus () {
   SERVER (menu_main ("(horizontal (link texmacs-menu))"));
-  SERVER (menu_icons (0, "(horizontal (link texmacs-main-icons))"));
-  SERVER (menu_icons (1, "(horizontal (link texmacs-mode-icons))"));
-  SERVER (menu_icons (2, "(horizontal (link texmacs-focus-icons))"));
-  SERVER (menu_icons (3, "(horizontal (link texmacs-extra-icons))"));
+ // SERVER (menu_icons (0, "(horizontal (link texmacs-main-icons))"));
+ // SERVER (menu_icons (1, "(horizontal (link texmacs-mode-icons))"));
+ // SERVER (menu_icons (2, "(horizontal (link texmacs-focus-icons))"));
+ // SERVER (menu_icons (3, "(horizontal (link texmacs-extra-icons))"));
   array<url> a= buffer_to_windows (buf->buf->name);
   if (N(a) > 0) {
     string win= "(string->url \"" * as_string (a[0]) * "\")";

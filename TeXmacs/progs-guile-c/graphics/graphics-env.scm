@@ -346,8 +346,8 @@
       ;; FIXME: This function is horribly slow, due to the
       ;;   non-correct (?) caching of the xmp files, or to
       ;;   the building of too much X11 datastructures.
-	    (tm_xpm "tm_cursor_none.xpm")
-	    (tm_xpm "tm_mask_none.xpm")))
+	    (tm_xpm "tm_cursor_none")
+	    (tm_xpm "tm_mask_none")))
 	((== curs 'text-arrow)
 	 (set-pointer 'none)
 	 (set-predef-mouse-pointer "XC_top_left_arrow"))

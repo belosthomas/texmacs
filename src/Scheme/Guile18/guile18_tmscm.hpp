@@ -7,246 +7,93 @@
 namespace texmacs {
 
     scm_t_bits &guile_blackbox_tag();
+    
+    class guile_scheme;
 
     class guile_tmscm : public abstract_tmscm {
 
     public:
         template<typename ...Args>
-        static tmscm mk(Args &&... args) {
+        static inline tmscm mk(Args &&... args) {
             return make_tmscm<guile_tmscm>(std::forward<Args>(args)...);
         }
 
-        guile_tmscm(SCM scm) : mSCM(scm) {
-            string t = type();
-            mType = std::string(t.data(), N(t));
-        }
+        guile_tmscm(guile_scheme *scheme, SCM scm);
 
-        ~guile_tmscm() {
+        ~guile_tmscm() override;
 
-        }
+        void mark();
 
-        SCM getSCM() const {
-            return mSCM;
-        }
+        void unmark();
 
-        tmscm null() override;
+        SCM getSCM() const;
 
-        void set_car(tmscm b) override {
-            SCM_SETCAR(mSCM, tmscm_cast<guile_tmscm>(b)->getSCM());
-        }
+        tmscm null();
 
-        void set_cdr(tmscm b) override {
-            SCM_SETCDR(mSCM, tmscm_cast<guile_tmscm>(b)->getSCM());
-        }
+        void set_car(tmscm b) override;
 
-        bool is_equal(tmscm o2) override {
-            return scm_is_true (scm_equal_p(mSCM, tmscm_cast<guile_tmscm>(o2)->getSCM()));
-        }
+        void set_cdr(tmscm b) override;
 
-        bool is_null() override {
-            return scm_is_null (mSCM);
-        }
+        bool is_equal(tmscm o2) override;
 
-        bool is_pair() override {
-            return scm_is_pair(mSCM);
-        }
+        bool is_null() override;
 
-        bool is_list() override {
-            return scm_is_true(scm_list_p(mSCM));
-        }
+        bool is_pair() override;
 
-        bool is_bool() override {
-            return scm_is_bool(mSCM);
-        }
+        bool is_list() override;
 
-        bool is_int() override {
-            return scm_is_integer(mSCM);
-        }
+        bool is_bool() override;
 
-        bool is_double() override {
-            return scm_is_real(mSCM);
-        }
+        bool is_int() override;
 
-        bool is_string() override {
-            return scm_is_string(mSCM);
-        }
+        bool is_double() override;
 
-        bool is_symbol() override {
-            return scm_is_symbol(mSCM);
-        }
+        bool is_string() override;
 
-        tmscm cons(tmscm obj2) override {
-            return guile_tmscm::mk(scm_cons(mSCM, tmscm_cast<guile_tmscm>(obj2)->getSCM()));
-        }
+        bool is_symbol() override;
 
-        tmscm car() override {
-            return guile_tmscm::mk(SCM_CAR (mSCM));
-        }
+        tmscm cons(tmscm obj2) override;
 
-        tmscm cdr() override {
-            return guile_tmscm::mk(SCM_CDR (mSCM));
-        }
+        tmscm car() override;
 
-        tmscm caar() override {
-            return guile_tmscm::mk(SCM_CAAR (mSCM));
-        }
+        tmscm cdr() override;
 
-        tmscm cadr() override {
-            return guile_tmscm::mk(SCM_CADR (mSCM));
-        }
+        tmscm caar() override;
 
-        tmscm cdar() override {
-            return guile_tmscm::mk(SCM_CDAR (mSCM));
-        }
+        tmscm cadr() override;
 
-        tmscm cddr() override {
-            return guile_tmscm::mk(SCM_CDDR (mSCM));
-        }
+        tmscm cdar() override;
 
-        tmscm caddr() override {
-            return guile_tmscm::mk(SCM_CADDR (mSCM));
-        }
+        tmscm cddr() override;
 
-        tmscm cadddr() override {
-            return guile_tmscm::mk(SCM_CADDDR(mSCM));
-        }
+        tmscm caddr() override;
 
-        bool is_blackbox() override {
-            return (SCM_NIMP (mSCM) && (((scm_t_bits)SCM_CAR (mSCM)) == guile_blackbox_tag()));
-        }
+        tmscm cadddr() override;
 
-        blackbox to_blackbox() override {
-            return *((blackbox *) SCM_CDR (mSCM));
-        }
+        bool is_blackbox() override;
 
-        bool to_bool() override {
-            return scm_to_bool(mSCM);
-        }
+        blackbox to_blackbox() override;
 
-        int to_int() override {
-            return scm_to_int64(mSCM);
-        }
+        bool to_bool() override;
 
-        double to_double() override {
-            return scm_to_double(mSCM);
-        }
+        int to_int() override;
 
-        string to_string() override {
-            size_t len_r;
-            char *_r = scm_to_locale_stringn(mSCM, &len_r);
-            string r(_r, len_r);
-            free(_r);
-            return r;
-        }
+        double to_double() override;
 
-        string to_symbol() override {
-            size_t len_r;
-            char *_r = scm_to_locale_stringn(scm_symbol_to_string(mSCM), &len_r);
-            string r(_r, len_r);
-            free(_r);
-            return r;
-        }
+        string to_string() override;
 
-        int hash() override {
-            return scm_ihash(mSCM, std::numeric_limits<int>::max(), NULL);
-        }
+        string to_symbol() override;
 
-        string type() {
-            string type = "";
-            if (scm_is_null(mSCM)) {
-                type = "null";
-                return type;
-            } else {
-                type = "not null";
-            }
-            if (scm_is_integer(mSCM)) {
-                type = type * "/int";
-            }
-            if (scm_is_real(mSCM)) {
-                type = type * "/double";
-            }
-            if (scm_is_string(mSCM)) {
-                type = type * "/string:'" * to_string() * "'";
-            }
-            if (scm_is_symbol(mSCM)) {
-                type = type * "/symbol";
-            }
-            if (scm_is_pair(mSCM)) {
-                type = type * "/pair";
-            }
-            if (scm_is_true(scm_list_p(mSCM))) {
-                type = type * "/true";
-            }
-            if (scm_is_false(scm_list_p(mSCM))) {
-                type = type * "/false";
-            }
-            if (scm_is_bool(mSCM)) {
-                type = type * "/bool";
-            }
-            if (SCM_NIMP (mSCM)) {
-                type = type * "/nimp";
-            }
-            if (SCM_IMP (mSCM)) {
-                type = type * "/imp";
-            }
-            return type;
-        }
+        int hash() override;
+
+        string type();
 
     private:
+        guile_scheme *mScheme;
         SCM mSCM;
+        SCM mHandle{};
         std::string mType;
     };
-
-    class guile_tmscm_null : public guile_tmscm {
-
-    public:
-        guile_tmscm_null() : guile_tmscm(scm_list_n(SCM_UNDEFINED)) {
-
-        }
-
-        template<typename ...Args>
-        static tmscm mk() {
-            return make_tmscm<guile_tmscm_null>();
-        }
-
-        bool is_null() override {
-            return true;
-        }
-
-        bool is_pair() override {
-            return false;
-        }
-
-        bool is_list() override {
-            return false;
-        }
-
-        bool is_bool() override {
-            return false;
-        }
-
-        bool is_int() override {
-            return false;
-        }
-
-        bool is_double() override {
-            return false;
-        }
-
-        bool is_string() override {
-            return false;
-        }
-
-        bool is_symbol() override {
-            return false;
-        }
-
-
-    };
-
-    tmscm guile_tmscm::null() {
-        return guile_tmscm_null::mk();
-    }
 
 }
 

@@ -207,7 +207,7 @@ begin_with (environment& env, assoc_environment local) {
 std_environment
 end_with_environment (std_environment env) {
   if (env->pure) return env->next;
-  ASSERT (env->next->pure, "pure environment expected");
+  TM_ASSERT (env->next->pure, "pure environment expected");
   basic_environment patch= flatten (env->env);
   basic_environment with_env= flatten (env->next->env);
   patch->multiple_remove (with_env->a, with_env->n);

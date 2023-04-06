@@ -221,7 +221,7 @@
             (list (url->system name) "")
             (url->system name) "15em")
       // // //
-      ((icon "tm_find.xpm")
+      ((icon "tm_find")
        (cond ((pattern? key)
               (choose-file setter "Background pattern" "image" "" curr))
              ((gradient? key)
@@ -244,7 +244,7 @@
     (toggle (set-recolor key (and answer "black"))
             (nnot (get-recolor key)))
     // // //
-    ((icon "tm_color.xpm")
+    ((icon "tm_color")
      (interactive-color (cut set-recolor key <>)
                         (list (or (get-recolor key) ""))))
     >>))
@@ -261,13 +261,13 @@
     (toggle (set-skin key (and answer "black"))
             (nnot (get-skin key)))
     // // //
-    ((icon "tm_color.xpm")
+    ((icon "tm_color")
      (interactive-color (cut set-skin key <>)
                         (list (or (get-skin key) ""))))
     // //
     (when (get-skin key)
-      ((icon "tm_remove.xpm") (dec-skin key))
-      ((icon "tm_add.xpm") (inc-skin key)))
+      ((icon "tm_remove") (dec-skin key))
+      ((icon "tm_add") (inc-skin key)))
     >>))
 
 (tm-widget (pattern-blur-options key)
@@ -290,7 +290,7 @@
                 "yellow" "cyan" "magenta" "orange" "brown" "")
           (or (get-gradient-background key) "white") "15em")
     // // //
-    ((icon "tm_color.xpm")
+    ((icon "tm_color")
      (interactive-color (cut set-gradient-background key <>)
                         (list (or (get-gradient-background key) "white"))))
     >>))
@@ -303,7 +303,7 @@
                 "yellow" "cyan" "magenta" "orange" "brown" "")
           (or (get-gradient-foreground key) "black") "15em")
     // // //
-    ((icon "tm_color.xpm")
+    ((icon "tm_color")
      (interactive-color (cut set-gradient-foreground key <>)
                         (list (or (get-gradient-foreground key) "black"))))
     >>))

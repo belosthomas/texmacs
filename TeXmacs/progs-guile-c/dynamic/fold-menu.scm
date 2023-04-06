@@ -196,22 +196,22 @@
 
 (tm-define (alternate-second-icon t)
   (:require (fold-context? t))
-  "tm_alternate_both.xpm")
+  "tm_alternate_both")
 
 (menu-bind dynamic-icons
-  ((balloon (icon "tm_larrow_bar.xpm") "First")
+  ((balloon (icon "tm_larrow_bar") "First")
    (dynamic-operate-on-buffer :first))
   (if (in-screens?)
-      ((balloon (icon "tm_larrow_double.xpm") "Previous screen")
+      ((balloon (icon "tm_larrow_double") "Previous screen")
        (screens-switch-to :previous)))
-  ((balloon (icon "tm_larrow.xpm") "Previous")
+  ((balloon (icon "tm_larrow") "Previous")
    (dynamic-traverse-buffer :previous))
-  ((balloon (icon "tm_rarrow.xpm") "Next")
+  ((balloon (icon "tm_rarrow") "Next")
    (dynamic-traverse-buffer :next))
   (if (in-screens?)
-      ((balloon (icon "tm_rarrow_double.xpm") "Next screen")
+      ((balloon (icon "tm_rarrow_double") "Next screen")
        (screens-switch-to :next)))
-  ((balloon (icon "tm_rarrow_bar.xpm") "Last")
+  ((balloon (icon "tm_rarrow_bar") "Last")
    (dynamic-operate-on-buffer :last)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -472,9 +472,9 @@
   (=> (balloon (icon (eval (current-page-icon))) "Page layout")
       (link page-rendering-menu))
   (assuming (focus-has-preferences? t)
-    (=> (balloon (icon "tm_focus_prefs.xpm") "Preferences for tag")
+    (=> (balloon (icon "tm_focus_prefs") "Preferences for tag")
 	(dynamic (focus-preferences-menu t))))
-  ((balloon (icon "tm_focus_help.xpm") "Describe tag")
+  ((balloon (icon "tm_focus_help") "Describe tag")
    (focus-help)))
 
 (tm-menu (standard-focus-icons t)

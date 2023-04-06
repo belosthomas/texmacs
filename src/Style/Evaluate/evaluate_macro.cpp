@@ -268,7 +268,7 @@ expand (tree t, assoc_environment env) {
 	int start= 0, end= N(val);
 	if (N(t)>=4) start= as_int (evaluate (expand (t[3], env)));
 	if (N(t)>=5) end  = as_int (evaluate (expand (t[4], env)));
-	int i, n= max (0, end-start);
+	int i, n= std::max (0, end-start);
 	tree r (make_tree_label (t[1]->label), n);
 	for (i=0; i<n; i++)
 	  r[i]= tree (make_tree_label (t[0]->label),

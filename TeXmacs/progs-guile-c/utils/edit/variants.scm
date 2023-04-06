@@ -162,13 +162,13 @@
   (alternate-second-name t))
 
 (tm-define (alternate-first-icon t)
-  "tm_alternate_first.xpm")
+  "tm_alternate_first")
 
 (tm-define (alternate-second-name t)
   "Expand")
 
 (tm-define (alternate-second-icon t)
-  "tm_alternate_second.xpm")
+  "tm_alternate_second")
 
 (tm-define (alternate-toggle t)
   (and-with p (tree-outer t)

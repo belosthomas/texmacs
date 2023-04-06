@@ -121,7 +121,7 @@ basic_environment_rep::multiple_remove (hash_node* b, int k) {
 void
 basic_environment_rep::resize (int new_n) {
   //cout << "Resize " << n << " -> " << new_n << " (" << size << ")\n";
-  ASSERT (new_n >= size, "too small number of bags");
+  TM_ASSERT (new_n >= size, "too small number of bags");
   int old_n= n;
   hash_node* old_a= a;
   n= new_n;

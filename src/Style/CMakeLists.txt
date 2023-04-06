@@ -1,0 +1,9 @@
+file(GLOB_RECURSE TEXMACS_STYLE_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/*.cpp)
+file(GLOB_RECURSE TEXMACS_STYLE_HEADERS ${CMAKE_CURRENT_SOURCE_DIR}/*.hpp)
+target_sources(texmacs-gui PRIVATE ${TEXMACS_STYLE_SOURCES} ${TEXMACS_STYLE_HEADERS})
+
+target_include_directories(texmacs-gui PUBLIC
+        ${CMAKE_CURRENT_SOURCE_DIR}/Environment
+        ${CMAKE_CURRENT_SOURCE_DIR}/Evaluate
+        ${CMAKE_CURRENT_SOURCE_DIR}/Memorizer
+        )

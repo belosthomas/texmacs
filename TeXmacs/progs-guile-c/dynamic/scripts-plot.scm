@@ -209,13 +209,13 @@
                      (refresh-now "plots-list"))
                    "string" (list name) "15em")
             ///
-            ((icon "tm_add.xpm")
+            ((icon "tm_add")
              (set! name (new-plot-name gt))
              (set-plot-name u lan ses gt name :new)
              (refresh-now "plot-name")
              (refresh-now "plots-list"))
             //
-            ((icon "tm_remove.xpm")
+            ((icon "tm_remove")
              (plot-delete u gt)
              (refresh-now "plot-name")
              (refresh-now "plots-list"))))

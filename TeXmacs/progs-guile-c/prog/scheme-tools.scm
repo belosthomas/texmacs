@@ -192,7 +192,7 @@
   (== (logand mods Mod1Mask) Mod1Mask))
 
 ;Original definition for reference
-;(tm-define (mouse-event key x y mods time data)
+;(tm-define (mouse-event key x y mods time)
 ;  (mouse-any key x y mods (+ time 0.0) data))
 
 ; Override mouse events. Because the Mod1Mask and Mod2Mask modifiers are used
@@ -200,28 +200,28 @@
 ; we have these modifiers, the buttons sent are middle and right, so we must
 ; check for events of type "press-" and "release-" in order to be compatible
 ; across platforms. (We could use :require for this too)
-(tm-define (mouse-event key x y mods time data)
+(tm-define (mouse-event key x y mods time)
   (:require (and developer-mode? (opt-click? mods) (in-prog-scheme?)))
   (with short (string-take key 4)
     (cond ((== short "pres")
            ; emulate a click to move the cursor
-           (mouse-any "release-left" x y 1 (+ time 0.0) data)
+           (mouse-any "release-left" x y 1 (+ time 0.0))
            (set! cw (cursor-word))
            (select-word cw (cursor-tree) (cAr (cursor-path))))
           ((== short "rele")
            (with cw2 (cursor-word)
              (if (== cw cw2) (help-window "scheme" cw))))
-          (else (mouse-any key x y mods (+ time 0.0) data)))))
+          (else (mouse-any key x y mods (+ time 0.0))))))
 
-(tm-define (mouse-event key x y mods time data)
+(tm-define (mouse-event key x y mods time)
   (:require (and developer-mode? (cmd-click? mods) (in-prog-scheme?)))
   (with short (string-take key 4)
     (cond ((== short "pres")
            ; emulate a click to move the cursor
-           (mouse-any "release-left" x y 1 (+ time 0.0) data)
+           (mouse-any "release-left" x y 1 (+ time 0.0))
            (set! cw (cursor-word))
            (select-word cw (cursor-tree) (cAr (cursor-path))))
           ((== short "rele")
            (with cw2 (cursor-word)
              (if (== cw cw2) (scheme-go-to-definition cw))))
-          (else (mouse-any key x y mods (+ time 0.0) data)))))
+          (else (mouse-any key x y mods (+ time 0.0))))))

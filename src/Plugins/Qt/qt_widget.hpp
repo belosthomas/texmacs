@@ -17,7 +17,7 @@
 #include "message.hpp"
 #include "qt_utilities.hpp"
 
-#include "Texmacs/DocumentWidget.hpp"
+#include "Gui/DocumentWidget.hpp"
 
 #include <QPointer>
 

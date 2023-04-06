@@ -1159,9 +1159,9 @@
 
 (menu-bind math-format-icons
   /
-  (=> (balloon (icon "tm_color.xpm") "Select a foreground color")
+  (=> (balloon (icon "tm_color") "Select a foreground color")
       (link color-menu))
-  (=> (balloon (icon "tm_math_style.xpm")
+  (=> (balloon (icon "tm_math_style")
                "Change the style of mathematical formulas")
       (group "Style")
       ("Small inline" (make-with "math-display" "false"))
@@ -1181,16 +1181,16 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (menu-bind math-insert-icons
-  (=> (balloon (icon "tm_fraction.xpm") "Insert a fraction")
+  (=> (balloon (icon "tm_fraction") "Insert a fraction")
       ("Standard fraction" (make-fraction))
       ("Small inline fraction" (make 'tfrac))
       ("Large displayed fraction" (make 'dfrac))
       ("Slashed fraction" (make 'frac*))
       ("Continued fraction" (make 'cfrac)))
-  (=> (balloon (icon "tm_root.xpm") "Insert a root")
+  (=> (balloon (icon "tm_root") "Insert a root")
       ("Square root" (make-sqrt))
       ("Multiple root" (make-var-sqrt)))
-  (=> (balloon (icon "tm_subsup.xpm") "Insert a script")
+  (=> (balloon (icon "tm_subsup") "Insert a script")
       ("Subscript" (make-script #f #t))
       ("Superscript" (make-script #t #t))
       ("Left subscript" (make-script #f #f))
@@ -1198,35 +1198,35 @@
       ("Subscript below" (make-below))
       ("Superscript above" (make-above)))
   /
-  (=> (balloon (icon "tm_bigop.xpm") "Insert a big operator")
+  (=> (balloon (icon "tm_bigop") "Insert a big operator")
       (tile 6 (link big-operator-menu)))
-  (=> (balloon (icon "tm_bigaround.xpm") "Insert large delimiters")
+  (=> (balloon (icon "tm_bigaround") "Insert large delimiters")
       (tile 8 (link large-delimiter-menu))
       ---
       (-> "Opening" (tile 8 (link left-delimiter-menu)))
       (-> "Middle" (tile 8 (link middle-delimiter-menu)))
       (-> "Closing" (tile 8 (link right-delimiter-menu))))
-  (=> (balloon (icon "tm_wide.xpm") "Insert an accent")
+  (=> (balloon (icon "tm_wide") "Insert an accent")
       (tile 6
-            ((icon "tm_hat.xpm") (make-wide "^"))
-            ((icon "tm_tilda.xpm") (make-wide "~"))
-            ((icon "tm_bar.xpm") (make-wide "<bar>"))
-            ((icon "tm_vect.xpm") (make-wide "<vect>"))
-            ((icon "tm_check.xpm") (make-wide "<check>"))
-            ((icon "tm_breve.xpm") (make-wide "<breve>"))
-            ((icon "tm_invbreve.xpm") (make-wide "<invbreve>"))
-            ((icon "tm_dot.xpm") (make-wide "<dot>"))
-            ((icon "tm_ddot.xpm") (make-wide "<ddot>"))
-            ((icon "tm_acute.xpm") (make-wide "<acute>"))
-            ((icon "tm_grave.xpm") (make-wide "<grave>"))))
+            ((icon "tm_hat") (make-wide "^"))
+            ((icon "tm_tilda") (make-wide "~"))
+            ((icon "tm_bar") (make-wide "<bar>"))
+            ((icon "tm_vect") (make-wide "<vect>"))
+            ((icon "tm_check") (make-wide "<check>"))
+            ((icon "tm_breve") (make-wide "<breve>"))
+            ((icon "tm_invbreve") (make-wide "<invbreve>"))
+            ((icon "tm_dot") (make-wide "<dot>"))
+            ((icon "tm_ddot") (make-wide "<ddot>"))
+            ((icon "tm_acute") (make-wide "<acute>"))
+            ((icon "tm_grave") (make-wide "<grave>"))))
   /
-  (=> (balloon (icon "tm_binop.xpm") "Insert a binary operation")
+  (=> (balloon (icon "tm_binop") "Insert a binary operation")
       (tile 8 (link binary-operation-menu)))
-  (=> (balloon (icon "tm_binrel.xpm") "Insert a binary relation")
+  (=> (balloon (icon "tm_binrel") "Insert a binary relation")
       (tile 8 (link binary-relation-menu-1))
       ---
       (tile 8 (link binary-relation-menu-2)))
-  (=> (balloon (icon "tm_arrow.xpm") "Insert an arrow")
+  (=> (balloon (icon "tm_arrow") "Insert an arrow")
       (tile 9 (link horizontal-arrow-menu))
       ---
       (tile 8 (link vertical-arrow-menu))
@@ -1234,20 +1234,20 @@
       (tile 6 (link long-arrow-menu))
       ---
       (link extensible-arrow-menu))
-  (=> (balloon (icon "tm_unequal.xpm") "Insert a negation")
+  (=> (balloon (icon "tm_unequal") "Insert a negation")
       (tile 9 (link negation-menu-1))
       ---
       (tile 9 (link negation-menu-2)))
-  (=> (balloon (icon "tm_miscsymb.xpm") "Insert a miscellaneous symbol")
+  (=> (balloon (icon "tm_miscsymb") "Insert a miscellaneous symbol")
       (tile 8 (link miscellaneous-symbol-menu))
       ---
       (tile 6 (link dots-menu)))
   /
-  (=> (balloon (icon "tm_greek_char.xpm") "Insert a greek character")
+  (=> (balloon (icon "tm_greek_char") "Insert a greek character")
       (tile 8 (link lower-greek-menu))
       ---
       (tile 8 (link upper-greek-menu)))
-  (=> (balloon (icon "tm_mathbold.xpm")
+  (=> (balloon (icon "tm_mathbold")
                "Insert a bold character")
       (tile 15 (link bold-num-menu))
       ---
@@ -1256,19 +1256,19 @@
       (tile 13 (link bold-up-alpha-menu))
       ---
       (tile 15 (link bold-greek-menu)))
-  (=> (balloon (icon "tm_cal.xpm")
+  (=> (balloon (icon "tm_cal")
                "Insert a calligraphic character")
       (tile 13 (link cal-menu)))
-  (=> (balloon (icon "tm_frak.xpm")
+  (=> (balloon (icon "tm_frak")
                "Insert a fraktur character")
       (tile 13 (link frak-menu)))
-  (=> (balloon (icon "tm_bbb.xpm")
+  (=> (balloon (icon "tm_bbb")
                "Insert a blackboard bold character")
       (tile 13 (link bbb-menu)))
-  (=> (balloon (icon "tm_op.xpm") "Insert a textual operator")
+  (=> (balloon (icon "tm_op") "Insert a textual operator")
       (link textual-operator-menu))
   (link math-format-icons)
-  (=> (balloon (icon "tm_math_preferences.xpm")
+  (=> (balloon (icon "tm_math_preferences")
                "Preferences for editing mathematical formulas")
       (group "Keyboard")
       ("Enforce brackets to match" (toggle-matching-brackets))
@@ -1280,7 +1280,7 @@
       (group "Semantics")
       (link semantic-math-preferences-menu))
   (if (== (get-preference "semantic editing") "on")
-      (=> (balloon (icon "tm_math_syntax.xpm")
+      (=> (balloon (icon "tm_math_syntax")
                    "Specify semantics of a symbol or formula")
           (link semantic-annotation-menu))))
 
@@ -1373,11 +1373,11 @@
   (:require (script-context? t))
   (assuming (tree-in? t '(lsub rsub))
     (when (script-only-script? t)
-      ((balloon (icon "tm_insert_up.xpm") "Insert superscript")
+      ((balloon (icon "tm_insert_up") "Insert superscript")
        (structured-insert-up))))
   (assuming (tree-in? t '(lsup rsup))
     (when (script-only-script? t)
-      ((balloon (icon "tm_insert_down.xpm") "Insert subscript")
+      ((balloon (icon "tm_insert_down") "Insert subscript")
        (structured-insert-down)))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -1396,7 +1396,7 @@
 
 (tm-menu (focus-toggle-icons t)
   (:require (tree-is? t 'sqrt))
-  ((check (balloon (icon "tm_root_index.xpm") "Multiple root") "v"
+  ((check (balloon (icon "tm_root_index") "Multiple root") "v"
           (== (tree-arity (focus-tree)) 2))
    (sqrt-toggle (focus-tree))))
 
@@ -1420,7 +1420,7 @@
 
 (tm-menu (focus-toggle-icons t)
   (:require (tree-in? t '(wide wide*)))
-  ((check (balloon (icon "tm_wide_under.xpm") "Accent below") "v"
+  ((check (balloon (icon "tm_wide_under") "Accent below") "v"
           (alternate-second? (focus-tree)))
    (alternate-toggle (focus-tree))))
 
@@ -1459,14 +1459,14 @@
 
 (tm-menu (focus-toggle-icons t)
   (:require (tree-in? t '(around around*)))
-  ((check (balloon (icon "tm_large_around.xpm") "Large brackets") "v"
+  ((check (balloon (icon "tm_large_around") "Large brackets") "v"
           (alternate-second? (focus-tree)))
    (alternate-toggle (focus-tree)))
   ;; TODO: create suitable icons
-  ;;((balloon (icon "tm_plus.xpm") "Increase bracket size")
+  ;;((balloon (icon "tm_plus") "Increase bracket size")
   ;; (geometry-up))
-  ;;((balloon (icon "tm_minus.xpm") "Decrease bracket size")
+  ;;((balloon (icon "tm_minus") "Decrease bracket size")
   ;; (geometry-down))
-  ;;((balloon (icon "tm_reset.xpm") "Reset to default bracket size")
+  ;;((balloon (icon "tm_reset") "Reset to default bracket size")
   ;; (geometry-reset))
   )

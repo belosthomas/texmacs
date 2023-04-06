@@ -375,8 +375,8 @@ inline bool   exec_file (url u) {
     return scheme().exec_file(u);
 }
 
-void   exec_delayed (object cmd);
-void   exec_delayed_pause (object cmd);
+void   exec_delayed (object cmd, string name);
+void   exec_delayed_pause (object cmd, string name);
 void   exec_pending_commands ();
 void   clear_pending_commands ();
 

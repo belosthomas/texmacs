@@ -88,14 +88,14 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (menu-bind prog-format-icons
-  ((balloon (icon "tm_italic.xpm") "Write italic text")
+  ((balloon (icon "tm_italic") "Write italic text")
    (make-with "prog-font-shape" "italic"))
-  ((balloon (icon "tm_bold.xpm") "Write bold text")
+  ((balloon (icon "tm_bold") "Write bold text")
    (make-with "prog-font-series" "bold"))
-  ((balloon (icon "tm_sansserif.xpm") "Use a sans serif font")
+  ((balloon (icon "tm_sansserif") "Use a sans serif font")
    (make-with "prog-font-family" "ss"))
   (if (not (in-graphics?))
-      (=> (balloon (icon "tm_color.xpm") "Select a foreground color")
+      (=> (balloon (icon "tm_color") "Select a foreground color")
 	  (link color-menu))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;

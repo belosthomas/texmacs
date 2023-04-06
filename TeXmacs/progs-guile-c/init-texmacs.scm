@@ -18,8 +18,6 @@
   (call-with-output-string
     (lambda (port) (write obj port))))
 
-(define (when cond . body) (if cond (begin body)))
-
 (define (texmacs-version) "TEXMACS_VERSION")
   (define object-stack '(()))
 
@@ -96,9 +94,8 @@
 ;; (set! primitive-load new-primitive-load)
 
 ;(display "Booting TeXmacs kernel functionality\n")
-(if (os-mingw?)
-    (load "kernel/boot/boot.scm")
-    (load (url-concretize "$TEXMACS_PATH/progs/kernel/boot/boot.scm")))
+(load "kernel/boot/boot.scm")
+
 (inherit-modules (kernel boot compat) (kernel boot abbrevs)
                  (kernel boot debug) (kernel boot srfi)
                  (kernel boot ahash-table) (kernel boot prologue))

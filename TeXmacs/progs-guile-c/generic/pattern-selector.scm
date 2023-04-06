@@ -205,7 +205,7 @@
             (list (url->system name) "")
             (url->system name) "15em")
       // // //
-      ((icon "tm_find.xpm")
+      ((icon "tm_find")
        (cond ((and (not global-picture?) (not global-gradient?))
               (choose-file setter "Background pattern" "image" "" curr))
              (global-gradient?
@@ -229,7 +229,7 @@
       (toggle (set-recolor (and answer "black"))
               (nnot (get-recolor)))
       // // //
-      ((icon "tm_color.xpm")
+      ((icon "tm_color")
        (interactive-color set-recolor (list (or recol ""))))
       >>)))
 
@@ -246,12 +246,12 @@
       (toggle (set-skin (and answer "black"))
               (nnot (get-skin)))
       // // //
-      ((icon "tm_color.xpm")
+      ((icon "tm_color")
        (interactive-color set-skin (list (or skin ""))))
       // //
       (when skin
-	((icon "tm_remove.xpm") (dec-skin))
-	((icon "tm_add.xpm") (inc-skin)))
+	((icon "tm_remove") (dec-skin))
+	((icon "tm_add") (inc-skin)))
       >>)))
 
 (tm-widget (pattern-blur-options)
@@ -275,7 +275,7 @@
                   "yellow" "cyan" "magenta" "orange" "brown" "")
             (or bg "white") "15em")
       // // //
-      ((icon "tm_color.xpm")
+      ((icon "tm_color")
        (interactive-color set-gradient-background (list (or bg "white"))))
       >>)))
 
@@ -288,7 +288,7 @@
                   "yellow" "cyan" "magenta" "orange" "brown" "")
             (or fg "black") "15em")
       // // //
-      ((icon "tm_color.xpm")
+      ((icon "tm_color")
        (interactive-color set-gradient-foreground (list (or fg "black"))))
       >>)))
 

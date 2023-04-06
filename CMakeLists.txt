@@ -1,9 +1,15 @@
+# CMakeLists.txt for TeXmacs entirely rewritten by Liza Belos
+
+#######################################################################################################################
+#                                                                                                                     #
+#  Project Informations                                                                                               #
+#                                                                                                                     #
+#######################################################################################################################
+
 cmake_minimum_required(VERSION 3.13)
-project(TeXmacs
-        VERSION 2.1.2
-        DESCRIPTION "TeXmacs is a scientific text editor"
-        HOMEPAGE_URL "https://www.texmacs.org"
-        LANGUAGES CXX C)
+project(TeXmacs VERSION 2.1.2 DESCRIPTION "TeXmacs is a scientific text editor" HOMEPAGE_URL "https://www.texmacs.org" LANGUAGES CXX C)
+
+set(CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -22,16 +28,19 @@ set (STABLE_VERSION ${TEXMACS_VERSION})
 set (STABLE_RELEASE "1")
 set (TEXMACS_REVISION ${TEXMACS_VERSION})
 
-add_definitions(-DWIN32_LEAN_AND_MEAN)
+#######################################################################################################################
+#                                                                                                                     #
+#  Find Qt                                                                                                            #
+#                                                                                                                     #
+#######################################################################################################################
 
-# add an option for the qt version and set the default value to 5
-option(QT_VERSION "Qt version to use" "5")
+option(QT_VERSION "Qt version to use" "6")
 
 if (QT_VERSION STREQUAL "5" OR NOT QT_VERSION)
     message(STATUS "Using Qt5")
-    find_package(Qt5 COMPONENTS Core Gui Widgets PrintSupport Svg OpenGL QuickWidgets)
+    find_package(Qt5 COMPONENTS Core Gui Widgets PrintSupport Svg OpenGL QuickWidgets VERSION 5.15)
     if (NOT Qt5_FOUND)
-        message(FATAL_ERROR "Qt5 not found. Please specify the -DQt5_DIR (exemple -DQt5_DIR=D:/Qt/5.15.2/msvc2019_64/lib/cmake) variable or set the -DQT_VERSION option to 6")
+        message(FATAL_ERROR "Qt5.15 or higher version not found. Please specify the -DQt5_DIR (exemple -DQt5_DIR=D:/Qt/5.15.2/msvc2019_64/lib/cmake) variable or set the -DQT_VERSION option to 6")
     else()
         message(STATUS "Found Qt5 !")
     endif()
@@ -59,130 +68,39 @@ if (Qt5_FOUND)
     set(USE_GUILE_QT5 ON CACHE BOOL "Use Guile with Qt" FORCE)
 endif()
 
-if (NOT CMAKE_BUILD_TYPE)
-    set(CMAKE_BUILD_TYPE Release CACHE STRING "Choose the type of build, options are: None Debug Release RelWithDebInfo MinSizeRel." FORCE)
-endif (NOT CMAKE_BUILD_TYPE)
 
-# Detect MinGW
-if (MINGW OR WIN32)
-     set (OS_MINGW 1)
-endif()
+#######################################################################################################################
+#                                                                                                                     #
+#  Internal Thirdparty                                                                                                #
+#                                                                                                                     #
+#######################################################################################################################
 
-# add a global variable to C++ code
-add_definitions(-DQTTEXMACS=1)
+# FreeType
+add_subdirectory(thirdparty/freetype)
+option(LINKED_FREETYPE "linked Freetype" ON)
+set(USE_FREETYPE 1)
+set(FREETYPE_LIBRARIES freetype)
+set(FREETYPE_INCLUDE_DIRS "${CMAKE_CURRENT_SOURCE_DIR}/thirdparty/freetype/include")
 
-set(PACKAGE TeXmacs)
-set(CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
+# S7
+add_subdirectory(thirdparty/s7)
+set(S7_LIBRARIES s7)
+set(USE_S7 ON)
 
-function(GenerateResourcesQRC)
-
-    # Generate resources.qrc
-    file(GLOB_RECURSE Texmacs_Resources "${CMAKE_CURRENT_SOURCE_DIR}/TeXmacs/*")
-
-    set(Texmacs_Resources_List "")
-
-    # For each file
-    foreach (Texmacs_Resource ${Texmacs_Resources})
-        # Get the file name
-        get_filename_component(Texmacs_Resource_Name ${Texmacs_Resource} NAME)
-        # Get the file path
-        get_filename_component(Texmacs_Resource_Path ${Texmacs_Resource} PATH)
-        # Remove the path prefix
-        string(REPLACE "${CMAKE_CURRENT_SOURCE_DIR}" "" Texmacs_Resource_Path ${Texmacs_Resource_Path})
-        # Add the file to the resources
-        # list(APPEND Texmacs_Resources_List "<file alias=\"${Texmacs_Resource_Path}/${Texmacs_Resource_Name}\">${Texmacs_Resource}</file>")
-        set(Texmacs_Resources_List "${Texmacs_Resources_List}<file alias=\"${Texmacs_Resource_Path}/${Texmacs_Resource_Name}\">${Texmacs_Resource}</file>\n")
-    endforeach ()
-
-    # Generate the qrc file
-    configure_file("${CMAKE_CURRENT_SOURCE_DIR}/resources.qrc.in" "${CMAKE_CURRENT_BINARY_DIR}/resources.qrc" @ONLY)
-
-    # add the qrc to the texmacs target
-    target_sources(texmacs PUBLIC "${CMAKE_CURRENT_BINARY_DIR}/resources.qrc")
-
-endfunction()
-
-file(GLOB_RECURSE Texmacs_AppSources "${CMAKE_CURRENT_SOURCE_DIR}/src/Texmacs/Texmacs/*")
-
-if (ANDROID)
-    add_library (texmacs MODULE ${Texmacs_AppSources})
-    set_target_properties(texmacs PROPERTIES QT_ANDROID_PACKAGE_SOURCE_DIR "${PROJECT_SOURCE_DIR}/android")
-    qt_android_generate_deployment_settings(texmacs)
-    qt_android_add_apk_target(texmacs)
-
-    file(MAKE_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/android-build/libs/${ANDROID_ABI}/")
-    add_custom_command(
-            TARGET texmacs
-            POST_BUILD
-            COMMAND ${CMAKE_COMMAND}
-            ARGS -E copy "${CMAKE_CURRENT_BINARY_DIR}/libtexmacs.so" "${CMAKE_CURRENT_BINARY_DIR}/android-build/libs/${ANDROID_ABI}/libtexmacs_${ANDROID_ABI}.so"
-    )
-else()
-    add_executable (texmacs)
-    target_sources(texmacs PUBLIC ${Texmacs_AppSources})
-    # set_target_properties(texmacs PROPERTIES
-    #     MACOSX_BUNDLE ON
-    #     WIN32_EXECUTABLE ON
-    # )
-endif()
-
-# if MSVC, use /Ox in release mode
-if (MSVC)
-    if (CMAKE_BUILD_TYPE STREQUAL "Release" OR CMAKE_BUILD_TYPE STREQUAL "RelWithDebInfo")
-        target_compile_options(texmacs PUBLIC /Ox)
-    endif()
-else()
-    if (CMAKE_BUILD_TYPE STREQUAL "Release")
-        target_compile_options(texmacs PUBLIC -O2)
-    endif()
-    if (CMAKE_BUILD_TYPE STREQUAL "Debug")
-        target_compile_options(texmacs PUBLIC -fstack-protector-all)
-    endif()
-endif()
-
-GenerateResourcesQRC()
-target_include_directories(texmacs PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/src)
-
-if(WIN32)
-    target_link_libraries(texmacs PUBLIC wsock32 ws2_32)
-endif()
-
-if (Qt6_FOUND)
-    target_link_libraries(texmacs PUBLIC Qt::Gui Qt::Widgets Qt::PrintSupport Qt::Svg Qt::OpenGL Qt::QuickWidgets)
-else()
-    target_link_libraries(texmacs PUBLIC Qt5::Gui Qt5::Widgets Qt5::PrintSupport Qt5::Svg Qt5::OpenGL Qt5::QuickWidgets)
-endif()
-
-#if (CMAKE_BUILD_TYPE STREQUAL "Debug")
-#    find_program(TOOL_WINDEPLOYQT NAMES windeployqt.debug.bat)
-#else()
-#    find_program(TOOL_WINDEPLOYQT NAMES windeployqt)
-#endif()
-
-#add_custom_command(TARGET texmacs POST_BUILD COMMAND ${TOOL_WINDEPLOYQT} $<TARGET_FILE:texmacs> COMMENT "Running windeployqt...")
+# Guile18
+message(STATUS "Using internal Guile 1.8.8")
+add_subdirectory(thirdparty/guile)
+set(GUILE_LIBRARIES guile)
+set(USE_GUILE18 ON)
 
 
-set(QTTEXMACS 1)
+#######################################################################################################################
+#                                                                                                                     #
+#  External Thirdparty                                                                                                #
+#                                                                                                                     #
+#######################################################################################################################
 
-#find_package(PNG REQUIRED)
-#target_link_libraries(texmacs PUBLIC ${PNG_LIBRARIES})
-
-#find_package(Iconv REQUIRED)
-#target_link_libraries(texmacs PUBLIC ${ICONV_LIBRARIES})
-
-#find_package(ZLIB REQUIRED)
-#target_link_libraries(texmacs PUBLIC ${ZLIB_LIBRARIES})
-
-#find_package(JPEG REQUIRED)
-#target_link_libraries(texmacs PUBLIC ${JPEG_LIBRARIES})
-
-file(GLOB_RECURSE TeXmacs_Qt_SRCS "${CMAKE_CURRENT_SOURCE_DIR}/src/Plugins/Qt/*.cpp")
-file(GLOB_RECURSE TeXmacs_Qt_HDRS "${CMAKE_CURRENT_SOURCE_DIR}/src/Plugins/Qt/*.hpp")
-target_sources(texmacs PUBLIC ${TeXmacs_Qt_SRCS} ${TeXmacs_Qt_HDRS})
-
-
-option(QTPIPES "use Qt pipes" ON)
-
+# Find SQLite3
 option(USE_SQLITE3 "Use SQLite3" OFF)
 if (USE_SQLITE3)
     find_package(SQLite3 REQUIRED)
@@ -190,15 +108,7 @@ if (USE_SQLITE3)
     target_link_libraries(texmacs PUBLIC SQLite::SQLite3)
 endif (USE_SQLITE3)
 
-add_subdirectory(thirdparty/freetype)
-option(LINKED_FREETYPE "linked Freetype" ON)
-set(USE_FREETYPE 1)
-target_link_libraries(texmacs PUBLIC freetype)
-target_include_directories(texmacs PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/thirdparty/freetype/include")
-file(GLOB_RECURSE TeXmacs_Freetype_SRCS "${CMAKE_CURRENT_SOURCE_DIR}/src/Plugins/Freetype/*.cpp")
-target_sources(texmacs PUBLIC ${TeXmacs_Freetype_SRCS})
-
-
+# Cairo
 option(USE_CAIRO "use Cairo" OFF)
 if (USE_CAIRO)
     find_package(Cairo REQUIRED)
@@ -206,6 +116,7 @@ if (USE_CAIRO)
     target_link_libraries(texmacs PUBLIC Cairo::Cairo)
 endif (USE_CAIRO)
 
+# Imlib2
 option(USE_IMLIB2 "use Imlib2" OFF)
 if (USE_IMLIB2)
     find_package(Imlib2 REQUIRED)
@@ -216,6 +127,7 @@ endif (USE_IMLIB2)
 option(USE_SPARKLE "use Sparkle" OFF)
 option(PDFHUMMUS_NO_TIFF "Disable TIFF in PDF Hummus" ON)
 
+# GMP
 option(USE_GMP "use GMP" OFF)
 if (USE_GMP)
     find_package(GMP)
@@ -223,163 +135,19 @@ if (USE_GMP)
     target_link_libraries(texmacs PUBLIC GMP::GMP)
 endif (USE_GMP)
 
-set(SCHEME_DECL "")
-set(SCHEME_REGI "")
+#######################################################################################################################
+#                                                                                                                     #
+#  Global Definitions                                                                                                 #
+#                                                                                                                     #
+#######################################################################################################################
 
-option(ENABLE_INTERNAL_S7 "Use internal s7" ON)
-if (ENABLE_INTERNAL_S7)
-    message(STATUS "Using internal s7")
-    add_subdirectory(thirdparty/s7)
-    set(S7_LIBRARIES s7)
-    set(USE_S7 ON)
-    set(SCHEME_DECL "${SCHEME_DECL} void registerS7();")
-    set(SCHEME_REGI "${SCHEME_REGI} registerS7();")
-    target_sources(texmacs PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/src/Scheme/s7/s7_tmscheme.cpp)
-    target_link_libraries(texmacs PUBLIC s7)
-else ()
-    set(USE_S7 OFF)
-endif ()
+set(TEXMACS_RESOURCES_DIR "${CMAKE_CURRENT_SOURCE_DIR}/TeXMacs")
 
-option(ENABLE_INTERNAL_GUILE18 "Enable internal Guile" ON)
-if (ENABLE_INTERNAL_GUILE18)
-    message(STATUS "Using internal Guile 1.8.8")
-    add_subdirectory(thirdparty/guile)
-    set(GUILE_LIBRARIES guile)
-    set(USE_GUILE18 ON)
-    set(SCHEME_DECL "${SCHEME_DECL} void registerGuile18();")
-    set(SCHEME_REGI "${SCHEME_REGI} registerGuile18();")
-    target_sources(texmacs PUBLIC
-            "${CMAKE_CURRENT_SOURCE_DIR}/src/Scheme/Guile18/guile18_scheme.cpp"
-            "${CMAKE_CURRENT_SOURCE_DIR}/src/Scheme/Guile18/guile_thread.cpp"
-            )
-    target_link_libraries(texmacs PUBLIC guile)
-    target_compile_options(guile PUBLIC -fexceptions)
-    target_link_options(guile PUBLIC -fexceptions)
-else()
-    set(USE_GUILE18 OFF)
+# Global variables that should be removed
+if (MINGW OR WIN32)
+     set (OS_MINGW 1)
 endif()
-
-### --------------------------------------------------------------------
-### Include standard modules
-### --------------------------------------------------------------------
-
-include(CheckFunctionExists)
-include(CheckLibraryExists)
-include(CheckIncludeFile)
-include(CheckTypeSize)
-include(FindPkgConfig)
-include(CheckCSourceCompiles)
-include(FindX11)
-
-
-### --------------------------------------------------------------------
-### Check for standard functionalities
-### --------------------------------------------------------------------
-check_type_size(FILE HAVE_FILE)
-check_include_file(memory.h HAVE_MEMORY_H)
-check_include_file(stdlib.h HAVE_STDLIB_H)
-check_include_file(strings.h HAVE_STRINGS_H)
-check_include_file(string.h HAVE_STRING_H)
-check_include_file(sys/stat.h HAVE_SYS_STAT_H)
-check_include_file(unistd.h HAVE_UNISTD_H)
-check_include_file(X11/Xlib.h HAVE_X11_XLIB_H)
-check_include_file(X11/Xutil.h HAVE_X11_XUTIL_H)
-check_include_file(pty.h HAVE_PTY_H)
-check_include_file(util.h HAVE_UTIL_H)
-check_function_exists(gettimeofday HAVE_GETTIMEOFDAY)
-
-
-### --------------------------------------------------------------------
-### Check for dl library
-### --------------------------------------------------------------------
-
-check_function_exists(dlopen HAVE_DLOPEN)
-
-if (NOT ${HAVE_DLOPEN})
-    check_library_exists(dl dlopen "" HAVE_DLOPEN)
-    if (${HAVE_DLOPEN})
-        set(CONFIG_BDL "-ldl")
-    endif (${HAVE_DLOPEN})
-endif (NOT ${HAVE_DLOPEN})
-
-if (NOT ${HAVE_DLOPEN})
-    check_library_exists(dld dld_link "" HAVE_DLOPEN)
-    if (${HAVE_DLOPEN})
-        set(CONFIG_BDL "-ldl")
-    endif (${HAVE_DLOPEN})
-endif (NOT ${HAVE_DLOPEN})
-
-if (NOT ${HAVE_DLOPEN})
-    check_function_exists(shl_load HAVE_DLOPEN)
-    if (${HAVE_DLOPEN})
-        set(CONFIG_BDL "-ldl")
-    endif (${HAVE_DLOPEN})
-endif (NOT ${HAVE_DLOPEN})
-
-
-if (${HAVE_DLOPEN})
-    #SET(TM_DYNAMIC_LINKING 1) # dynamic linking works
-endif (${HAVE_DLOPEN})
-
-### --------------------------------------------------------------------
-### Handle different systems case by case
-### --------------------------------------------------------------------
-
-set(CONFIG_OS "GNU_LINUX")
-set(CONFIG_OS_SUFFIX "gnu-linux")
-set(CONFIG_CXXTEMPLATE "")
-set(CONFIG_STD_SETENV "#define STD_SETENV")
-set(CONFIG_SO "so")
-set(CONFIG_LIB_PATH "LD_LIBRARY_PATH")
-set(CONFIG_CHMOD "chmod -f")
-set(CONFIG_CXXOPTIMIZE "-O2")
-set(CONFIG_BSTATIC "-Wl,-Bstatic")
-set(CONFIG_BSHARED "-Wl,-Bdynamic")
-set(CONFIG_BFLAGS "")
-set(CONFIG_BPATH "-Wl,-rpath,")
-set(CONFIG_WORD_LENGTH "4")
-set(CONFIG_WORD_LENGTH_INC "3")
-set(CONFIG_WORD_MASK "0xfffffffc")
-set(CONFIG_MAX_FAST "260 // WORD_LENGTH more than power of 2")
-
-check_type_size("void*" SIZE_OF_VOIDP)
-
-message(STATUS "Check if we are on a 64-bits computer")
-if (${SIZE_OF_VOIDP} EQUAL 8)
-    set(CONFIG_WORD_LENGTH "8")
-    set(CONFIG_WORD_LENGTH_INC "7")
-    set(CONFIG_WORD_MASK "0xfffffffffffffff8")
-    set(CONFIG_MAX_FAST "264 // WORD_LENGTH more than power of 2")
-endif (${SIZE_OF_VOIDP} EQUAL 8)
-
-
-if (${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
-    message(STATUS "final adjustments for an Intel or AMD GNU/Linux host")
-    set(CONFIG_CXXOPTIMIZE "-O3 -fexpensive-optimizations")
-endif (${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
-
-if (${CMAKE_SYSTEM_NAME} STREQUAL "FreeBSD")
-    message(STATUS "final adjustments for an Intel or AMD GNU/BSD host")
-    set(CONFIG_CXXOPTIMIZE "-O3 -fexpensive-optimizations")
-endif (${CMAKE_SYSTEM_NAME} STREQUAL "FreeBSD")
-
-if (${CMAKE_SYSTEM_NAME} STREQUAL "SunOS")
-    message(STATUS "final adjustments for an Intel or AMS Solaris host")
-    set(CONFIG_CXXOPTIMIZE "-O3 -fexpensive-optimizations")
-    set(CONFIG_CXXOPTIMIZE "-O3")
-    set(CONFIG_BPATH "-Wl,-R,")
-    #  SET(X11_LDFLAGS "${X_LIBS} -lXext -lX11 -lsocket")
-endif (${CMAKE_SYSTEM_NAME} STREQUAL "SunOS")
-
-if (${CMAKE_SYSTEM_NAME} STREQUAL "CYGWIN_NT-5.1")
-    message(STATUS "final adjustments for cygwin host")
-    set(CONFIG_OS "CYGWIN")
-    set(CONFIG_BFLAGS "-Wl,-stack,8388608")
-endif (${CMAKE_SYSTEM_NAME} STREQUAL "CYGWIN_NT-5.1")
-
-### --------------------------------------------------------------------
-### Package Data
-### --------------------------------------------------------------------
+set(PACKAGE TeXmacs)
 
 set(PACKAGE_BUGREPORT 1)
 set(PACKAGE_NAME 1)
@@ -387,34 +155,6 @@ set(PACKAGE_STRING 1)
 set(PACKAGE_TARNAME 1)
 set(PACKAGE_URL 1)
 set(PACKAGE_VERSION 1)
-
-### --------------------------------------------------------------------
-### Memory allocation options
-### --------------------------------------------------------------------
-
-#if(${DISABLE_FASTALLOC})
-#  set(NO_FAST_ALLOC 1)
-#endif(${DISABLE_FASTALLOC})
-
-
-### --------------------------------------------------------------------
-### Experimental options
-### --------------------------------------------------------------------
-
-#  SET(EXPERIMENTAL 1)
-
-### --------------------------------------------------------------------
-###  Test for Libraries
-### --------------------------------------------------------------------
-
-
-
-
-
-### --------------------------------------------------------------------
-###  Some Guile related adjustements
-### --------------------------------------------------------------------
-
 
 ### --------------------------------------------------------------------
 ### Generate configure headers
@@ -435,163 +175,53 @@ set(PDF_RENDERER 0)
 set(SIZEOF_VOID_P 8)
 set(STDC_HEADERS 1)
 
-set(CONFIG_STD_SETENV "#define STD_SETENV")
-set(tm_orig ${CMAKE_CURRENT_SOURCE_DIR})
-set(CONFIG_HOST_OS "linux-gnu") # TODO: should not be hard-coded
-set(CONFIG_HOST_VENDOR "pc") # TODO: should not be hard-coded
-set(CONFIG_HOST_CPU ${CMAKE_SYSTEM_PROCESSOR})
-set(CONFIG_USER $ENV{USER})
-string(TIMESTAMP CONFIG_DATE)
-set(tm_devel TeXmacs-${DEVEL_VERSION})
-set(tm_stable TeXmacs-${STABLE_VERSION})
-set(tm_devel_release ${tm_devel}-${DEVEL_RELEASE})
-set(tm_stable_release ${tm_stable}-${STABLE_RELEASE})
+#######################################################################################################################
+#                                                                                                                     #
+#  TeXMacs Gui                                                                                                        #
+#                                                                                                                     #
+#######################################################################################################################
 
-set(prefix ${CMAKE_INSTALL_PREFIX})
-set(exec_prefix ${prefix})
-set(datarootdir ${prefix}/share)
-set(datadir ${datarootdir})
-set(tmdata ${datarootdir}/TeXmacs)
-set(tmbin ${exec_prefix}/lib/texmacs/TeXmacs)
+add_subdirectory(src/Gui)
 
-configure_file(${CMAKE_CURRENT_SOURCE_DIR}/src/System/tm_config.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/src/System/tm_config.h)
-configure_file(${CMAKE_CURRENT_SOURCE_DIR}/src/System/tm_configure.hpp.cmake ${CMAKE_CURRENT_BINARY_DIR}/src/System/tm_configure.hpp)
-target_include_directories(texmacs PUBLIC ${CMAKE_CURRENT_BINARY_DIR}/src/System)
+#######################################################################################################################
+#                                                                                                                     #
+#  TeXMacs Core Library                                                                                               #
+#                                                                                                                     #
+#######################################################################################################################
 
+target_include_directories(texmacs-gui PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/src)
+target_include_directories(texmacs-gui PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/TeXmacs/include)
+if(WIN32)
+    target_link_libraries(texmacs-gui PUBLIC wsock32 ws2_32)
+endif()
 
-### --------------------------------------------------------------------
-### the include dirs
-### --------------------------------------------------------------------
-target_include_directories(texmacs PUBLIC
-        ${CMAKE_CURRENT_SOURCE_DIR}/src/Data/Convert
-        ${CMAKE_CURRENT_SOURCE_DIR}/src/Data/Document
-        ${CMAKE_CURRENT_SOURCE_DIR}/src/Data/Drd
-        ${CMAKE_CURRENT_SOURCE_DIR}/src/Data/History
-        ${CMAKE_CURRENT_SOURCE_DIR}/src/Data/Observers
-        ${CMAKE_CURRENT_SOURCE_DIR}/src/Data/Parser
-        ${CMAKE_CURRENT_SOURCE_DIR}/src/Data/String
-        ${CMAKE_CURRENT_SOURCE_DIR}/src/Data/Tree
-        ${CMAKE_CURRENT_SOURCE_DIR}/src/Edit
-        ${CMAKE_CURRENT_SOURCE_DIR}/src/Edit/Editor
-        ${CMAKE_CURRENT_SOURCE_DIR}/src/Edit/Interface
-        ${CMAKE_CURRENT_SOURCE_DIR}/src/Edit/Modify
-        ${CMAKE_CURRENT_SOURCE_DIR}/src/Edit/Process
-        ${CMAKE_CURRENT_SOURCE_DIR}/src/Edit/Replace
-        ${CMAKE_CURRENT_SOURCE_DIR}/src/Graphics/Bitmap_fonts
-        ${CMAKE_CURRENT_SOURCE_DIR}/src/Graphics/Colors
-        ${CMAKE_CURRENT_SOURCE_DIR}/src/Graphics/Fonts
-        ${CMAKE_CURRENT_SOURCE_DIR}/src/Graphics/Gui
-        ${CMAKE_CURRENT_SOURCE_DIR}/src/Graphics/Handwriting
-        ${CMAKE_CURRENT_SOURCE_DIR}/src/Graphics/Mathematics
-        ${CMAKE_CURRENT_SOURCE_DIR}/src/Graphics/Pictures
-        ${CMAKE_CURRENT_SOURCE_DIR}/src/Graphics/Renderer
-        ${CMAKE_CURRENT_SOURCE_DIR}/src/Graphics/Spacial
-        ${CMAKE_CURRENT_SOURCE_DIR}/src/Graphics/Types
-        ${CMAKE_CURRENT_SOURCE_DIR}/src/Kernel/Abstractions
-        ${CMAKE_CURRENT_SOURCE_DIR}/src/Kernel/Containers
-        ${CMAKE_CURRENT_SOURCE_DIR}/src/Kernel/Types
-        ${CMAKE_CURRENT_SOURCE_DIR}/src/Plugins
-       # ${CMAKE_CURRENT_SOURCE_DIR}/src/Plugins/Pdf/LibAesgm
-        ${CMAKE_CURRENT_SOURCE_DIR}/src/Scheme
-        ${CMAKE_CURRENT_SOURCE_DIR}/src/Scheme/Scheme
-        ${CMAKE_CURRENT_SOURCE_DIR}/src/Style/Environment
-        ${CMAKE_CURRENT_SOURCE_DIR}/src/Style/Evaluate
-        ${CMAKE_CURRENT_SOURCE_DIR}/src/Style/Memorizer
-        ${CMAKE_CURRENT_SOURCE_DIR}/src/System
-        ${CMAKE_CURRENT_SOURCE_DIR}/src/System/Boot
-        ${CMAKE_CURRENT_SOURCE_DIR}/src/System/Classes
-        ${CMAKE_CURRENT_SOURCE_DIR}/src/System/Files
-        ${CMAKE_CURRENT_SOURCE_DIR}/src/System/Language
-        ${CMAKE_CURRENT_SOURCE_DIR}/src/System/Link
-        ${CMAKE_CURRENT_SOURCE_DIR}/src/System/Misc
-        ${CMAKE_CURRENT_SOURCE_DIR}/src/Texmacs
-        ${CMAKE_CURRENT_SOURCE_DIR}/src/Texmacs/Data
-        ${CMAKE_CURRENT_SOURCE_DIR}/src/Typeset
-        ${CMAKE_CURRENT_SOURCE_DIR}/src/Typeset/Bridge
-        ${CMAKE_CURRENT_SOURCE_DIR}/src/Typeset/Concat
-        ${CMAKE_CURRENT_SOURCE_DIR}/src/Typeset/Page
-        ${CMAKE_CURRENT_SOURCE_DIR}/TeXmacs/include
-        ${TEXMACS_BINARY_DIR}/src/System/
-        )
+# Compile options : Build type
+if (NOT CMAKE_BUILD_TYPE)
+    set(CMAKE_BUILD_TYPE MinSizeRel CACHE STRING "Choose the type of build, options are: None Debug Release RelWithDebInfo MinSizeRel." FORCE)
+endif (NOT CMAKE_BUILD_TYPE)
 
-if (WIN32 OR MINGW)
-    message(STATUS "Using Windows plugins")
-    target_include_directories(texmacs PUBLIC
-            ${CMAKE_CURRENT_SOURCE_DIR}/src/Plugins/Windows
-            ${CMAKE_CURRENT_SOURCE_DIR}/src/Plugins/Windows/nowide
-            )
-    file(GLOB_RECURSE texmacs_windows_plugin_srcs "${CMAKE_CURRENT_SOURCE_DIR}/src/Plugins/Windows/*.cpp")
-    target_sources(texmacs PUBLIC ${texmacs_windows_plugin_srcs})
-else()
-    message(STATUS "Using Unix plugins")
-    file(GLOB_RECURSE texmacs_unix_plugin_srcs "${CMAKE_CURRENT_SOURCE_DIR}/src/Plugins/Unix/*.cpp")
-    target_sources(texmacs PUBLIC ${texmacs_unix_plugin_srcs})
-    target_include_directories(texmacs PUBLIC
-            ${CMAKE_CURRENT_SOURCE_DIR}/src/Plugins/Unix
-            )
-endif ()
+if (CMAKE_BUILD_TYPE STREQUAL "Release")
+    target_compile_options(texmacs-gui PUBLIC -O3 -fexpensive-optimizations)
+endif()
+if (CMAKE_BUILD_TYPE STREQUAL "MinSizeRel")
+    target_compile_options(texmacs-gui PUBLIC -Os)
+endif()
+if (CMAKE_BUILD_TYPE STREQUAL "Debug")
+    target_compile_options(texmacs-gui PUBLIC -O0)
+endif()
 
-target_include_directories(texmacs PUBLIC
-        ${FREETYPE_INCLUDE_DIRS} ${Cairo_INCLUDE_DIRS}
-        ${IMLIB2_INCLUDE_DIR} ${GMP_INCLUDES}
-        )
+# Compile options : Definitions
+target_compile_definitions(texmacs-gui PUBLIC -DWIN32_LEAN_AND_MEAN)
+target_compile_definitions(texmacs-gui PUBLIC -DQTTEXMACS=1)
 
-### --------------------------------------------------------------------
-### the main sources
-### --------------------------------------------------------------------
-file(GLOB_RECURSE TeXmacs_Base_SRCS
-        "${CMAKE_CURRENT_SOURCE_DIR}/src/Data/*.cpp"
-        "${CMAKE_CURRENT_SOURCE_DIR}/src/Edit/*.cpp"
-        "${CMAKE_CURRENT_SOURCE_DIR}/src/Graphics/*.cpp"
-        "${CMAKE_CURRENT_SOURCE_DIR}/src/Kernel/*.cpp"
-        "${CMAKE_CURRENT_SOURCE_DIR}/src/System/*.cpp"
-        "${CMAKE_CURRENT_SOURCE_DIR}/src/Texmacs/Data/*.cpp"
-        "${CMAKE_CURRENT_SOURCE_DIR}/src/Texmacs/Server/*.cpp"
-        "${CMAKE_CURRENT_SOURCE_DIR}/src/Texmacs/Window/*.cpp"
-        "${CMAKE_CURRENT_SOURCE_DIR}/src/Typeset/*.cpp"
-        )
-target_sources(texmacs PUBLIC ${TeXmacs_Base_SRCS})
-target_sources(texmacs PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/src/Scheme/abstract_scheme.cpp" "${CMAKE_CURRENT_SOURCE_DIR}/src/Scheme/scheme.cpp" "${CMAKE_CURRENT_SOURCE_DIR}/src/Scheme/Scheme/glue.cpp")
-
-file(GLOB_RECURSE TeXmacs_Std_Plugins_SRCS
-        "${CMAKE_CURRENT_SOURCE_DIR}/src/Plugins/Axel/*.cpp"
-        "${CMAKE_CURRENT_SOURCE_DIR}/src/Plugins/Bibtex/*.cpp"
-        "${CMAKE_CURRENT_SOURCE_DIR}/src/Plugins/Cairo/*.cpp"
-        "${CMAKE_CURRENT_SOURCE_DIR}/src/Plugins/Database/*.cpp"
-       # "${CMAKE_CURRENT_SOURCE_DIR}/src/Plugins/Pdf/*.cpp"
-       # "${CMAKE_CURRENT_SOURCE_DIR}/src/Plugins/Pdf/*.c"
-        "${CMAKE_CURRENT_SOURCE_DIR}/src/Plugins/Ghostscript/*.cpp"
-        "${CMAKE_CURRENT_SOURCE_DIR}/src/Plugins/Imlib2/*.cpp"
-        "${CMAKE_CURRENT_SOURCE_DIR}/src/Plugins/Ispell/*.cpp"
-        "${CMAKE_CURRENT_SOURCE_DIR}/src/Plugins/Metafont/*.cpp"
-        "${CMAKE_CURRENT_SOURCE_DIR}/src/Plugins/LaTeX_Preview/*.cpp"
-        "${CMAKE_CURRENT_SOURCE_DIR}/src/Plugins/Mplayer/*.cpp"
-        "${CMAKE_CURRENT_SOURCE_DIR}/src/Plugins/Openssl/*.cpp"
-        "${CMAKE_CURRENT_SOURCE_DIR}/src/Plugins/Sqlite3/*.cpp"
-        "${CMAKE_CURRENT_SOURCE_DIR}/src/Plugins/Updater/*.cpp"
-        )
-target_sources(texmacs PUBLIC ${TeXmacs_Std_Plugins_SRCS})
-
-file(GLOB_RECURSE TeXmacs_Style_SRCS
-        "${CMAKE_CURRENT_SOURCE_DIR}/src/Style/*.cpp"
-        )
-
-
-
-
-### --------------------------------------------------------------------
-### Determine TeXmacs_Libraries
-### --------------------------------------------------------------------
-
-target_link_libraries(texmacs PUBLIC
-        ${ZLIB_LIBRARIES}
-        ${JPEG_LIBRARIES}
-        ${PNG_LIBRARIES}
-        )
-
-if (LINKED_CAIRO)
-    target_link_libraries(texmacs PUBLIC ${CAIRO_LIBRARIES})
-endif (LINKED_CAIRO)
-
-
-
+add_subdirectory(src/Data)
+add_subdirectory(src/Edit)
+add_subdirectory(src/Graphics)
+add_subdirectory(src/Kernel)
+add_subdirectory(src/Plugins)
+add_subdirectory(src/Scheme)
+add_subdirectory(src/Style)
+add_subdirectory(src/System)
+add_subdirectory(src/Texmacs)
+add_subdirectory(src/Typeset)
+add_subdirectory(src/Utils)

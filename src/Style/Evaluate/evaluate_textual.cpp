@@ -16,6 +16,7 @@
 #include "gui.hpp"
 #include "file.hpp"
 #include "dictionary.hpp"
+#include "locale.hpp"
 
 /******************************************************************************
 * Array-like operations on strings and compound structures
@@ -73,16 +74,16 @@ evaluate_range (tree t) {
   if (!(is_int (t2) && is_int (t3))) return evaluate_error ("bad range");
   if (is_compound (t1)) {
     if (is_tuple (t1)) {
-      int i1= max (0, as_int (t2));
-      int i2= min (N (t1), as_int (t3));
-      i2 = max (i1, i2);
+      int i1= std::max (0, as_int (t2));
+      int i2= std::min (N (t1), as_int (t3));
+      i2 = std::max (i1, i2);
       return t1 (i1, i2);
     }
     return evaluate_error ("bad range");
   }
-  int i1= max (0, as_int (t2));
-  int i2= min (N(t1->label), as_int (t3));
-  i2 = max (i1, i2);
+  int i1= std::max (0, as_int (t2));
+  int i2= std::min (N(t1->label), as_int (t3));
+  i2 = std::max (i1, i2);
   return t1->label (i1, i2);
 }
 

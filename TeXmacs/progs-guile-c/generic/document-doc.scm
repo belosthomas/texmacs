@@ -41,7 +41,7 @@
         "For instance, by clicking on the current style, "
         "paper size or font size, a pulldown menu will open "
         "from which you can modify the current setting. "
-        "By clicking on the " ($tmdoc-icon "tm_add.xpm") " icon "
+        "By clicking on the " ($tmdoc-icon "tm_add") " icon "
         "after the document style, you may select additional style packages.")
 
       ($para

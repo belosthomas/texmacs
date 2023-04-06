@@ -165,5 +165,101 @@ texmacs::s7_tmscheme::s7_tmscheme() {
         return sc->string_to_tmscm("test");
     }, 0, 0);
 
+}
 
+texmacs::s7_tmscheme::~s7_tmscheme() {
+    s7_free(mInstance);
+}
+
+tmscm texmacs::s7_tmscheme::blackbox_to_tmscm(blackbox b) {
+    auto obj = s7_make_c_object(mInstance, blackboxTag(), (void *) (tm_new<blackbox>(b)));
+    return s7_tmscm::mk(mInstance, obj);
+}
+
+tmscm texmacs::s7_tmscheme::tmscm_null() {
+    return s7_tmscm::mk(mInstance, s7_nil(mInstance));
+}
+
+tmscm texmacs::s7_tmscheme::tmscm_true() {
+    return s7_tmscm::mk(mInstance, s7_t(mInstance));
+}
+
+tmscm texmacs::s7_tmscheme::tmscm_false() {
+    return s7_tmscm::mk(mInstance, s7_f(mInstance));
+}
+
+tmscm texmacs::s7_tmscheme::bool_to_tmscm(bool b) {
+    return s7_tmscm::mk(mInstance, s7_make_boolean(mInstance, b));
+}
+
+tmscm texmacs::s7_tmscheme::int_to_tmscm(int i) {
+    return s7_tmscm::mk(mInstance, s7_make_integer(mInstance, i));
+}
+
+tmscm texmacs::s7_tmscheme::long_to_tmscm(long l) {
+    return s7_tmscm::mk(mInstance, s7_make_integer(mInstance, l));
+}
+
+tmscm texmacs::s7_tmscheme::double_to_tmscm(double i) {
+    return s7_tmscm::mk(mInstance, s7_make_real(mInstance, i));
+}
+
+tmscm texmacs::s7_tmscheme::string_to_tmscm(string s) {
+    c_string _s(s);
+    s7_pointer r = s7_make_string(mInstance, _s);
+    return s7_tmscm::mk(mInstance, r);
+}
+
+tmscm texmacs::s7_tmscheme::symbol_to_tmscm(string s) {
+    c_string _s(s);
+    s7_pointer r = s7_make_symbol(mInstance, _s);
+    return s7_tmscm::mk(mInstance, r);
+}
+
+tmscm texmacs::s7_tmscheme::tmscm_unspefied() {
+    return s7_tmscm::mk(mInstance, s7_unspecified(mInstance));
+}
+
+tmscm texmacs::s7_tmscheme::eval_scheme_file(string name) {
+    std::cout << "Eval Scheme File " << std::string(name.data(), N(name)) << std::endl;
+    c_string _file(name);
+    s7_pointer r = s7_load_with_environment(mInstance, _file, mUserEnv);
+    if (r == nullptr) {
+        std::cerr << "Error while loading " << _file << std::endl;
+        return tmscm_unspefied();
+    }
+    return s7_tmscm::mk(mInstance, r);
+    // s7_pointer r = s7_load(mInstance, _file);
+    // return s7_tmscm::mk(mInstance, s7_eval(mInstance, r, {}));
+}
+
+tmscm texmacs::s7_tmscheme::eval_scheme(string s) {
+    std::cout << "Eval Scheme " << std::string(s.data(), N(s)) << std::endl;
+
+    c_string _s(s);
+    s7_pointer result = s7_eval_c_string_with_environment(mInstance, _s, mUserEnv);
+    return s7_tmscm::mk(mInstance, result);
+}
+
+s7_pointer texmacs::s7_tmscheme::_call_scheme_args(s7_pointer fun, s7_pointer args) {
+    return s7_call(mInstance, fun, args);
+}
+
+s7_pointer texmacs::s7_tmscheme::_call_scheme_args(s7_pointer fun, std::vector<s7_pointer> args) {
+
+    s7_pointer l = s7_nil(mInstance);
+    for (int i = args.size() - 1; i >= 0; i--) {
+        l = s7_cons(mInstance, args[i], l);
+    }
+    return s7_call(mInstance, fun, l);
+}
+
+tmscm texmacs::s7_tmscheme::call_scheme_args(tmscm fun, std::vector<tmscm> _args) {
+    s7_pointer fun_scm = tmscm_cast<s7_tmscm>(fun)->getSCM();
+    // assert(s7_is_function(fun_scm) || s7_is_procedure(fun_scm) || s7_is_macro(mInstance, fun_scm));
+    std::vector<s7_pointer> args;
+    for (auto &arg: _args) {
+        args.push_back(tmscm_cast<s7_tmscm>(arg)->getSCM());
+    }
+    return s7_tmscm::mk(mInstance, _call_scheme_args(fun_scm, args));
 }

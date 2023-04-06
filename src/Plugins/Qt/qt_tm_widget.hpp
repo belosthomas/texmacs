@@ -25,7 +25,7 @@
 #include <QMainWindow>
 #include <QStackedWidget>
 #include <QLayout>
-#include <Texmacs/Window.hpp>
+#include "Gui/MainWindow.hpp"
 
 class QLabel; 
 class QToolBar;

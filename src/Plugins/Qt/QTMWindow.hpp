@@ -15,7 +15,7 @@
 #include <QMainWindow>
 
 #include "qt_tm_widget.hpp"
-#include "Texmacs/Application.hpp"
+#include "Gui/Application.hpp"
 
 
 /*! The interface that any QWidget must implement to become a window in TeXmacs.

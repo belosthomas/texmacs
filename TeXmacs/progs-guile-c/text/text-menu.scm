@@ -570,48 +570,48 @@
 
 (menu-bind text-block-icons
   (if (style-has? "header-letter-dtd")
-      (=> (balloon (icon "tm_title.xpm") "Make a letter environment")
+      (=> (balloon (icon "tm_title") "Make a letter environment")
           (link letter-header-menu)))
   (if (style-has? "header-exam-dtd")
-      (=> (balloon (icon "tm_title.xpm") "Enter title information")
+      (=> (balloon (icon "tm_title") "Enter title information")
           (link exam-header-menu)))
   (if (style-has? "book-style")
-      (=> (balloon (icon "tm_chapter.xpm") "Start a new chapter")
+      (=> (balloon (icon "tm_chapter") "Start a new chapter")
           (link chapter-menu)))
   (if (and (style-has? "section-base-dtd")
            (not (style-has? "header-exam-dtd"))
            (not (in-poster?)))
-      (=> (balloon (icon "tm_section.xpm") "Start a new section")
+      (=> (balloon (icon "tm_section") "Start a new section")
           (link section-menu)))
   (if (in-poster?)
-      (=> (balloon (icon "tm_block.xpm") "Insert a section block")
+      (=> (balloon (icon "tm_block") "Insert a section block")
           (link poster-block-menu)))
   (if (or (style-has? "env-theorem-dtd")
           (style-has? "header-exam-dtd"))
-      (=> (balloon (icon "tm_theorem.xpm") "Insert an enunciation")
+      (=> (balloon (icon "tm_theorem") "Insert an enunciation")
           (link enunciation-menu)))
   (if (and (style-has? "std-markup-dtd") (not (in-poster?)))
-      (=> (balloon (icon "tm_prominent.xpm") "Insert a prominent piece of text")
+      (=> (balloon (icon "tm_prominent") "Insert a prominent piece of text")
           (link prominent-menu)))
   (if (and (style-has? "std-markup-dtd") (in-poster?))
-      (=> (balloon (icon "tm_var_prominent.xpm")
+      (=> (balloon (icon "tm_var_prominent")
                    "Insert a prominent piece of text")
           (link prominent-menu)))
   (if (style-has? "std-markup-dtd")
-      (=> (balloon (icon "tm_program.xpm") "Insert a computer program")
+      (=> (balloon (icon "tm_program") "Insert a computer program")
           (link code-menu)))
   (if (style-has? "std-list-dtd")
-      (=> (balloon (icon "tm_list.xpm") "Insert a list")
+      (=> (balloon (icon "tm_list") "Insert a list")
           (link list-menu)))
   (if (and (style-has? "env-float-dtd") (detailed-menus?))
-      ;;((balloon (icon "tm_footnote.xpm") "Insert a footnote") ())
-      ;;((balloon (icon "tm_margin.xpm") "Insert a marginal note") ())
-      ;;((balloon (icon "tm_floating.xpm") "Insert a floating object") ())
-      ;;((balloon (icon "tm_multicol.xpm") "Start multicolumn context") ())
-      (=> (balloon (icon "tm_pageins.xpm") "Insert a note or a floating object")
+      ;;((balloon (icon "tm_footnote") "Insert a footnote") ())
+      ;;((balloon (icon "tm_margin") "Insert a marginal note") ())
+      ;;((balloon (icon "tm_floating") "Insert a floating object") ())
+      ;;((balloon (icon "tm_multicol") "Start multicolumn context") ())
+      (=> (balloon (icon "tm_pageins") "Insert a note or a floating object")
           (link note-menu)))
   (if (style-has? "section-base-dtd")
-      (=> (balloon (icon "tm_index.xpm")
+      (=> (balloon (icon "tm_index")
                    "Insert automatically generated content")
           (link automatic-menu))))
 
@@ -623,16 +623,16 @@
 
 (menu-bind text-format-icons
   (if (not (style-has? "std-markup-dtd"))
-      (=> (balloon (icon "tm_parstyle.xpm") "Set paragraph mode")
-          ((balloon (icon "tm_left.xpm") "Align text to the left")
+      (=> (balloon (icon "tm_parstyle") "Set paragraph mode")
+          ((balloon (icon "tm_left") "Align text to the left")
            (make-line-with "par-mode" "left"))
-          ((balloon (icon "tm_center.xpm") "Center text")
+          ((balloon (icon "tm_center") "Center text")
            (make-line-with "par-mode" "center"))
-          ((balloon (icon "tm_right.xpm") "Align text to the right")
+          ((balloon (icon "tm_right") "Align text to the right")
            (make-line-with "par-mode" "right"))
-          ((balloon (icon "tm_justify.xpm") "Justify text")
+          ((balloon (icon "tm_justify") "Justify text")
            (make-line-with "par-mode" "justify")))
-      (=> (balloon (icon "tm_parindent.xpm") "Set paragraph margins")
+      (=> (balloon (icon "tm_parindent") "Set paragraph margins")
           ("Left margin" (make-interactive-line-with "par-left"))
           ("Right margin" (make-interactive-line-with "par-right"))
           ("First indentation" (make-interactive-line-with "par-first")))
@@ -642,28 +642,28 @@
       ;;(text (roman rm bold right 12 600) "S")
       ;;"Write bold text")
       ;;(make-with "font-series" "bold"))
-      ((balloon (icon "tm_emphasize.xpm") "Emphasize text")
+      ((balloon (icon "tm_emphasize") "Emphasize text")
        (make 'em))
-      ((balloon (icon "tm_strong.xpm") "Write strong text")
+      ((balloon (icon "tm_strong") "Write strong text")
        (make 'strong))
-      ((balloon (icon "tm_verbatim.xpm") "Write verbatim text")
+      ((balloon (icon "tm_verbatim") "Write verbatim text")
        (make 'verbatim))
-      ((balloon (icon "tm_sansserif.xpm") "Write sample text")
+      ((balloon (icon "tm_sansserif") "Write sample text")
        (make 'samp))
-      ((balloon (icon "tm_name.xpm") "Write a name")
+      ((balloon (icon "tm_name") "Write a name")
        (make 'name)))
   (if (or (not (style-has? "std-markup-dtd")) (in-source?))
-      ((balloon (icon "tm_italic.xpm") "Write italic text")
+      ((balloon (icon "tm_italic") "Write italic text")
        (make-with "font-shape" "italic"))
-      ((balloon (icon "tm_bold.xpm") "Write bold text")
+      ((balloon (icon "tm_bold") "Write bold text")
        (make-with "font-series" "bold"))
-      ((balloon (icon "tm_typewriter.xpm") "Use a typewriter font")
+      ((balloon (icon "tm_typewriter") "Use a typewriter font")
        (make-with "font-family" "tt"))
-      ((balloon (icon "tm_sansserif.xpm") "Use a sans serif font")
+      ((balloon (icon "tm_sansserif") "Use a sans serif font")
        (make-with "font-family" "ss"))
-      ((balloon (icon "tm_smallcaps.xpm") "Use small capitals")
+      ((balloon (icon "tm_smallcaps") "Use small capitals")
        (make-with "font-shape" "small-caps")))
-  (=> (balloon (icon "tm_color.xpm") "Select a foreground color")
+  (=> (balloon (icon "tm_color") "Select a foreground color")
       (link color-menu)))
 
 (menu-bind text-inline-icons
@@ -736,17 +736,17 @@
 
 (tm-menu (focus-title-icons)
   (assuming (doc-data-has-hidden?)
-    ((check (balloon (icon "tm_show_hidden.xpm") "Show hidden") "v"
+    ((check (balloon (icon "tm_show_hidden") "Show hidden") "v"
             (doc-data-deactivated?))
      (doc-data-activate-toggle)))
   (mini #t
     (inert ("Title" (noop))))
-  (=> (balloon (icon "tm_add.xpm") "Add title information")
+  (=> (balloon (icon "tm_add") "Add title information")
       (link focus-title-menu)
       (-> "Hidden" (link focus-title-hidden-menu)))
-  (=> (balloon (icon "tm_focus_prefs.xpm") "Title presentation options")
+  (=> (balloon (icon "tm_focus_prefs") "Title presentation options")
       (link focus-title-option-menu))
-  (=> (balloon (icon "tm_like.xpm") "Cite TeXmacs")
+  (=> (balloon (icon "tm_like") "Cite TeXmacs")
       (link cite-texmacs-menu)))
 
 (tm-menu (focus-ancestor-menu t)
@@ -792,7 +792,7 @@
 (tm-menu (focus-author-icons)
   (mini #t
     (inert ("Author" (noop))))
-  (=> (balloon (icon "tm_add.xpm") "Add author information")
+  (=> (balloon (icon "tm_add") "Add author information")
       (link focus-author-menu)))
 
 (tm-menu (focus-ancestor-menu t)
@@ -836,7 +836,7 @@
 (tm-menu (focus-abstract-icons)
   (mini #t
     (inert ("Abstract" (noop))))
-  (=> (balloon (icon "tm_add.xpm") "Add abstract information")
+  (=> (balloon (icon "tm_add") "Add abstract information")
       (link focus-abstract-menu)))
 
 (tm-menu (focus-ancestor-menu t)
@@ -960,13 +960,13 @@
 (tm-menu (focus-toggle-icons t)
   (:require (algorithm-context? t))
   (when (not (algorithm-named? (focus-tree)))
-    ((check (balloon (icon "tm_numbered.xpm") "Toggle numbering") "v"
+    ((check (balloon (icon "tm_numbered") "Toggle numbering") "v"
             (algorithm-numbered? (focus-tree)))
      (algorithm-toggle-number (focus-tree))))
-  ((check (balloon (icon "tm_small_textual.xpm") "Toggle name") "v"
+  ((check (balloon (icon "tm_small_textual") "Toggle name") "v"
           (algorithm-named? (focus-tree)))
    (algorithm-toggle-name t))
-  ((check (balloon (icon "tm_specified.xpm") "Toggle specification") "v"
+  ((check (balloon (icon "tm_specified") "Toggle specification") "v"
           (algorithm-specified? (focus-tree)))
    (algorithm-toggle-specification t)))
 
@@ -980,52 +980,52 @@
 
 (tm-menu (focus-float-icons t)
   (:require (marginal-note-context? t))
-  (=> (balloon (icon "tm_position_float.xpm")
+  (=> (balloon (icon "tm_position_float")
                "Position of marginal note")
       (link position-marginal-note-menu)))
 
 (tm-menu (focus-float-icons t)
   (:require (rich-float-context? t))
   (if (in-multicol-style?)
-      ((check (balloon (icon "tm_wide_float.xpm") "Make float wide") "v"
+      ((check (balloon (icon "tm_wide_float") "Make float wide") "v"
               (float-wide? (focus-tree)))
        (float-toggle-wide (focus-tree))))
-  (=> (balloon (icon "tm_position_float.xpm")
+  (=> (balloon (icon "tm_position_float")
                "Allowed positions of floating object")
       (link float-menu))
-  ((balloon (icon "tm_anchor.xpm")
+  ((balloon (icon "tm_anchor")
             "Go to anchor or float")
    (cursor-toggle-anchor)))
 
 (tm-menu (focus-float-icons t)
   (:require (phantom-float-context? t))
-  (=> (balloon (icon "tm_position_float.xpm")
+  (=> (balloon (icon "tm_position_float")
                "Allowed positions of floating object")
       (link float-menu)))
 
 (tm-menu (focus-float-icons t)
   (:require (floatable-context? t))
   (if (in-multicol-style?)
-      ((check (balloon (icon "tm_wide_float.xpm") "Make wide") "v"
+      ((check (balloon (icon "tm_wide_float") "Make wide") "v"
               (floatable-wide? (focus-tree)))
        (floatable-toggle-wide (focus-tree))))
-  ((balloon (icon "tm_position_float.xpm")
+  ((balloon (icon "tm_position_float")
             "Let the environment float")
    (turn-floating (tree-innermost floatable-context?))))
 
 (tm-menu (focus-float-icons t)
   (:require (footnote-context? t))
   (if (in-multicol-style?)
-      ((check (balloon (icon "tm_wide_float.xpm") "Make footnote wide") "v"
+      ((check (balloon (icon "tm_wide_float") "Make footnote wide") "v"
               (float-wide? (focus-tree)))
        (float-toggle-wide (focus-tree))))
-  ((balloon (icon "tm_anchor.xpm")
+  ((balloon (icon "tm_anchor")
             "Go to anchor or footnote")
    (cursor-toggle-anchor)))
 
 (tm-menu (focus-float-icons t)
   (:require (balloon-context? t))
-  (=> (balloon (icon "tm_position_float.xpm")
+  (=> (balloon (icon "tm_position_float")
                "Alignment of balloon")
       (link position-balloon-menu)))
 
@@ -1046,7 +1046,7 @@
 
 (tm-menu (focus-toggle-icons t)
   (:require (detached-note-context? t))
-  ((check (balloon (icon "tm_small_textual.xpm") "Use custom note symbol") "v"
+  ((check (balloon (icon "tm_small_textual") "Use custom note symbol") "v"
           (custom-note-context? (focus-tree)))
    (note-toggle-custom t))
   (dynamic (former t)))
@@ -1063,7 +1063,7 @@
 
 (tm-menu (focus-toggle-icons t)
   (:require (titled-context? t))
-  ((check (balloon (icon "tm_small_textual.xpm") "Toggle name") "v"
+  ((check (balloon (icon "tm_small_textual") "Toggle name") "v"
           (titled-named? (focus-tree)))
    (titled-toggle-name t))
   (dynamic (former t)))
@@ -1080,7 +1080,7 @@
 
 (tm-menu (focus-toggle-icons t)
   (:require (or (frame-context? t) (frame-titled-context? t)))
-  ((check (balloon (icon "tm_small_textual.xpm") "Toggle name") "v"
+  ((check (balloon (icon "tm_small_textual") "Toggle name") "v"
           (frame-titled? (focus-tree)))
    (frame-toggle-title t))
   (dynamic (former t)))
@@ -1097,5 +1097,5 @@
 (tm-menu (focus-toggle-icons t)
   (:require (automatic-section-context? t))
   (dynamic (former t))
-  ((balloon (icon "tm_small_textual.xpm") "Rename section")
+  ((balloon (icon "tm_small_textual") "Rename section")
    (interactive automatic-section-rename)))

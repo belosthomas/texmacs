@@ -25,6 +25,7 @@
 #include "array.hpp"
 #include "hashmap.hpp"
 #include "socket_notifier.hpp"
+#include "object.hpp"
 
 #if (QT_VERSION >= 0x050000) && defined(OS_MACOS) && defined(CocoaPlugin)
 #ifndef QT_MAC_USE_COCOA
@@ -89,27 +90,43 @@ public:
 
 /*! The queue of delayed commands.
  */
+
+#include "Utils/ThreadSafeQueue.hpp"
+
 class command_queue {
-  array<object> q;
-  array<time_t> start_times;
-  time_t lapse;
-  
-  bool wait;
-    // this flag is used in update() to insert QP_DELAYED_COMMANDS events in
-    // the TeXmacs event queue to have delayed command handling properly
-    // interspersed with the other events
 
 public:
-  command_queue();
-  ~command_queue();
+    command_queue();
+    ~command_queue();
 
-  void exec (object cmd);
-  void exec_pause (object cmd);
-  void exec_pending ();
-  void clear_pending ();
-  bool must_wait (time_t now) const;
-  
-  friend class qt_gui_rep;
+    void exec (object cmd, string name);
+    void exec_pause (object cmd, string name);
+    void exec_pending ();
+    void clear_pending ();
+    bool must_wait (time_t now) const;
+
+    inline time_t get_lapse() const {
+        return lapse;
+    }
+
+private:
+    struct command {
+
+        command() : q(), start_time(0), name("") {};
+
+        command(object cmd, time_t start_time, string name) :
+            q(cmd), start_time(start_time), name(name) {};
+
+        object q;
+        time_t start_time;
+        string name;
+    };
+    array<command> mCommands;
+    texmacs::thread_safe_queue<command, 200> mPendingCommands;
+
+    time_t lapse;
+    bool wait;
+
 };
 
 
@@ -150,6 +167,14 @@ public:
 public:
   qt_gui_rep (int &argc, char **argv);
   virtual ~qt_gui_rep ();
+
+  inline void exec (object cmd, string name) {
+      delayed_commands.exec(cmd, name);
+  }
+
+    inline void exec_pause (object cmd, string name) {
+        delayed_commands.exec_pause(cmd, name);
+    }
 
   /* extents, grabbing, selections */
   void get_extents (SI& width, SI& height);

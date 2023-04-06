@@ -720,7 +720,7 @@ tmg_exec_delayed (tmscm arg1) {
   object in1= arg1;
 
   // TMSCM_DEFER_INTS;
-  exec_delayed (in1);
+  exec_delayed (in1, "tmg_exec_delayed");
   // TMSCM_ALLOW_INTS;
 
   return scheme().tmscm_unspefied();
@@ -733,7 +733,7 @@ tmg_exec_delayed_pause (tmscm arg1) {
   object in1= arg1;
 
   // TMSCM_DEFER_INTS;
-  exec_delayed_pause (in1);
+  exec_delayed_pause (in1, "tmg_exec_delayed_pause");
   // TMSCM_ALLOW_INTS;
 
   return scheme().tmscm_unspefied();
@@ -805,11 +805,23 @@ inline tmscm tmg_cpp_set_preference (tmscm arg1, tmscm arg2) {
 inline tmscm tmg_cpp_reset_preference (tmscm arg1) {
   TMSCM_ASSERT_STRING (arg1, TMSCM_ARG1, "cpp-reset-preference");
 
-  string in1= arg1->to_string();
+  static string currentlyReseting;
+
+  if (currentlyReseting == arg1->to_string()) {
+    // avoid infinite recursion
+      fprintf(stderr, "ERROR : Infinite recursion in cpp-reset-preference !!!");
+      fprintf(stderr, "  (preference %s is reset by itself)", currentlyReseting.data());
+      fprintf(stderr, "Please correct this bug");
+      return scheme().tmscm_unspefied();
+  }
+
+  currentlyReseting = arg1->to_string();
 
   // TMSCM_DEFER_INTS;
-  reset_user_preference (in1);
+  reset_user_preference (currentlyReseting);
   // TMSCM_ALLOW_INTS;
+
+  currentlyReseting = "";
 
   return scheme().tmscm_unspefied();
 }

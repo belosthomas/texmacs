@@ -723,6 +723,7 @@ qt_gui_rep::add_event (const queued_event& ev) {
 
 void
 qt_gui_rep::update () {
+
 #ifdef QT_CPU_FIX
   int std_delay= 1;
   tm_sleep ();
@@ -752,7 +753,7 @@ qt_gui_rep::update () {
     // Check if a wait dialog is active and in that case remove it.
     // If we are here then the long operation has finished.
   
-  if (waitDialogs.count()) {
+ /* if (waitDialogs.count()) {
     waitWindow->layout()->removeWidget (waitDialogs.last());
     waitWindow->close();
     while (waitDialogs.count()) {
@@ -765,7 +766,7 @@ qt_gui_rep::update () {
     popup_wid_time = 0;
     _popup_wid->send (SLOT_VISIBILITY, close_box<bool> (true));
   }
-  
+  */
     // 2.
     // Manage delayed commands
   
@@ -799,9 +800,9 @@ qt_gui_rep::update () {
   
   if (waiting_events.size() > 0) needing_update = true;
   if (interrupted)               needing_update = true;
-  if (!headless_mode && nr_windows == 0) qApp->quit();
+  //if (!headless_mode && nr_windows == 0) qApp->quit();
   
-  time_t delay = delayed_commands.lapse - texmacs_time();
+  time_t delay = delayed_commands.get_lapse() - texmacs_time();
   if (needing_update) delay = 0;
   else                delay = std::max ((time_t)0, std::min ((time_t)std_delay, delay));
   if (postpone_treatment) delay= 9; // NOTE: force occasional display
@@ -1033,67 +1034,79 @@ command_queue::command_queue() : lapse (0), wait (true) { }
 command_queue::~command_queue() { clear_pending(); /* implicit */ }
 
 void
-command_queue::exec (object cmd) {
-  q << cmd;
-  start_times << (((time_t) texmacs_time ()) - 1000000000);
-  lapse = texmacs_time();
-  the_gui->need_update();
-  wait= true;
+command_queue::exec(object cmd, string name) {
+    *mPendingCommands.getPushElement() = command(cmd, (((time_t) texmacs_time()) - 1000000000), name);
+    mPendingCommands.notifyPush();
+    lapse = texmacs_time();
+    the_gui->need_update();
+    wait = true;
 }
 
 void
-command_queue::exec_pause (object cmd) {
-  q << cmd;
-  start_times << ((time_t) texmacs_time ());
-  lapse = texmacs_time();
-  the_gui->need_update();
-  wait= true;
+command_queue::exec_pause(object cmd, string name) {
+    *mPendingCommands.getPushElement() = command(cmd, ((time_t) texmacs_time()), name);
+    mPendingCommands.notifyPush();
+    lapse = texmacs_time();
+    the_gui->need_update();
+    wait = true;
 }
 
 void
-command_queue::exec_pending () {
-  array<object> a = q;
-  array<time_t> b = start_times;
-  q = array<object> (0);
-  start_times = array<time_t> (0);
-  int i, n = N(a);
-  for (i = 0; i<n; i++) {
-    time_t now =  texmacs_time ();
-    if ((now - b[i]) >= 0) {
-      object obj = call (a[i]);
-      if (is_int (obj) && (now - b[i] < 1000000000)) {
-        time_t pause = as_int (obj);
-          //cout << "pause = " << obj << "\n";
-        q << a[i];
-        start_times << (now + pause);
-      }
+command_queue::exec_pending() {
+
+    int n = mPendingCommands.getCurrentSize();
+    for (int i = 0; i < n; i++) {
+        command cmd = *mPendingCommands.getPopElement();
+        mPendingCommands.notifyPop();
+        mCommands << cmd;
     }
-    else {
-      q << a[i];
-      start_times << b[i];
+
+    array<command> commands = mCommands;
+    commands = array<command>(0);
+
+    n = N(commands);
+    for (int i = 0; i < n; i++) {
+        time_t now = texmacs_time();
+        if ((now - commands[i].start_time) < 0) {
+            mCommands << commands[i];
+            continue;
+        }
+
+        object obj;
+        try {
+            obj = call(commands[i].q);
+        } catch (std::exception& e) {
+            qCritical() << "Exception in the execution of the command " << QString::fromStdString(std::string(commands[i].name.data(), N(commands[i].name))) << ": " << e.what();
+        }
+
+        if (is_int(obj) && (now - commands[i].start_time < 1000000000)) {
+            time_t pause = as_int(obj);
+            //cout << "pause = " << obj << "\n";
+            mCommands << command(commands[i].q, now + pause, commands[i].name);
+        }
     }
-  }
-  if (N(q) > 0) {
-    wait = true;  // wait_for_delayed_commands
-    lapse = start_times[0];
-    int n = N(start_times);
-    for (i = 1; i<n; i++) {
-      if (lapse > start_times[i]) lapse = start_times[i];
+
+    if (N(mCommands) > 0) {
+        wait = true;  // wait_for_delayed_commands
+        lapse = mCommands[0].start_time;
+        int n = N(mCommands);
+        for (int i = 1; i < n; i++) {
+            if (lapse > mCommands[i].start_time) lapse = mCommands[i].start_time;
+        }
+    } else {
+        wait = false;
     }
-  } else
+}
+
+void
+command_queue::clear_pending() {
+    mCommands = array<command>(0);
     wait = false;
 }
 
-void
-command_queue::clear_pending () {
-  q = array<object> (0);
-  start_times = array<time_t> (0);
-  wait = false;
-}
-
 bool
-command_queue::must_wait (time_t now) const {
-  return wait && (lapse <= now);
+command_queue::must_wait(time_t now) const {
+    return wait && (lapse <= now);
 }
 
 
@@ -1101,11 +1114,11 @@ command_queue::must_wait (time_t now) const {
  * Delayed commands interface
  ******************************************************************************/
 
-void exec_delayed (object cmd) {
-  the_gui->delayed_commands.exec(cmd);
+void exec_delayed (object cmd, string name) {
+  the_gui->exec(cmd, name);
 }
-void exec_delayed_pause (object cmd) {
-  the_gui->delayed_commands.exec_pause(cmd);
+void exec_delayed_pause (object cmd, string name) {
+  the_gui->exec_pause(cmd, name);
 }
 void clear_pending_commands () {
   the_gui->delayed_commands.clear_pending();

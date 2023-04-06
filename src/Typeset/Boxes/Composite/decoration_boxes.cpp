@@ -175,7 +175,7 @@ scrollbar_box_rep::message (tree type, SI x, SI y, rectangles& rs) {
   if (u != t && is_accessible (obtain_ip (t))) {
     object fun= symbol_object ("tree-set");
     object cmd= list_object (fun, t, u);
-    exec_delayed (scheme_cmd (cmd));
+    exec_delayed (scheme_cmd (cmd), "tree-set t u");
   }
   return "done";
 }

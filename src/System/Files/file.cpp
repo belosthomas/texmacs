@@ -73,7 +73,7 @@ bool load_string(url u, string &s, bool fatal) {
     QFile qfile(QString::fromStdString(std::string(name.data(), N(name))));
 
     if (!qfile.open(QIODevice::ReadOnly)) {
-        qWarning() << "Can't open file for reading : " << QString::fromStdString(std::string(name.data(), N(name)));
+        qInfo() << "Can't open file for reading : " << QString::fromStdString(std::string(name.data(), N(name)));
         if (fatal) {
             string err_msg = string("Failed to load file: ") * as_string(u);
             failed_error << err_msg << LF;
@@ -413,9 +413,8 @@ read_directory(url u, bool &error_flag) {
     QDir qtdir(QString::fromStdString(std::string(name.data(), N(name))));
     QDir tmhome = QDir::homePath() + "/.TeXmacs";
 
-    if (!qtdir.absolutePath().startsWith(tmhome.absolutePath())) {
-        qDebug() << "ERROR, You DON'T have the permission to list " << qtdir.absolutePath() << " which is not in "
-                 << tmhome.absolutePath();
+    if (!qtdir.absolutePath().startsWith(tmhome.absolutePath()) && qtdir != QDir("C:/Windows/Fonts") && qtdir != QDir("/usr/share/fonts") && qtdir != QDir("/usr/local/share/fonts")) {
+        qDebug() << "ERROR, You DON'T have the permission to list " << qtdir.absolutePath() << " which is not in " << tmhome.absolutePath();
         array<string> dir;
         return dir;
     }

@@ -11,6 +11,3 @@
 ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(when (not (buffer-has-name? (current-buffer)))
-  (when (buffer-missing-style?)
-    (buffer-set-default-style)))

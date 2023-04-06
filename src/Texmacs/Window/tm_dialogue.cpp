@@ -49,7 +49,7 @@ dialogue_command_rep::apply () {
     string s_arg;
     sv->dialogue_inquire (i, s_arg);
     if (s_arg == "#f") {
-      exec_delayed (scheme_cmd ("(dialogue-end)"));
+      exec_delayed (scheme_cmd ("(dialogue-end)"), "dialogue-end");
       return;
     }
     object arg= string_to_object (s_arg);
@@ -62,8 +62,8 @@ dialogue_command_rep::apply () {
   }
   call ("learn-interactive", fun, learn);
   cmd= cons (fun, cmd);
-  exec_delayed (scheme_cmd ("(dialogue-end)"));
-  exec_delayed (scheme_cmd (cmd));
+  exec_delayed (scheme_cmd ("(dialogue-end)"), "dialogue-end");
+  exec_delayed (scheme_cmd (cmd), "dialogue-command_rep::apply");
 }
 
 command

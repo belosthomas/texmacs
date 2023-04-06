@@ -31,7 +31,6 @@ static tree surround2 (VSPACE, "0.5fn");
 
 bool is_long_arg (tree t, int i);
 bool is_long (tree t);
-string arg_type (tree t, int i);
 
 tree
 highlight (tree t, string kind) {
@@ -227,7 +226,7 @@ rewrite_inactive_arg (tree t, int i, inactive_style sty) {
       */
 	r= rewrite_inactive (r, sty);
     }
-  return highlight (r, arg_type (t, i));
+  return highlight (r, as_string(L(t[i])));
 }
 
 tree

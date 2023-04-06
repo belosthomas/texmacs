@@ -64,7 +64,7 @@ inline path decorate_right (path ip) {
 
 void
 transfer_ip (tree src, tree dest) {
-  ASSERT (obtain_ip (dest) == path (DETACHED), "already has an ip");
+  TM_ASSERT (obtain_ip (dest) == path (DETACHED), "already has an ip");
   dest->obs= list_observer (ip_observer (obtain_ip (src)), dest->obs);
 }
 
@@ -349,7 +349,7 @@ evaluate_impl (tree t) {
     return evaluate_get_binding (t);
 
   /* Graphical primitives */
-  case PATTERN:
+  case TM_PATTERN:
     return evaluate_pattern (t);
   case _POINT:
     return evaluate_point (t);
@@ -385,17 +385,17 @@ evaluate_impl (tree t) {
 
 tree
 evaluate_error (string error) {
-  return tree (ERROR, error);
+  return tree (LABEL_ERROR, error);
 }
 
 tree
 evaluate_error (string error, tree arg) {
-  return tree (ERROR, error, arg);
+  return tree (LABEL_ERROR, error, arg);
 }
 
 tree
 evaluate_error (string error, array<tree> args) {
-  tree r= tree (ERROR, error);
+  tree r= tree (LABEL_ERROR, error);
   r << args;
   return r;
 }

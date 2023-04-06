@@ -290,8 +290,8 @@ init_guile () {
   }
   */
 
-  guile_path= guile_path | "$TEXMACS_HOME_PATH/progs" | plugin_path ("progs");
-  set_env_path ("GUILE_LOAD_PATH", guile_path);
+ // guile_path= guile_path | "$TEXMACS_HOME_PATH/progs" | plugin_path ("progs");
+ // set_env_path ("GUILE_LOAD_PATH", guile_path);
 }
 
 /******************************************************************************

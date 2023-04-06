@@ -1,0 +1,7 @@
+#ifndef TEXMACS_SCHEME_CONFIG
+#define TEXMACS_SCHEME_CONFIG
+
+#cmakedefine SCHEME_DECL @SCHEME_DECL@
+#cmakedefine SCHEME_REGI @SCHEME_REGI@
+
+#endif

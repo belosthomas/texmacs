@@ -18,7 +18,7 @@
 #include <QMainWindow>
 #include <QMenuBar>
 #include <QLayoutItem>
-#include <Texmacs/DocumentWidget.hpp>
+#include "Gui/DocumentWidget.hpp"
 
 #include "tm_config.h"
 #include "analyze.hpp"

@@ -116,7 +116,7 @@ void tm_server_rep::init () {
   bench_cumul ("initialize scheme");
   if (my_init_cmds != "") {
     my_init_cmds= "(begin" * my_init_cmds * ")";
-    exec_delayed (scheme_cmd (my_init_cmds));
+    exec_delayed (scheme_cmd (my_init_cmds), my_init_cmds);
   }
 }
 

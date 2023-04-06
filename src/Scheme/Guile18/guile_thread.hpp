@@ -6,7 +6,7 @@
 #define TEXMACS_SCHEME_GUILE18_GUILE_THREAD_HPP
 
 #include <future>
-#include <pthread.h>
+#include <QThread>
 #include <libguile.hpp>
 #include "Utils/ThreadSafeQueue.hpp"
 
@@ -16,7 +16,10 @@ namespace texmacs {
     /**
      * @brief This class is a guile thread pool. This class allows to isolate guile from the main thread, and to instanciate multiple guile.
      */
-    class guile_thread {
+    class guile_thread : public QThread {
+
+        Q_OBJECT
+
     public:
         guile_thread() = default;
 
@@ -30,12 +33,7 @@ namespace texmacs {
          * @brief This function runs a function in the guile thread.
          * @param f The function to run.
          */
-        void run(std::function<void()> f);
-
-        /**
-         * @brief This function is a C proxy for the run function.
-         */
-        static void* c_init(void* data);
+        void addToLaunchQueue(std::function<void()> f);
 
         /**
          * Remove copy constructor and assignment operator.
@@ -43,20 +41,27 @@ namespace texmacs {
         guile_thread(const guile_thread&) = delete;
         guile_thread& operator=(const guile_thread&) = delete;
 
+        /**
+         * @brief This function returns the guile object stack.
+         * @return The guile object stack.
+         */
+        SCM *unsafe_objectstack() const {
+            return mObjectStack;
+        }
+
     protected:
         /**
          * @brief This function is the main function of the guile thread.
          * @return
          */
-        void *run(int64_t *stack_base);
+        void run() override;
 
     private:
-        pthread_t mThreadID;
-        pthread_attr_t mThreadAttr;
-
         bool mIsInitialized = false;
         thread_safe_queue<std::function<void()>, 10> mQueue;
         std::promise<bool> mIsInitializedPromise;
+
+        SCM *mObjectStack;
     };
 
 }

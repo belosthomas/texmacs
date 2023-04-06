@@ -18,7 +18,8 @@ void guile_error() {
     }
 
     QString message = guile_last_messages[thread_id];
-    throw std::runtime_error(message.toStdString());
+    std::string stdmessage = message.toStdString();
+    throw std::runtime_error(stdmessage);
 }
 
 void guile_log_function(const char *cmsg, int len) {
@@ -41,22 +42,38 @@ void guile_log_function(const char *cmsg, int len) {
     *guile_logs[thread_id] << str.right(str.length() - last - 1);
 }
 
-void texmacs::guile_thread::init() {
-    // compute the stack base and size of the current thread with pthread and mThreadAttr
-    int64_t stack_base;
-    run(&stack_base);
+void texmacs::guile_thread::run() {
 
-}
+    size_t stack_size = 100 * 1024 * 1024;
+    void *stack_base = &stack_size; // this requires the -fno-strict-aliasing compiler flag
 
-void *texmacs::guile_thread::run(int64_t *stack_base_manual) {
+    scm_init_guile((int64_t*)stack_base, stack_size);
 
-    void *stack_base;
-    size_t stack_size;
-    pthread_attr_getstack(&mThreadAttr, &stack_base, &stack_size);
+    SCM object_stack;
 
-    scm_init_guile((int64_t*)stack_base_manual, stack_size);
+    const char* init_prg =
+            "(debug-enable 'debug)\n"
+            "(debug-enable 'backtrace)\n"
+            "(read-set! keywords 'prefix)\n"
+            "(read-enable 'positions)\n"
+            "\n"
+            "(define (display-to-string obj)\n"
+            "  (call-with-output-string\n"
+            "    (lambda (port) (display obj port))))\n"
+            "(define (object->string obj)\n"
+            "  (call-with-output-string\n"
+            "    (lambda (port) (write obj port))))\n"
+            "\n"
+            "(define (texmacs-version) \"" "Alpha Liza" "\")\n"
+            "(define object-stack '(()))";
+
+    scm_c_eval_string (init_prg);
+    object_stack = scm_variable_ref (scm_c_lookup("object-stack"));
+
+    mObjectStack = &object_stack;
 
     while (true) {
+        (void)object_stack; // we want to keep the object_stack variable alive
         std::function<void()> f = *mQueue.getPopElement();
         if (mQueue.isDestroyed()) {
             break;
@@ -64,42 +81,24 @@ void *texmacs::guile_thread::run(int64_t *stack_base_manual) {
         mQueue.notifyPop();
         f();
     }
-    return nullptr;
+
+    mObjectStack = nullptr;
+
+    return;
 }
 
-void *texmacs::guile_thread::c_init(void *data) {
-    guile_thread *thread = static_cast<guile_thread*>(data);
-    thread->init();
-    return nullptr;
-}
-
-#define GUILE_SINGLE_THREAD 1
-
-extern int *main_stack_base;
-
-void texmacs::guile_thread::run(std::function<void()> f) {
+void texmacs::guile_thread::addToLaunchQueue(std::function<void()> f) {
     if (!mIsInitialized) {
-#if !GUILE_SINGLE_THREAD
         scm_use_embedded_ice9();
         scm_set_log_function(guile_log_function);
         set_error_callback(guile_error);
 
-        pthread_attr_init(&mThreadAttr);
-        // set the stack size to 100 MB
-        pthread_attr_setstacksize(&mThreadAttr, 100 * 1024 * 1024);
-        pthread_create(&mThreadID, &mThreadAttr, &guile_thread::c_init, this);
+        start();
         mIsInitialized = true;
-#else
-        mThreadID = pthread_self();
-        scm_use_embedded_ice9();
-        scm_set_log_function(guile_log_function);
-        set_error_callback(guile_error);
-        scm_init_guile((int64_t*)main_stack_base, 100 * 1024 * 1024);
-#endif
     }
 
     // check if we are in the guile thread with pthread
-    if (pthread_equal(pthread_self(), mThreadID)) {
+    if (QThread::currentThread() == this) {
         f();
         return;
     }

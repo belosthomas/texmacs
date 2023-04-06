@@ -380,20 +380,20 @@
         ===
         (hlist
           >>>
-          ((balloon (icon "tm_search_first.xpm") "First error")
+          ((balloon (icon "tm_search_first") "First error")
            (spell-extreme-match #f))
-          ((balloon (icon "tm_search_previous.xpm") "Previous error")
+          ((balloon (icon "tm_search_previous") "Previous error")
            (spell-next-match #f))
-          ((balloon (icon "tm_search_next.xpm") "Next error")
+          ((balloon (icon "tm_search_next") "Next error")
            (spell-next-match #t))
-          ((balloon (icon "tm_search_last.xpm") "Last error")
+          ((balloon (icon "tm_search_last") "Last error")
            (spell-extreme-match #t))
           /// ///
-          ((balloon (icon "tm_compress_tool.xpm") "Compress into toolbar")
+          ((balloon (icon "tm_compress_tool") "Compress into toolbar")
            (set-boolean-preference "toolbar spell" #t)
            (quit)
            (toolbar-spell-start))
-          ((balloon (icon "tm_close_tool.xpm") "Close spell tool")
+          ((balloon (icon "tm_close_tool") "Close spell tool")
            (quit))))
       /// ///
       (resize "200px" "225px"
@@ -465,9 +465,9 @@
 
 (tm-widget (spell-toolbar)
   (hlist
-    ((balloon (icon "tm_right.xpm") "Accept during this pass")
+    ((balloon (icon "tm_right") "Accept during this pass")
      (spell-accept-word))
-    ((balloon (icon "tm_add.xpm") "Permanently add to dictionary")
+    ((balloon (icon "tm_add") "Permanently add to dictionary")
      (spell-insert-word))
     ///
     (text "Correct: ") //
@@ -481,20 +481,20 @@
                                     (list-ref spell-suggestions i))
             ((eval text) (spell-follow-suggestion i))))))
     >>> >>> >>>
-    ((balloon (icon "tm_search_first.xpm") "First error")
+    ((balloon (icon "tm_search_first") "First error")
      (spell-extreme-match #f))
-    ((balloon (icon "tm_search_previous.xpm") "Previous error")
+    ((balloon (icon "tm_search_previous") "Previous error")
      (spell-next-match #f))
-    ((balloon (icon "tm_search_next.xpm") "Next error")
+    ((balloon (icon "tm_search_next") "Next error")
      (spell-next-match #t))
-    ((balloon (icon "tm_search_last.xpm") "Last error")
+    ((balloon (icon "tm_search_last") "Last error")
      (spell-extreme-match #t))
     ///
-    ((balloon (icon "tm_expand_tool.xpm") "Open tool in separate window")
+    ((balloon (icon "tm_expand_tool") "Open tool in separate window")
      (set-boolean-preference "toolbar spell" #f)
      (toolbar-spell-end)
      (open-spell))
-    ((balloon (icon "tm_close_tool.xpm") "Close spell tool")
+    ((balloon (icon "tm_close_tool") "Close spell tool")
       (toolbar-spell-end))))
 
 (tm-define (toolbar-spell-start)
