@@ -37,7 +37,7 @@ if (WIN32 OR MINGW)
 else()
     message(STATUS "Using Unix plugins")
     file(GLOB_RECURSE texmacs_unix_plugin_srcs "${CMAKE_CURRENT_SOURCE_DIR}/Unix/*.cpp")
-    target_sources(texmacsgui PUBLIC ${texmacs_unix_plugin_srcs})
+    target_sources(texmacs-gui PUBLIC ${texmacs_unix_plugin_srcs})
     target_include_directories(texmacs-gui PUBLIC
             ${CMAKE_CURRENT_SOURCE_DIR}/Unix
             )
