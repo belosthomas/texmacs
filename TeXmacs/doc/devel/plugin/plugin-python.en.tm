@@ -28,7 +28,7 @@
     \ \ \ \ $TEXMACS_PATH/examples/plugins/pyminimal
   </verbatim>
 
-  to <verbatim|$TEXMACS_PROGS_PATH> or <verbatim|$TEXMACS_HOME_PATH/progs>.
+  to <verbatim|$TEXMACS_PATH/progs> or <verbatim|$TEXMACS_HOME_PATH/progs>.
 
   When relaunching <TeXmacs>, the plug-in should now be automatically
   recognized.

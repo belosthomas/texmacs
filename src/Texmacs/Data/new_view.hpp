@@ -47,4 +47,6 @@ void    attach_view (url win_u, url u);
 void    detach_view (url u);
 url     get_recent_view (url name, bool s, bool o, bool a, bool p);
 
+extern tm_view the_view;
+
 #endif // defined NEW_VIEW_H

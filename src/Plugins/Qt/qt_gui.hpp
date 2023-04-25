@@ -109,6 +109,8 @@ public:
         return lapse;
     }
 
+    void launch(object cmd, string name, time_t when);
+
 private:
     struct command {
 

@@ -20,16 +20,8 @@
 #include <sys/types.h>
 #endif
 
-#ifdef HAVE_GETTIMEOFDAY
 #include <sys/time.h>
-#else
-#include <sys/timeb.h>
-#ifdef OS_SUN
-extern "C" {
-  extern int ftime __P ((struct timeb *__timebuf));
-};
-#endif
-#endif
+
 
 time_t raw_time ();
 time_t texmacs_time ();

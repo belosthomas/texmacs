@@ -27,81 +27,35 @@ namespace texmacs {
     public:
         ThingyTabInnerWindow(QWidget *parent);
 
-        const QString &title() const {
-            return mTitle;
-        }
+        const QString &title() const;
 
-        void setCentralWidget(QWidget *widget) {
+        void setCentralWidget(QWidget *widget);
 
-            if (mCentralWidget != nullptr) {
-                mLayout.removeWidget(mCentralWidget);
-            }
+        void addStackedWidget(QWidget *widget);
 
-            mCentralWidget = widget;
-            mCentralWidget->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
-            mLayout.addWidget(mCentralWidget);
-        }
+        QWidget *centralWidget() const;
 
-        void addStackedWidget(QWidget *widget) {
-            widget->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
-            mLayout.addWidget(widget);
-            mLayout.setCurrentWidget(widget);
-            updateFocus();
-        }
+        QMenuBar *menuBar();
 
-        QWidget *centralWidget() const {
-            return mCentralWidget;
-        }
+        void addToolBar(QToolBar *toolBar);
 
-        QMenuBar *menuBar() {
-            return mCentralWindow.menuBar();
-        }
+        void addToolBarBreak();
 
-        void addToolBar(QToolBar *toolBar) {
-            toolBar->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Minimum);
-            mCentralWindow.addToolBar(toolBar);
-        }
+        void addDockWidget(Qt::DockWidgetArea area, QDockWidget *dockWidget);
 
-        void addToolBarBreak() {
-            mCentralWindow.addToolBarBreak();
-        }
+        QStatusBar *statusBar();
 
-        void addDockWidget(Qt::DockWidgetArea area, QDockWidget *dockWidget) {
-            mCentralWindow.addDockWidget(area, dockWidget);
-        }
+        QString switchStack();
 
-        QStatusBar *statusBar() {
-            return mCentralWindow.statusBar();
-        }
+        void updateFocus();
 
-        QString switchStack() {
-            mCurrentIndex = (mCurrentIndex + 1) % mLayout.count();
-            updateFocus();
-            return mLayout.widget(mCurrentIndex)->objectName();
-        }
+        QPoint origin ();
 
-        void updateFocus() {
-            for (int i = 0; i < mLayout.count(); i++) {
-                mLayout.widget(i)->setAttribute(Qt::WA_TransparentForMouseEvents, i != mCurrentIndex);
-            }
-            mLayout.widget(mCurrentIndex)->setFocus();
-        }
+        QRect extents ();
 
-        QPoint origin () {
-            return p_origin;
-        }
+        QScrollBar *horizontalScrollBar();
 
-        QRect extents () {
-            return p_extents;
-        }
-
-        QScrollBar *horizontalScrollBar() {
-            return mScrollArea.horizontalScrollBar();
-        }
-
-        QScrollBar *verticalScrollBar() {
-            return mScrollArea.verticalScrollBar();
-        }
+        QScrollBar *verticalScrollBar();
 
         void setOrigin(QPoint newOrigin);
 

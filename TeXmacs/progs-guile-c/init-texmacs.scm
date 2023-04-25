@@ -18,8 +18,8 @@
   (call-with-output-string
     (lambda (port) (write obj port))))
 
-(define (texmacs-version) "TEXMACS_VERSION")
-  (define object-stack '(()))
+(define (texmacs-version) "2.1.2")
+(define object-stack '(()))
 
 (define boot-start (texmacs-time))
 (define remote-client-list (list))

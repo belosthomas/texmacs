@@ -6525,6 +6525,8 @@ tmg_url_unix (tmscm arg1, tmscm arg2) {
   url out= url (in1, in2);
   // TMSCM_ALLOW_INTS;
 
+  string concretized  = materialize(out);
+
   return url_to_tmscm (out);
 }
 

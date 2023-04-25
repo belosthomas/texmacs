@@ -29,7 +29,7 @@
   examples in the other subsections of "<hlink|Extending the graphical user
   interface|scheme-gui.en.tm>". If you'd rather see the sources, the whole
   list of keywords is in the table <scm|gui-make-table> inside
-  <hlink|<verbatim|menu-define.scm>|$TEXMACS_PROGS_PATH/kernel/gui/menu-define.scm>.
+  <hlink|<verbatim|menu-define.scm>|$TEXMACS_PATH/progs/kernel/gui/menu-define.scm>.
 
   To create a widget, you'll first need to use <scm|tm-widget> to define a
   new one. The call to this function uses its particular syntax, with many
@@ -152,7 +152,7 @@
 
   From here you can go on reading \P<hlink|Extending the graphical user
   interface|scheme-gui.en.tm>\Q or see the sample widgets in
-  <hlink|<verbatim|menu-test.scm>|$TEXMACS_PROGS_PATH/kernel/gui/menu-test.scm>.
+  <hlink|<verbatim|menu-test.scm>|$TEXMACS_PATH/progs/kernel/gui/menu-test.scm>.
 
   <tmdoc-copyright|2012|the <TeXmacs> team.>
 

@@ -158,7 +158,7 @@ qt_window_widget_rep::send (slot s, blackbox val) {
       break;
     case SLOT_VISIBILITY:
     {
-      check_type<bool> (val, s);
+      /*check_type<bool> (val, s);
       bool flag = open_box<bool> (val);
       if (qwid) {
         if (flag) {
@@ -171,7 +171,7 @@ qt_window_widget_rep::send (slot s, blackbox val) {
           //QApplication::setActiveWindow (master);
         }
         else qwid->hide();
-      }
+      }*/
     }
       break;
     case SLOT_MOUSE_GRAB:

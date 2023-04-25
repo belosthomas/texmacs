@@ -5,19 +5,13 @@
 
 using namespace Qt::StringLiterals;
 
-texmacs::Application::Application(int &argc, char **argv) : QApplication(argc, argv) {
+texmacs::Application::Application(int &argc, char **argv) : QApplication(argc, argv), mApplicationThread(QThread::currentThread()) {
     // Set the application informations
     setWindowIcon(QIcon(":/TeXmacs/images/texmacs.png"));
     setApplicationName("TeXmacs");
     setApplicationVersion(TEXMACS_REVISION);
     setOrganizationName("TeXmacs");
     setOrganizationDomain("texmacs.org");
-
-    // Load the splash screen
-    loadSplashScreen();
-
-    // When Qt is ready, initialize TeXmacs
-    QTimer::singleShot(0, this, SLOT(onApplicationStarted()));
 }
 
 void texmacs::Application::addTab(ThingyTabInnerWindow *centralWidget) {
@@ -33,7 +27,29 @@ void texmacs::Application::addTab(ThingyTabInnerWindow *centralWidget) {
     currentWindow->show();
 }
 
-void texmacs::Application::loadSplashScreen() {
+void texmacs::Application::showSchemeImplementationChooserWidget() {
+    mWelcomeWidget = new WelcomeWidget();
+    mWelcomeWidget->show();
+
+    auto allSchemes = get_scheme_factories();
+    for (auto scheme : allSchemes) {
+        mWelcomeWidget->addVersion(QString::fromStdString(scheme));
+    }
+
+    connect(mWelcomeWidget, &WelcomeWidget::launch, this, [this](QString version) {
+        setWantedSchemeImplementation(version.toStdString());
+        mWelcomeWidget->hide();
+        showSplashScreenAndLoadTeXMacs();
+    });
+
+    connect(&mResourceExtractorThread, &ResourcesExtractor::progress, mWelcomeWidget, &WelcomeWidget::setProgress);
+    connect(&mResourceExtractorThread, &ResourcesExtractor::ready, mWelcomeWidget, &WelcomeWidget::setReady);
+
+    mResourceExtractorThread.start();
+
+}
+
+void texmacs::Application::showSplashScreenAndLoadTeXMacs() {
     mSlpashScreen.setPixmap(QPixmap(":/TeXmacs/misc/images/splash.png").scaledToWidth(primaryScreen()->size().width() / 4, Qt::SmoothTransformation));
     mSlpashScreen.show();
     connect(this, &Application::initializationMessage, this, [this](const QString& message) {
@@ -43,6 +59,7 @@ void texmacs::Application::loadSplashScreen() {
     connect(this, &Application::initialized, this, [this]() {
         mSlpashScreen.hide();
     });
+    QTimer::singleShot(0, this, SLOT(onApplicationStarted()));
 }
 
 void texmacs::Application::resetTeXmacs() {
@@ -53,62 +70,23 @@ void texmacs::Application::resetTeXmacs() {
     }
 }
 
-void texmacs::Application::extractResources() {
-    emit initializationMessage("Extracting resources...");
-    QString destination = QDir::homePath() + "/.TeXmacs";
-
-    // Test if the resources are already extracted
-    if (QFile(destination + "/.resources_extracted").exists()) {
-        return;
-    }
-    QDir().mkpath(destination);
-
-    // Count the number of files to extract
-    int count = 0;
-    for (QDirIterator it(":", QDirIterator::Subdirectories); it.hasNext(); it.next()) {
-        count++;
-    }
-
-    // Extract the files
-    int i = 0;
-    for (QDirIterator it(":", QDirIterator::Subdirectories); it.hasNext(); ) {
-        QString source_filename = it.next();
-        QString destination_filename = source_filename;
-        destination_filename.replace(":", destination);
-        qDebug() << "Copying " << source_filename << " to " << destination_filename;
-        if (it.fileInfo().isDir()) {
-            QDir().mkpath(destination_filename);
-        } else {
-            if (!QFile::copy(source_filename, destination_filename)) {
-                throw std::runtime_error("Could not copy " + source_filename.toStdString() + " to " + destination_filename.toStdString());
-            }
-        }
-        i++;
-        emit initializationMessage("Extracting resources..." + QString::number(i * 100 / count) + "%");
-    }
-
-    // Create a dummy file to indicate that the resources have been extracted
-    QFile f(destination + "/.resources_extracted");
-    f.open(QIODevice::WriteOnly);
-    f.close();
-}
-
 void texmacs::Application::initializeEnvironmentVariables() {
     emit initializationMessage("Initializing environment variable...");
     QString texmacsHomePath = QDir::homePath() + "/.TeXmacs";
     QString texmacsPath = QDir::homePath() + "/.TeXmacs/TeXmacs";
     QString texmacsProgsPath = QDir::homePath() + "/.TeXmacs/TeXmacs/progs-";
+    QString texmacsPluginsPath = QDir::homePath() + "/.TeXmacs/TeXmacs/plugins";
 
     set_env("TEXMACS_HOME_PATH", string(texmacsHomePath.toUtf8().constData(), texmacsHomePath.toUtf8().size()));
     set_env("TEXMACS_PATH", string(texmacsPath.toUtf8().constData(), texmacsPath.toUtf8().size()));
     set_env("TEXMACS_PROGS_PATH", string(texmacsProgsPath.toUtf8().constData(), texmacsProgsPath.toUtf8().size()) * scheme().scheme_dialect());
+    set_env("TEXMACS_PLUGINS_PATH", string(texmacsPluginsPath.toUtf8().constData(), texmacsPluginsPath.toUtf8().size()));
 
     original_path= get_env ("PATH");
     load_user_preferences ();
 }
 
 void texmacs::Application::initializeScheme() {
-    register_all_scheme();
     auto allSchemes = get_scheme_factories();
     if (allSchemes.empty()) {
         qDebug() << "Error: No scheme factories registered";
@@ -120,18 +98,13 @@ void texmacs::Application::initializeScheme() {
         use_scheme(mWantedScemeImplementation);
     } else {
         emit initializationMessage("Initializing Scheme (" + QString::fromStdString(allSchemes[0]) + " by default)...");
-        use_scheme(allSchemes[0]);
+        use_scheme("S7");
     }
 
 }
 
 void texmacs::Application::onApplicationStarted() {
-    // resetTeXmacs();
-    extractResources();
-
     try {
-        QString texmacsProgsPath = QDir::homePath() + "/.TeXmacs/TeXmacs/progs-";
-        set_env("GUILE_LOAD_PATH", string(texmacsProgsPath.toUtf8().constData(), texmacsProgsPath.toUtf8().size()) * "guile-c");
         initializeScheme();
     } catch (const std::exception& e) {
         // Open an error dialog

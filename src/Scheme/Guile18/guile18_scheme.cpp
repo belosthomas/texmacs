@@ -11,6 +11,7 @@ void texmacs::register_scheme_factory(SchemeFactory *factory);
 
 void texmacs::registerGuile18() {
     register_scheme_factory(new Guile18Factory);
+    register_scheme_factory(new ThreadedGuile18Factory);
 }
 
 #define SCM_BLACKBOXP(t) (SCM_NIMP (t) && (((scm_t_bits)SCM_CAR (t)) == blackbox_tag))
@@ -52,15 +53,9 @@ void texmacs::initialize_smobs() {
     scm_set_smob_equalp(blackbox_tag, cmp_blackbox);
 }
 
-texmacs::guile_scheme::guile_scheme() : mThread() {
-    mThread.addToLaunchQueue([]() {
-        initialize_smobs();
-    });
-}
-
 tmscm texmacs::guile_scheme::blackbox_to_tmscm(blackbox b) {
     std::promise<tmscm> promise;
-    mThread.addToLaunchQueue([&promise, b, this]() {
+    mLaunchQueue->addToLaunchQueue([&promise, b, this]() {
         try {
             SCM blackbox_smob;
             SET_SMOB (blackbox_smob, (void *) (tm_new<blackbox>(b)), (SCM) guile_blackbox_tag());
@@ -72,8 +67,12 @@ tmscm texmacs::guile_scheme::blackbox_to_tmscm(blackbox b) {
             promise.set_value(tmscm_null());
 #endif
         }
-    });
+    }, "blackbox_to_tmscm");
     return promise.get_future().get();
+}
+
+texmacs::guile_scheme::guile_scheme(abstract_guile_launch_queue *launchQueue) : mLaunchQueue(launchQueue) {
+
 }
 
 tmscm texmacs::guile_scheme::tmscm_null() {
@@ -122,7 +121,7 @@ tmscm texmacs::guile_scheme::tmscm_unspefied() {
 
 tmscm texmacs::guile_scheme::eval_scheme_file(string name) {
     std::promise<tmscm> promise;
-    mThread.addToLaunchQueue([&promise, &name, this]() {
+    mLaunchQueue->addToLaunchQueue([&promise, &name, this]() {
         try {
             c_string _file(name);
             promise.set_value(guile_tmscm::mk(this, scm_c_primitive_load(_file)));
@@ -133,13 +132,13 @@ tmscm texmacs::guile_scheme::eval_scheme_file(string name) {
             promise.set_value(tmscm_null());
 #endif
         }
-    });
+    }, std::string(name.data(), N(name)));
     return promise.get_future().get();
 }
 
 tmscm texmacs::guile_scheme::eval_scheme(string s) {
     std::promise<tmscm> promise;
-    mThread.addToLaunchQueue([&promise, s, this]() {
+    mLaunchQueue->addToLaunchQueue([&promise, s, this]() {
         try {
             c_string _s(s);
             SCM result = scm_c_eval_string(_s);
@@ -151,7 +150,7 @@ tmscm texmacs::guile_scheme::eval_scheme(string s) {
             promise.set_value(tmscm_null());
 #endif
         }
-    });
+    }, std::string(s.data(), N(s)));
     return promise.get_future().get();
 }
 
@@ -177,7 +176,7 @@ SCM texmacs::guile_scheme::_call_scheme_args(SCM fun, std::vector<SCM> args) {
 
 tmscm texmacs::guile_scheme::call_scheme_args(tmscm fun, std::vector<tmscm> _args) {
     std::promise<tmscm> promise;
-    mThread.addToLaunchQueue([&promise, fun, _args, this]() {
+    mLaunchQueue->addToLaunchQueue([&promise, fun, _args, this]() {
         try {
             SCM fun_scm = tmscm_cast<guile_tmscm>(fun)->getSCM();
             std::vector<SCM> args;
@@ -192,24 +191,32 @@ tmscm texmacs::guile_scheme::call_scheme_args(tmscm fun, std::vector<tmscm> _arg
             promise.set_value(tmscm_null());
 #endif
         }
-    });
+    }, "fun with args");
     return promise.get_future().get();
 }
 
 void texmacs::guile_scheme::install_procedure(string name, std::function<tmscm(abstract_scheme *, tmscm)> fun, int numArgs, int numOptional) {
     assert(numOptional == 0); // not implemented
-    mThread.addToLaunchQueue([this, name, fun, numArgs]() {
+    mLaunchQueue->addToLaunchQueue([this, name, fun, numArgs]() {
         c_string _name(name);
         register_callback(&*_name, [this, fun](SCM args) {
             return tmscm_cast<guile_tmscm>(fun(this, guile_tmscm::mk(this, args)))->getSCM();
         }, numArgs);
-    });
+    }, "install procedure");
 }
 
 texmacs::abstract_scheme *texmacs::Guile18Factory::make_scheme() {
-    return new guile_scheme();
+    return new guile_scheme(new guile_no_thread);
 }
 
 std::string texmacs::Guile18Factory::name() {
     return "Guile++";
+}
+
+texmacs::abstract_scheme *texmacs::ThreadedGuile18Factory::make_scheme() {
+    return new guile_scheme(new guile_thread);
+}
+
+std::string texmacs::ThreadedGuile18Factory::name() {
+    return "Guile++ (Threaded)";
 }

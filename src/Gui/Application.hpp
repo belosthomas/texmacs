@@ -24,7 +24,10 @@
 #include <QThread>
 
 #include "MainWindow.hpp"
+#include "WelcomeWidget.hpp"
 #include "PixmapManager.hpp"
+#include "WelcomeWidget.hpp"
+#include "ResourcesExtractor.hpp"
 
 #include "server.hpp"
 #include "string.hpp"
@@ -43,6 +46,9 @@ extern int geometry_x, geometry_y;
 extern tree the_et;
 extern bool texmacs_started;
 
+#define TEXMACS_APP_ASSERT_APPLICATION_THREAD() \
+    texmacs::getApplication().assertApplicationThread(__FUNCTION__)
+
 namespace texmacs {
 
     /**
@@ -56,10 +62,22 @@ namespace texmacs {
         Application(int &argc, char **argv);
 
         /**
-         * @brief Add a tab to the current window, or to a new window if there is no current window.
-         * @param centralWidget The central widget of the tab.
+         * @brief Get the Qt on which the application is running.
          */
-        void addTab(ThingyTabInnerWindow *centralWidget);
+        const QThread &applicationThread() const {
+            return *mApplicationThread;
+        }
+
+        /**
+         * @brief Assert that the current thread is the application thread.
+         */
+        void assertApplicationThread(QString functionName = "") const {
+            qDebug() << "Asserting that " << functionName << " is called from the application thread.";
+            if (QThread::currentThread() != mApplicationThread) {
+                qDebug() << "Error: " << functionName << " is not called from the application thread.";
+               // abort();
+            }
+        }
 
         /**
          * @brief Get the pixmap manager.
@@ -75,6 +93,30 @@ namespace texmacs {
             mWantedScemeImplementation = wantedSchemeImplementation;
         }
 
+        /**
+         * @brief Get the wanted scheme implementation.
+         */
+        inline const std::string &wantedSchemeImplementation() const {
+            return mWantedScemeImplementation;
+        }
+
+    public slots:
+        /**
+         * @brief Add a tab to the current window, or to a new window if there is no current window.
+         * @param centralWidget The central widget of the tab.
+         */
+        void addTab(ThingyTabInnerWindow *centralWidget);
+
+        /**
+         * @brief Load the welcome widget.
+         */
+        void showSchemeImplementationChooserWidget();
+
+        /**
+         * @brief Load and show the splash screen.
+         */
+        void showSplashScreenAndLoadTeXMacs();
+
     signals:
         /**
          * @brief This signal is emitted when the application is ready to be shown.
@@ -89,19 +131,9 @@ namespace texmacs {
 
     protected:
         /**
-         * @brief Load and show the splash screen.
-         */
-        void loadSplashScreen();
-
-        /**
          * @brief Reset TeXmacs by removing the ~/.TeXmacs directory.
          */
         void resetTeXmacs();
-
-        /**
-         * @brief Extract the resources from the application bundle.
-         */
-        void extractResources();
 
         /**
          * @brief Initialize the environment variable TEXMACS_*.
@@ -120,6 +152,10 @@ namespace texmacs {
         void onApplicationStarted();
 
     private:
+        const QThread *mApplicationThread;
+        ResourcesExtractor mResourceExtractorThread;
+
+        WelcomeWidget *mWelcomeWidget;
         QSplashScreen mSlpashScreen;
         server *mServer = nullptr;
         std::list<MainWindow*> mWindows;

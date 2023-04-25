@@ -195,6 +195,7 @@ append_string(url u, string s, bool fatal) {
 
 bool
 is_of_type(url name, string filter) {
+
     if (filter == "") return true;
     int i, n = N(filter);
 
@@ -257,6 +258,10 @@ is_of_type(url name, string filter) {
 #endif
 
     string conc_name = concretize(name);
+    if (conc_name == "xxx") {
+        return false;
+    }
+
     QFileInfo qt_name(QString::fromStdString(std::string(conc_name.data(), N(conc_name))));
 
     bool preserve_links = false;
@@ -514,6 +519,10 @@ rmdir(url u) {
 void
 mkdir(url u) {
     string conc_name = concretize(u);
+    if (conc_name == "xxx") {
+        TM_FAILED("mkdir of xxx");
+    }
+
     QString conc_name_str = QString::fromStdString(std::string(conc_name.data(), N(conc_name)));
     QDir qt_name(conc_name_str);
 

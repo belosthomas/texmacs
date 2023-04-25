@@ -16,7 +16,7 @@
 
     <item><verbatim|$TEXMACS_PATH/langs/natural/hyphen>\<#5305\>\<#542B\>\<#4E86\>\<#4E0D\>\<#540C\>\<#8BED\>\<#8A00\>\<#7684\>\<#5B57\>\<#7B26\>\<#8FDE\>\<#63A5\>\<#6A21\>\<#5F0F\>
 
-    <item><verbatim|$TEXMACS_PROGS_PATH/fonts>\<#5305\>\<#542B\>\<#4E86\>\<#8BBE\>\<#7F6E\>\<#5B57\>\<#4F53\>\<#7684\><name|<with|font|roman|Scheme>>\<#7A0B\>\<#5E8F\>
+    <item><verbatim|$TEXMACS_PATH/progs/fonts>\<#5305\>\<#542B\>\<#4E86\>\<#8BBE\>\<#7F6E\>\<#5B57\>\<#4F53\>\<#7684\><name|<with|font|roman|Scheme>>\<#7A0B\>\<#5E8F\>
   </itemize>
 
   <tmdoc-copyright|2013--2019|Joris van der Hoeven|\<#6C88\>\<#8FBE\>>

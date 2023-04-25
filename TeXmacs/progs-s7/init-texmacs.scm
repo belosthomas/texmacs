@@ -11,6 +11,15 @@
 ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
+(define (display-to-string obj)
+  (call-with-output-string
+    (lambda (port) (display obj port))))
+(define (object->string obj)
+  (call-with-output-string
+    (lambda (port) (write obj port))))
+
+(define (texmacs-version) "2.1.2")
+(define object-stack '(()))
 
 ;; S7 macros are not usual macros...
 (define define-macro define-expansion)

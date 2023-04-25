@@ -15,13 +15,13 @@
 #include "image_files.hpp"
 #include "frame.hpp"
 
-int    std_shrinkf  = 5;
+int    std_shrinkf  = 8;
 bool   retina_manual= false;
 bool   retina_iman  = false;
-int    retina_factor= 1;
+int    retina_factor= 4; // 2 (anti-aliasing) * 2 (high-dpi, see DocumentWidget.cpp)
 int    retina_zoom  = 1;
 int    retina_icons = 1;
-double retina_scale = 1.0;
+double retina_scale = 1;
 
 int    get_retina_factor () { return retina_factor; }
 int    get_retina_zoom () { return retina_zoom; }
@@ -481,7 +481,7 @@ renderer_rep::shadow (picture& pic, SI x1, SI y1, SI x2, SI y2) {
   ren->retina_pixel= retina_pixel;
   ren->brushpx= brushpx;
   ren->thicken= thicken;
-  
+
   int x1b= x0 - pic->get_origin_x ();
   int y2b= y0 + pic->get_origin_y () - (pic->get_height () - 1);
   ren->ox  -= x1b * pixel;

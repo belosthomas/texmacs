@@ -39,6 +39,7 @@
 #include "QTMGuiHelper.hpp"  // needed to connect()
 #include "QTMInteractivePrompt.hpp"
 #include "QTMInteractiveInputHelper.hpp"
+#include "edit_interface.hpp"
 
 int menu_count = 0;  // zero if no menu is currently being displayed
 list<qt_tm_widget_rep*> waiting_widgets;
@@ -158,6 +159,7 @@ qt_tm_widget_rep::qt_tm_widget_rep(int mask, command _quit)
   auto documentWidget = new texmacs::DocumentWidget(qt_simple_widget_rep::last_created_widget, last_editor, mw);
   mw->setCentralWidget(documentWidget);
   mw->addStackedWidget(new texmacs::DrawBoard(*documentWidget->horizontalScrollBar(), *documentWidget->verticalScrollBar()));
+    last_editor->as_qwidget();
   qt_simple_widget_rep::last_created_widget = nullptr;
   last_editor = nullptr;
   QWidget *cw = mw->centralWidget();

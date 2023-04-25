@@ -30,7 +30,7 @@
     \ \ \ \ $TEXMACS_PATH/examples/plugins/minimal
   </verbatim>
 
-  to <verbatim|$TEXMACS_PROGS_PATH> or <verbatim|$TEXMACS_HOME_PATH/progs>.
+  to <verbatim|$TEXMACS_PATH/progs> or <verbatim|$TEXMACS_HOME_PATH/progs>.
   Next, running the <verbatim|Makefile> using
 
   <\verbatim>

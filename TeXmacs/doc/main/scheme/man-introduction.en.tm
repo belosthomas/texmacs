@@ -32,7 +32,7 @@
   within <apply|scheme>. In what follows, we will discuss some of the most
   important routines. We plan to write a more complete reference guide later.
   You may also take a look at the scheme <verbatim|.scm> files in the
-  directory <verbatim|$TEXMACS_PROGS_PATH>.
+  directory <verbatim|$TEXMACS_PATH/progs>.
 
   <apply|tmdoc-copyright|1998--2002|Joris van der Hoeven>
 

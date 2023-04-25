@@ -31,99 +31,22 @@ namespace texmacs {
     Q_OBJECT
 
     public:
-        MainWindow(QWidget *parent = nullptr) {
-            mWindowContainer.setLayout(&mWindowLayout);
-            setCentralWidget(&mWindowContainer);
+        MainWindow(QWidget *parent = nullptr);
 
-            mWindowLayout.setContentsMargins(0, 0, 0, 0);
-            mWindowLayout.setSpacing(0);
+        void styleTabBar();
 
-            mWindowLayout.addLayout(&mTabBarLayout);
-
-            styleTabBar();
-            mTabBarLayout.addWidget(&mTabBar);
-
-            mNewDocumentButton.setText("+D");
-            connect(&mNewDocumentButton, &QPushButton::clicked, this, &MainWindow::newDocument);
-            mTabBarLayout.addWidget(&mNewDocumentButton);
-
-            mNewBrowserButton.setText("+B");
-            connect(&mNewBrowserButton, &QPushButton::clicked, this, &MainWindow::newBrowser);
-            mTabBarLayout.addWidget(&mNewBrowserButton);
-
-            mModeButton.setText("Mode");
-            connect(&mModeButton, &QPushButton::clicked, this, &MainWindow::changeMode);
-            mTabBarLayout.addSpacerItem(new QSpacerItem(0, 0, QSizePolicy::Expanding, QSizePolicy::Minimum));
-            mTabBarLayout.addWidget(&mModeButton);
-
-            mCentralStackedLayoutContainer.setLayout(&mCentralStackedLayout);
-            mCentralStackedLayoutContainer.setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
-            mWindowLayout.addWidget(&mCentralStackedLayoutContainer);
-
-            // Disable the title bar
-            // setWindowFlags(Qt::FramelessWindowHint);
-            setUnifiedTitleAndToolBarOnMac(true);
-
-            // Set the window size
-            setMinimumSize(800, 600);
-
-            // Connect the tab changed signal
-            connect(&mTabBar, &QTabBar::currentChanged, this, &MainWindow::onTabChanged);
-        }
-
-        void styleTabBar() {
-            QScreen *screen = QGuiApplication::primaryScreen();
-            double dpi = screen->physicalDotsPerInch();
-
-            // Set the tab bar style size
-            mTabBar.setStyleSheet("QTabBar::tab {"
-                                  "padding: " + QString::number(8 * dpi / 96) + "px; "
-                                  "margin-right: " + QString::number(8 * dpi / 96) +  "px;"
-                                  "border-radius: 0px;"
-                                  " background-color: black;"
-                                  " color: white; "
-                                  "}"
-                                  "QTabBar::tab:selected { border-bottom: 2px solid red; }");
-
-        }
-
-        void addTab(ThingyTabInnerWindow *widget) {
-            mCentralStackedLayout.addWidget(widget);
-            mTabBar.addTab(widget->title());
-
-            connect(widget, &ThingyTabInnerWindow::titleChanged, this, &MainWindow::onTitleChanged);
-
-            mTabBar.setCurrentIndex(mTabBar.count() - 1);
-        }
+        void addTab(ThingyTabInnerWindow *widget);
 
     public slots:
-        void onTabChanged(int index) {
-            auto widget = dynamic_cast<ThingyTabInnerWindow *>(mCentralStackedLayout.currentWidget());
-            mCentralStackedLayout.setCurrentIndex(index);
-            widget = dynamic_cast<ThingyTabInnerWindow *>(mCentralStackedLayout.widget(index));
-            if (widget != nullptr) {
-                setWindowTitle(widget->title());
-            }
-        }
+        void onTabChanged(int index);
 
-        void onTitleChanged(ThingyTabInnerWindow *innerWidget, QString title) {
-            setWindowTitle(title);
-        }
+        void onTitleChanged(ThingyTabInnerWindow *innerWidget, QString title);
 
-        void changeMode() {
-            ThingyTabInnerWindow *widget = dynamic_cast<ThingyTabInnerWindow *>(mCentralStackedLayout.currentWidget());
-            mModeButton.setText(widget->switchStack());
-        }
+        void showOnScreenKeyboard();
 
-        void newDocument() {
-            open_window();
-        }
+        void newDocument();
 
-        void newBrowser() {
-            WebBrowser *browser = new WebBrowser(this);
-            browser->addStackedWidget(new DrawBoard(*browser->horizontalScrollBar(), *browser->verticalScrollBar(), browser));
-            addTab(browser);
-        }
+        void newBrowser();
 
     private:
         QTabBar mTabBar;
@@ -137,8 +60,7 @@ namespace texmacs {
         QHBoxLayout mTabBarLayout;
 
         QPushButton mNewDocumentButton;
-        QPushButton mNewBrowserButton;
-        QPushButton mModeButton;
+        QPushButton mKeyboardButton;
     };
 
 }

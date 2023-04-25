@@ -21,23 +21,6 @@
 
 #define BLOCK_SIZE 65536 // should be >>> MAX_FAST
 
-/******************************************************************************
-* Globals
-******************************************************************************/
-
-extern void*   alloc_table[MAX_FAST]; // Static declaration initializes with NULL's
-extern char*  alloc_mem;
-#ifdef DEBUG_ON
-extern char*  alloc_mem_top;
-extern char*  alloc_mem_bottom;
-#endif
-bool break_stub(void* ptr);
-extern size_t alloc_remains;
-extern int    allocated;
-extern int    large_uses;
-
-#define alloc_ptr(i) alloc_table[i]
-#define ind(ptr) (*((void **) ptr))
 
 /******************************************************************************
 * General purpose fast allocation routines

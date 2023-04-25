@@ -118,15 +118,9 @@ s7_pointer g_current_time (s7_scheme *sc, s7_pointer args)
 {
     s7_int res;
 
-#ifdef HAVE_GETTIMEOFDAY
     struct timeval tp;
     gettimeofday (&tp, NULL);
     res = tp.tv_sec;
-#else
-    timeb tb;
-  ftime (&tb);
-  res = tb.time;
-#endif
 
     return s7_make_integer(sc, res);
 }

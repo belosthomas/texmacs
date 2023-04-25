@@ -61,7 +61,7 @@ get_env_path (string which, url def) {
 
 static url
 plugin_path (string which) {
-  url base= "$TEXMACS_HOME_PATH:/etc/TeXmacs:$TEXMACS_PATH:/usr/share/TeXmacs";
+  url base= "$TEXMACS_PATH";
   url search= base * "plugins" * url_wildcard ("*") * which;
   return expand (complete (search, "r"));
 }
@@ -258,8 +258,8 @@ init_guile () {
     TM_FAILED ("guile could not be found");
   }
 
-  /*
-  if (!exists ("$GUILE_LOAD_PATH/ice-9/boot-9.scm")) {
+
+ /* if (!exists ("$GUILE_LOAD_PATH/ice-9/boot-9.scm")) {
     int i;
     string guile_data    = var_eval_system ("guile-config info datadir");
     string guile_version = var_eval_system ("guile --version");
@@ -285,13 +285,13 @@ init_guile () {
     set_env_path ("GUILE_LOAD_PATH", guile_path);
     if (!exists ("$GUILE_LOAD_PATH/ice-9/boot-9.scm")) {
       failed_error << "\nGUILE_LOAD_PATH=" << guile_path << "\n";
-      FAILED ("guile seems not to be installed on your system");
+      TM_FAILED ("guile seems not to be installed on your system");
     }
-  }
-  */
+  }*/
 
- // guile_path= guile_path | "$TEXMACS_HOME_PATH/progs" | plugin_path ("progs");
- // set_env_path ("GUILE_LOAD_PATH", guile_path);
+
+  guile_path= guile_path | "$TEXMACS_HOME_PATH/progs" | plugin_path ("progs");
+  set_env_path ("GUILE_LOAD_PATH", guile_path);
 }
 
 /******************************************************************************

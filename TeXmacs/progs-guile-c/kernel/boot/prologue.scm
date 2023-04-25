@@ -34,7 +34,7 @@
       (let* ((module (list->module module*))
 	     (loaded (ahash-ref module-loaded-table module)))
 	(ahash-set! module-loaded-table module #t)
-	;;(if (not loaded) (display* "TeXmacs] Loading module " module* "\n"))
+	(if (not loaded) (display* "TeXmacs] Loading module " module "\n"))
 	(if (not loaded) (load-module module)))))
 
 ;; FIXME: why does this not work?

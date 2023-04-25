@@ -79,8 +79,16 @@ texmacs::abstract_scheme *texmacs::make_scheme(std::string name) {
     return factory->second->make_scheme();
 }
 
-void texmacs::register_all_scheme() {
+int64_t *stack_begin;
+
+void texmacs::initialize_schemes() {
+    int64_t stack_var;
+    stack_begin = &stack_var;
 #ifdef SCHEME_REGI
     SCHEME_REGI
 #endif
+}
+
+int64_t *get_scheme_stack_begin() {
+    return stack_begin;
 }

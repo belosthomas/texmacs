@@ -80,7 +80,7 @@
   </session>
 
   A complete list of the widgets you can embed in a form is in the table
-  <scm|gui-make-table> inside <hlink|<verbatim|menu-define.scm>|$TEXMACS_PROGS_PATH/kernel/gui/menu-define.scm>.
+  <scm|gui-make-table> inside <hlink|<verbatim|menu-define.scm>|$TEXMACS_PATH/progs/kernel/gui/menu-define.scm>.
 
   <tmdoc-copyright|2012|the <TeXmacs> team.>
 

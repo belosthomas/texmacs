@@ -27,9 +27,8 @@ namespace texmacs {
     class guile_scheme : public abstract_scheme {
 
     public:
-        guile_scheme();
+        guile_scheme(abstract_guile_launch_queue *launchQueue);
 
-        // disable copy constructor and assignment operator
         guile_scheme(const guile_scheme &) = delete;
 
         guile_scheme &operator=(const guile_scheme &) = delete;
@@ -70,16 +69,21 @@ namespace texmacs {
             return "guile-c";
         }
 
-        inline SCM *unsafe_objectstack() const {
-            return mThread.unsafe_objectstack();
-        }
-
     private:
-        guile_thread mThread;
+        abstract_guile_launch_queue *mLaunchQueue;
 
     };
 
     class Guile18Factory : public SchemeFactory {
+
+    public:
+        abstract_scheme *make_scheme() final;
+
+        std::string name() final;
+
+    };
+
+    class ThreadedGuile18Factory : public SchemeFactory {
 
     public:
         abstract_scheme *make_scheme() final;

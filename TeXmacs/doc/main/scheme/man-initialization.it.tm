@@ -8,7 +8,7 @@
   Quando si apre <apply|TeXmacs> viene eseguito il file
 
   <\verbatim>
-    \ \ \ \ $TEXMACS_PROGS_PATH/init-texmacs.scm
+    \ \ \ \ $TEXMACS_PATH/progs/init-texmacs.scm
   </verbatim>
 
   e, se esiste, viene eseguito anche il file dell'utente
@@ -22,7 +22,7 @@
   viene eseguito il file
 
   <\verbatim>
-    \ \ \ \ $TEXMACS_PROGS_PATH/init-buffer.scm
+    \ \ \ \ $TEXMACS_PATH/progs/init-buffer.scm
   </verbatim>
 
   e, se esiste, viene eseguito anche

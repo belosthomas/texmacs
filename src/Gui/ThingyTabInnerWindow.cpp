@@ -3,6 +3,7 @@
 //
 
 #include "ThingyTabInnerWindow.hpp"
+#include "Application.hpp"
 
 #include <QScrollBar>
 #include <QPainter>
@@ -10,16 +11,60 @@
 #include <QPaintEvent>
 #include <QStyle>
 #include <QApplication>
+#include <QScroller>
 
+texmacs::ThingyTabInnerWindow::ThingyTabInnerWindow(QWidget *parent) : QWidget(parent), mTitle("Untitled") {
+    TEXMACS_APP_ASSERT_APPLICATION_THREAD();
+
+    setLayout(&mOuterWindowLayout);
+    mOuterWindowLayout.addWidget(&mCentralWindow);
+
+    mCentralWindow.setCentralWidget(&mInnerWindowWidget);
+    mInnerWindowWidget.setLayout(&mInnerWindowLayout);
+    mInnerWindowLayout.addWidget(&mScrollArea);
+
+    mCentralWindow.setCentralWidget(&mInnerWindowWidget);
+    mScrollArea.setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+    mCentralWindow.show();
+
+    mLayout.setStackingMode(QStackedLayout::StackAll);
+    mLayout.setContentsMargins(0, 0, 0, 0);
+    mLayoutContainer.setLayout(&mLayout);
+    mScrollArea.setViewport(&mLayoutContainer);
+
+    // kinetic scrolling
+    mScrollArea.setHorizontalScrollBarPolicy(Qt::ScrollBarAsNeeded);
+    mScrollArea.setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
+    QScroller::grabGesture(&mScrollArea, QScroller::LeftMouseButtonGesture);
+    QScroller::grabGesture(&mScrollArea, QScroller::TouchGesture);
+
+    // when scrolling, update the central widget
+    connect(mScrollArea.horizontalScrollBar(), &QScrollBar::valueChanged, this, [this]() {
+        if (mCentralWidget != nullptr) {
+            mCentralWidget->update();
+        }
+    });
+    connect(mScrollArea.verticalScrollBar(), &QScrollBar::valueChanged, this, [this]() {
+        if (mCentralWidget != nullptr) {
+            mCentralWidget->update();
+        }
+    });
+}
 
 void texmacs::ThingyTabInnerWindow::setOrigin(QPoint newOrigin) {
-    if (newOrigin.x() != p_origin.x())
-        mScrollArea.horizontalScrollBar()->setSliderPosition(newOrigin.x());
-    if (newOrigin.y() != p_origin.y())
-        mScrollArea.verticalScrollBar()->setSliderPosition(newOrigin.y());
+    TEXMACS_APP_ASSERT_APPLICATION_THREAD();
+
+   mScrollArea.horizontalScrollBar()->setSliderPosition(newOrigin.x());
+   mScrollArea.verticalScrollBar()->setSliderPosition(newOrigin.y());
+
+    if (mCentralWidget != nullptr) {
+        mCentralWidget->update();
+    }
 }
 
 void texmacs::ThingyTabInnerWindow::setExtents (QRect newExtents ) {
+    TEXMACS_APP_ASSERT_APPLICATION_THREAD();
+
     //QWidget *_viewport = QAbstractScrollArea::viewport();
     //cout << "Inside  " << _viewport->width() << ", " << _viewport->height() << "\n";
     //cout << "Extents " << newExtents.width() << ", " << newExtents.height() << "\n";
@@ -29,10 +74,16 @@ void texmacs::ThingyTabInnerWindow::setExtents (QRect newExtents ) {
         p_extents = newExtents;
         updateScrollBars();
     }
+
+    if (mCentralWidget != nullptr) {
+        mCentralWidget->update();
+    }
 }
 
 /*! Scrolls contents so that the given point is visible. */
 void texmacs::ThingyTabInnerWindow::ensureVisible (int cx, int cy, int mx, int my ) {
+    TEXMACS_APP_ASSERT_APPLICATION_THREAD();
+
     QWidget *_viewport = mScrollArea.viewport();
     int w = _viewport->width();
     int h = _viewport->height();
@@ -62,10 +113,16 @@ void texmacs::ThingyTabInnerWindow::ensureVisible (int cx, int cy, int mx, int m
     else if (dy < h - ch && ch > h) dy = h - ch;
 
     setOrigin (QPoint(-dx, -dy));
+
+    if (mCentralWidget != nullptr) {
+        mCentralWidget->update();
+    }
 }
 
 /*! Scrollbar stabilization */
 void texmacs::ThingyTabInnerWindow::updateScrollBars() {
+    TEXMACS_APP_ASSERT_APPLICATION_THREAD();
+
     QWidget *_viewport = mScrollArea.viewport();
     QScrollBar *_hScrollBar = mScrollArea.horizontalScrollBar();
     QScrollBar *_vScrollBar = mScrollArea.verticalScrollBar();
@@ -103,29 +160,108 @@ void texmacs::ThingyTabInnerWindow::updateScrollBars() {
 
     // we may need a relayout if the surface width is changed
     //updateGeometry();
+    if (mCentralWidget != nullptr) {
+        mCentralWidget->update();
+    }
 }
 
 /*! Scroll area updater */
 void texmacs::ThingyTabInnerWindow::scrollContentsBy (int dx, int dy ) {
+    TEXMACS_APP_ASSERT_APPLICATION_THREAD();
+
     if (dx) p_origin.setX(p_origin.x() - dx);
     if (dy) p_origin.setY(p_origin.y() - dy);
+
+    if (mCentralWidget != nullptr) {
+        mCentralWidget->update();
+    }
 }
 
-texmacs::ThingyTabInnerWindow::ThingyTabInnerWindow(QWidget *parent) : QWidget(parent), mTitle("Untitled") {
+const QString &texmacs::ThingyTabInnerWindow::title() const {
+    return mTitle;
+}
 
-    setLayout(&mOuterWindowLayout);
-    mOuterWindowLayout.addWidget(&mCentralWindow);
+void texmacs::ThingyTabInnerWindow::setCentralWidget(QWidget *widget) {
+    TEXMACS_APP_ASSERT_APPLICATION_THREAD();
 
-    mCentralWindow.setCentralWidget(&mInnerWindowWidget);
-    mInnerWindowWidget.setLayout(&mInnerWindowLayout);
-    mInnerWindowLayout.addWidget(&mScrollArea);
+    if (mCentralWidget != nullptr) {
+        mLayout.removeWidget(mCentralWidget);
+    }
 
-    mCentralWindow.setCentralWidget(&mInnerWindowWidget);
-    mScrollArea.setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
-    mCentralWindow.show();
+    mCentralWidget = widget;
+    mCentralWidget->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+    mLayout.addWidget(mCentralWidget);
+}
 
-    mLayout.setStackingMode(QStackedLayout::StackAll);
-    mLayout.setContentsMargins(0, 0, 0, 0);
-    mLayoutContainer.setLayout(&mLayout);
-    mScrollArea.setViewport(&mLayoutContainer);
+void texmacs::ThingyTabInnerWindow::addStackedWidget(QWidget *widget) {
+    TEXMACS_APP_ASSERT_APPLICATION_THREAD();
+
+    widget->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+    mLayout.addWidget(widget);
+    mLayout.setCurrentWidget(widget);
+    updateFocus();
+}
+
+QWidget *texmacs::ThingyTabInnerWindow::centralWidget() const {
+    TEXMACS_APP_ASSERT_APPLICATION_THREAD();
+    return mCentralWidget;
+}
+
+QMenuBar *texmacs::ThingyTabInnerWindow::menuBar() {
+    TEXMACS_APP_ASSERT_APPLICATION_THREAD();
+    return mCentralWindow.menuBar();
+}
+
+void texmacs::ThingyTabInnerWindow::addToolBar(QToolBar *toolBar) {
+    TEXMACS_APP_ASSERT_APPLICATION_THREAD();
+    toolBar->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Minimum);
+    mCentralWindow.addToolBar(toolBar);
+}
+
+void texmacs::ThingyTabInnerWindow::addToolBarBreak() {
+    TEXMACS_APP_ASSERT_APPLICATION_THREAD();
+    mCentralWindow.addToolBarBreak();
+}
+
+void texmacs::ThingyTabInnerWindow::addDockWidget(Qt::DockWidgetArea area, QDockWidget *dockWidget) {
+    TEXMACS_APP_ASSERT_APPLICATION_THREAD();
+    // mCentralWindow.addDockWidget(area, dockWidget);
+}
+
+QStatusBar *texmacs::ThingyTabInnerWindow::statusBar() {
+    TEXMACS_APP_ASSERT_APPLICATION_THREAD();
+    return mCentralWindow.statusBar();
+}
+
+QString texmacs::ThingyTabInnerWindow::switchStack() {
+    TEXMACS_APP_ASSERT_APPLICATION_THREAD();
+    mCurrentIndex = (mCurrentIndex + 1) % mLayout.count();
+    updateFocus();
+    return mLayout.widget(mCurrentIndex)->objectName();
+}
+
+void texmacs::ThingyTabInnerWindow::updateFocus() {
+    TEXMACS_APP_ASSERT_APPLICATION_THREAD();
+    for (int i = 0; i < mLayout.count(); i++) {
+        mLayout.widget(i)->setAttribute(Qt::WA_TransparentForMouseEvents, i != mCurrentIndex);
+    }
+    mLayout.widget(mCurrentIndex)->setFocus();
+}
+
+QPoint texmacs::ThingyTabInnerWindow::origin () {
+    return QPoint(mScrollArea.horizontalScrollBar()->value(), mScrollArea.verticalScrollBar()->value());
+}
+
+QRect texmacs::ThingyTabInnerWindow::extents () {
+    return p_extents;
+}
+
+QScrollBar *texmacs::ThingyTabInnerWindow::horizontalScrollBar() {
+    TEXMACS_APP_ASSERT_APPLICATION_THREAD();
+    return mScrollArea.horizontalScrollBar();
+}
+
+QScrollBar *texmacs::ThingyTabInnerWindow::verticalScrollBar() {
+    TEXMACS_APP_ASSERT_APPLICATION_THREAD();
+    return mScrollArea.verticalScrollBar();
 }

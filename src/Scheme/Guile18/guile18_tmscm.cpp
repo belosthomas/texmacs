@@ -1,25 +1,25 @@
 #include "guile18_tmscm.hpp"
 #include "guile18_scheme.hpp"
 
- list<SCM> destroy_list;
+
+std::unordered_map<SCM, int> guile_tmscm_number_of_references;
 
 void texmacs::guile_tmscm::mark() {
-    SCM &object_stack = *mScheme->unsafe_objectstack();
-
-    while (!is_nil (destroy_list)) {
-        SCM handle = destroy_list->item;
-        SCM_SETCAR(handle, scm_list_n(SCM_UNDEFINED));
-        while (scm_is_pair  (SCM_CDR  (handle)) && scm_is_null  (SCM_CADR  (handle))) {
-            SCM_SETCDR (handle, SCM_CDDR((handle)));
-        }
-        destroy_list= destroy_list->next;
+    if (guile_tmscm_number_of_references.find(mSCM) == guile_tmscm_number_of_references.end()) {
+        guile_tmscm_number_of_references[mSCM] = 0;
     }
-    mHandle = scm_cons ( scm_cons(mSCM, scm_list_n(SCM_UNDEFINED)), SCM_CAR(object_stack) );
-    SCM_SETCAR(object_stack, mHandle);
+    if (guile_tmscm_number_of_references[mSCM] == 0) {
+        scm_gc_protect_object(mSCM);
+    }
+    guile_tmscm_number_of_references[mSCM]++;
+    // scm_gc_protect_object(mSCM);
 }
 
 void texmacs::guile_tmscm::unmark() {
-    destroy_list= list<SCM> ( mHandle, destroy_list);
+    guile_tmscm_number_of_references[mSCM]--;
+    if (guile_tmscm_number_of_references[mSCM] == 0) {
+        scm_gc_unprotect_object(mSCM);
+    }
 }
 
 texmacs::guile_tmscm::guile_tmscm(guile_scheme *scheme, SCM scm) : mScheme(scheme), mSCM(scm) {

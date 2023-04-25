@@ -28,6 +28,8 @@ set (STABLE_VERSION ${TEXMACS_VERSION})
 set (STABLE_RELEASE "1")
 set (TEXMACS_REVISION ${TEXMACS_VERSION})
 
+
+
 #######################################################################################################################
 #                                                                                                                     #
 #  Find Qt                                                                                                            #

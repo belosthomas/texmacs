@@ -20,7 +20,7 @@
     <item><verbatim|$TEXMACS_PATH/langs/natural/hyphen> contiene i modelli di
     sillabazione per varie lingue.
 
-    <item><verbatim|$TEXMACS_PROGS_PATH/fonts> contiene i programmi
+    <item><verbatim|$TEXMACS_PATH/progs/fonts> contiene i programmi
     <apply|scheme> per definire i font.
   </itemize>
 

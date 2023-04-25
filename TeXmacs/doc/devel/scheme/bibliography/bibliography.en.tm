@@ -28,7 +28,7 @@
   <section|Example of a simple bibliography style>
 
   Bibliographic style files are stored in directory
-  <verbatim|$TEXMACS_PROGS_PATH/bibtex>. They have the name of the style
+  <verbatim|$TEXMACS_PATH/progs/bibtex>. They have the name of the style
   followed with extension <verbatim|.scm>. For example,
   <verbatim|example.scm> is the file name associated to the style
   <verbatim|example>, which is denoted by <verbatim|tm-example> when it is

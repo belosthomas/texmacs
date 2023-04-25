@@ -10,14 +10,15 @@ using namespace texmacs;
 int main(int argc, char** argv) {
 
     // Find all the available Guile implementations
-    register_all_scheme();
+    initialize_schemes();
 
     // Enable high dpi scaling for Qt < 5.6. This does nothing for Qt >= 5.6.
     QApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
     QApplication::setAttribute(Qt::AA_ShareOpenGLContexts);
+    QCoreApplication::setAttribute(Qt::AA_DontUseNativeMenuBar);
 
     // Create the application
-    auto app = texmacs::Application(argc, argv);
+    texmacs::Application app = texmacs::Application(argc, argv);
 
     // Qt documentation says that QtWebView must be initialized before the QApplication
     // QtWebView::initialize();
@@ -39,10 +40,15 @@ int main(int argc, char** argv) {
             exit(1);
         }
         app.setWantedSchemeImplementation(args[pos + 1]);
+        app.showSplashScreenAndLoadTeXMacs();
         return 1;
     });
 
     argsParser.parse(argc, argv);
+
+    if (app.wantedSchemeImplementation().empty()) {
+        app.showSchemeImplementationChooserWidget();
+    }
 
     // Execute the application
     return app.exec();

@@ -22,6 +22,7 @@
 #include "tm_window.hpp"
 #include "new_window.hpp"
 #include "boot.hpp"
+#include "new_view.hpp"
 
 #include "qt_gui.hpp"
 #include "qt_utilities.hpp"
@@ -1033,26 +1034,74 @@ external_event (string type, time_t t) {
 command_queue::command_queue() : lapse (0), wait (true) { }
 command_queue::~command_queue() { clear_pending(); /* implicit */ }
 
+
+void command_queue::launch(object cmd, string name, time_t when) {
+
+/*    if (the_view == nullptr) {
+        *mPendingCommands.getPushElement() = command(cmd, when, name);
+        mPendingCommands.notifyPush();
+        lapse = texmacs_time();
+        the_gui->need_update();
+        wait = true;
+        return;
+    }
+*/
+    time_t delay = when - texmacs_time();
+    if (delay < 0) delay = 0;
+
+    if (the_view == nullptr) {
+        delay = delay + 10000;
+    }
+
+    QTimer::singleShot(delay, [=]() {
+
+        object obj;
+        try {
+            string nameCopy = name;
+            qDebug() << "Calling command: " << QString::fromStdString(std::string(nameCopy.data(), N(nameCopy)));
+            obj = call(cmd);
+
+            time_t now = texmacs_time();
+            if (is_int(obj) && (now - when < 1000000000)) {
+                time_t pause = as_int(obj);
+                launch(cmd, name, now + pause);
+            }
+
+        } catch (...) {
+            qDebug() << "command_queue::launch failed";
+        }
+
+    });
+
+}
+
 void
 command_queue::exec(object cmd, string name) {
-    *mPendingCommands.getPushElement() = command(cmd, (((time_t) texmacs_time()) - 1000000000), name);
+    /**mPendingCommands.getPushElement() = command(cmd, (((time_t) texmacs_time()) - 1000000000), name);
     mPendingCommands.notifyPush();
     lapse = texmacs_time();
     the_gui->need_update();
-    wait = true;
+    wait = true;*/
+    launch(cmd, name, texmacs_time() - 1000000000);
 }
 
 void
 command_queue::exec_pause(object cmd, string name) {
+    /*qDebug() << "exec_pause " << QString::fromStdString(std::string(name.data(), N(name)));
     *mPendingCommands.getPushElement() = command(cmd, ((time_t) texmacs_time()), name);
     mPendingCommands.notifyPush();
     lapse = texmacs_time();
     the_gui->need_update();
-    wait = true;
+    wait = true;*/
+    launch(cmd, name, texmacs_time());
 }
 
 void
 command_queue::exec_pending() {
+
+    if (the_view == nullptr) {
+        return;
+    }
 
     int n = mPendingCommands.getCurrentSize();
     for (int i = 0; i < n; i++) {
@@ -1062,7 +1111,7 @@ command_queue::exec_pending() {
     }
 
     array<command> commands = mCommands;
-    commands = array<command>(0);
+    mCommands = array<command>(0);
 
     n = N(commands);
     for (int i = 0; i < n; i++) {
@@ -1074,6 +1123,7 @@ command_queue::exec_pending() {
 
         object obj;
         try {
+            qDebug() << "exec_pending " << QString::fromStdString(std::string(commands[i].name.data(), N(commands[i].name)));
             obj = call(commands[i].q);
         } catch (std::exception& e) {
             qCritical() << "Exception in the execution of the command " << QString::fromStdString(std::string(commands[i].name.data(), N(commands[i].name))) << ": " << e.what();

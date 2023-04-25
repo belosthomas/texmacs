@@ -124,9 +124,10 @@ set_current_view (url u) {
 
 url
 get_current_view () {
-    std::unique_lock<std::mutex> lk(the_view_mutex);
+    //std::unique_lock<std::mutex> lk(the_view_mutex);
     while (the_view == nullptr) {
-        the_view_cv.wait(lk);
+        QCoreApplication::processEvents(QEventLoop::ExcludeUserInputEvents);
+        // the_view_cv.wait(lk);
         //TM_ASSERT (the_view != NULL, "no active view");
     }
     return abstract_view (the_view);
@@ -359,7 +360,6 @@ attach_view (url win_u, url u) {
   widget wid= win->wid;
   set_scrollable (wid, vw->ed);
   vw->ed->cvw= wid.rep;
-  TM_ASSERT (is_attached (wid), "widget should be attached");
   vw->ed->resume ();
   win->set_window_name (vw->buf->buf->title);
   win->set_window_url (vw->buf->buf->name);
@@ -376,7 +376,6 @@ detach_view (url u) {
   // cout << "Detach view " << vw->buf->buf->name << "\n";
   vw->win= NULL;
   widget wid= win->wid;
-  TM_ASSERT (is_attached (wid), "widget should be attached");
   vw->ed->suspend ();
   set_scrollable (wid, glue_widget ());
   win->set_window_name ("TeXmacs");
@@ -405,13 +404,18 @@ window_set_view (url win_u, url new_u, bool focus) {
     set_current_view (new_u);
 }
 
+
+url
+new_window (bool map_flag= true, tree geom= "");
+
 void
 switch_to_buffer (url name) {
   //cout << "Switching to buffer " << name << "\n";
   url u= get_passive_view (name);
+  url win= new_window (true, "");
   tm_view vw= concrete_view (u);
   if (vw == NULL) return;
-  window_set_view (get_current_window (), u, true);
+  window_set_view (win, u, true);
   tm_window nwin= vw->win;
   if (nwin != NULL)
     nwin->set_window_zoom_factor (nwin->get_window_zoom_factor ());
@@ -450,7 +454,7 @@ focus_on_editor (editor ed) {
   std_warning << "Warning: editor no longer exists, "
               << "may indicate synchronization error\n";
   //failed_error << "Name of buffer: " << ed->buf->buf->name << "\n";
-  //FAILED ("invalid situation");
+  TM_FAILED ("invalid situation");
 }
 
 bool

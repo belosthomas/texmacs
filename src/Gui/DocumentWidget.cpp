@@ -18,18 +18,6 @@ texmacs::DocumentWidget::DocumentWidget(qt_simple_widget_rep *drawer, edit_inter
 
     drawer->associatedDocumentWidget = this;
 
-    QTimer *timer = new QTimer(this);
-    connect(timer, SIGNAL(timeout()), this, SLOT(update()));
-    timer->start(16);
-
-    // when this widget is focused, show the keyboard
-    connect(this, &DocumentWidget::focusInEvent, this, &DocumentWidget::showKeyboard);
-    // when this widget is not focused, hide the keyboard
-    connect(this, &DocumentWidget::focusOutEvent, this, &DocumentWidget::hideKeyboard);
-
-    setAttribute(Qt::WA_InputMethodEnabled, true);
-    setInputMethodHints(Qt::ImhNoAutoUppercase | Qt::ImhPreferNumbers);
-
     setAttribute(Qt::WA_NoSystemBackground);
     setAttribute(Qt::WA_StaticContents);
     //p_surface->setAttribute(Qt::WA_MacNoClickThrough);
@@ -38,39 +26,65 @@ texmacs::DocumentWidget::DocumentWidget(qt_simple_widget_rep *drawer, edit_inter
     setAttribute(Qt::WA_OpaquePaintEvent);
     setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
 
+    setLayout(&mLayout);
+    mLayout.addWidget(&mTextEdit);
+    // the text edit is a dummy widget, it is used to get the keyboard focus. it should be shown but not visible
+    mTextEdit.setStyleSheet("QPlainTextEdit { border: none; background: transparent; color: transparent; opacity: 0; }");
+
+    mLayout.setContentsMargins(0, 0, 0, 0);
+
     connect(&mTextEdit, &QPlainTextEdit::textChanged, this, &DocumentWidget::updateText);
 
+    mTextEdit.installEventFilter(this);
 }
 
 void texmacs::DocumentWidget::paint(QPainter &painter) {
 
-// Enable antialiasing
     painter.setRenderHint(QPainter::Antialiasing, true);
-
-// Fix blurry images on high DPI screens
     painter.setRenderHint(QPainter::SmoothPixmapTransform, true);
 
+    QPixmap antialiasedPixmap(painter.device()->width() * retina_factor, painter.device()->height() * retina_factor);
+    QPainter *antialiasedPainter = new QPainter(&antialiasedPixmap);
+    antialiasedPainter->setRenderHint(QPainter::Antialiasing, true);
+    antialiasedPainter->setRenderHint(QPainter::SmoothPixmapTransform, true);
 
-    qt_renderer_rep ren(&painter, painter.device()->width(), painter.device()->height());
+
+    qt_renderer_rep ren(antialiasedPainter, antialiasedPainter->device()->width(), antialiasedPainter->device()->height());
     mDrawer->invalidate_all();
     mDrawer->repaint_invalid_regions(&ren);
 
+    // Delete the painter
+    delete antialiasedPainter;
+
+    painter.scale(1.0 / retina_factor, 1.0 / retina_factor);
+    painter.drawPixmap(0, 0, antialiasedPixmap);
 }
 
-void keyEventToString(QKeyEvent *event) {
-    QString nss = event->text();
-    unsigned int kc = event->nativeVirtualKey();
-    unsigned short unic = nss.data()[0].unicode();
-
-
+bool texmacs::DocumentWidget::eventFilter(QObject *obj, QEvent *event) {
+    switch (event->type()) {
+        case QEvent::KeyPress:
+            return keyPressEventFilter(static_cast<QKeyEvent *>(event));
+        //case QEvent::MouseButtonPress:
+        //    return mousePressEventFilter(static_cast<QMouseEvent *>(event));
+        //case QEvent::MouseButtonRelease:
+        //    return mouseReleaseEventFilter(static_cast<QMouseEvent *>(event));
+        case QEvent::InputMethod:
+            return inputMethodEventFilter(static_cast<QInputMethodEvent *>(event));
+        //case QEvent::InputMethodQuery:
+        //    return inputMethodQueryFilter(static_cast<QInputMethodQueryEvent *>(event));
+        default:
+            return QObject::eventFilter(obj, event);
+    }
 }
 
-void texmacs::DocumentWidget::keyPressEvent(QKeyEvent *event) {
+bool texmacs::DocumentWidget::keyPressEventFilter(QKeyEvent *event) {
 
     qDebug() << "key press";
+    focus_on_editor(mEditor);
+    mEditor->handle_keyboard_focus(true, texmacs_time());
 
     // send the key to mTextEdit
-    #define TMKEYMAP(filter, str) if (event->key() == filter ) return mEditor->handle_keypress(str, texmacs_time());
+    #define TMKEYMAP(filter, str) if (event->key() == filter ) { mEditor->handle_keypress(str, texmacs_time()); update(); return true; }
     TMKEYMAP(Qt::Key_Space, "space");
     TMKEYMAP(Qt::Key_Tab, "tab");
     TMKEYMAP(Qt::Key_Backtab, "tab");
@@ -134,8 +148,8 @@ void texmacs::DocumentWidget::keyPressEvent(QKeyEvent *event) {
     TMKEYMAP(Qt::Key_Help, "help");
     TMKEYMAP(Qt::Key_section, "section");
     #undef TMKEYMAP
-    
-    qApp->sendEvent(&mTextEdit, event);
+
+    return false;
 }
 
 static unsigned int
@@ -178,7 +192,7 @@ mouse_decode(unsigned int mstate) {
 }
 
 
-void texmacs::DocumentWidget::mousePressEvent(QMouseEvent *event) {
+bool texmacs::DocumentWidget::mousePressEventFilter(QMouseEvent *event) {
     QPoint point = event->pos() + origin();
     coord2 pt = from_qpoint(point);
     unsigned int mstate = mouse_state(event, false);
@@ -209,7 +223,7 @@ void texmacs::DocumentWidget::mousePressEvent(QMouseEvent *event) {
     event->accept();
 }
 
-void texmacs::DocumentWidget::mouseReleaseEvent(QMouseEvent *event) {
+bool texmacs::DocumentWidget::mouseReleaseEventFilter(QMouseEvent *event) {
     QPoint point = event->pos() + origin();
     coord2 pt = from_qpoint(point);
     unsigned int mstate = mouse_state(event, false);
@@ -240,20 +254,6 @@ void texmacs::DocumentWidget::mouseReleaseEvent(QMouseEvent *event) {
     event->accept();
 }
 
-void texmacs::DocumentWidget::showKeyboard() {
-    QInputMethod *inputMethod = QGuiApplication::inputMethod();
-    if (inputMethod != nullptr) {
-        inputMethod->show();
-    }
-}
-
-void texmacs::DocumentWidget::hideKeyboard() {
-    QInputMethod *inputMethod = QGuiApplication::inputMethod();
-    if (inputMethod != nullptr) {
-        inputMethod->hide();
-    }
-}
-
 void texmacs::DocumentWidget::updateText() {
     if (mTextEdit.toPlainText().isEmpty()) {
         return;
@@ -262,9 +262,10 @@ void texmacs::DocumentWidget::updateText() {
     qDebug() << "TEXT : " << text;
     mTextEdit.clear();
     mEditor->handle_keypress(utf8_to_cork(string(text.toUtf8().data(), text.toUtf8().size())), texmacs_time());
+    update();
 }
 
-void texmacs::DocumentWidget::inputMethodEvent (QInputMethodEvent* event) {
+bool texmacs::DocumentWidget::inputMethodEventFilter (QInputMethodEvent* event) {
     QString const & preedit_string = event->preeditString();
     QString const & commit_string = event->commitString();
 
@@ -317,7 +318,7 @@ void texmacs::DocumentWidget::inputMethodEvent (QInputMethodEvent* event) {
     event->accept();
 }
 
-QVariant texmacs::DocumentWidget::inputMethodQuery (Qt::InputMethodQuery query) const {
+QVariant texmacs::DocumentWidget::inputMethodQueryFilter (Qt::InputMethodQuery query) const {
     qDebug() << "inputMethodQuery " << query;
     switch (query) {
         case Qt::ImEnabled:

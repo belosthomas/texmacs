@@ -142,6 +142,9 @@
       ;;(display* "Lazy definition of " lan " in " m "\n")
       (ahash-remove! lazy-language-waiting lan)
       (ahash-set! lazy-language-done lan #t)
+      (display "Loading module for lazy language definition : ")
+      (display m)
+      (display "\n")
       (module-load m))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;

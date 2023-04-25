@@ -15,6 +15,7 @@
 #include <QInputMethodEvent>
 #include <QDebug>
 #include <QPlainTextEdit>
+#include <QVBoxLayout>
 
 #include "ThingyTabInnerWindow.hpp"
 
@@ -42,15 +43,17 @@ namespace texmacs {
 
         void paint(QPainter &painter);
 
-        void keyPressEvent(QKeyEvent *event) override;
+        bool eventFilter(QObject *obj, QEvent *event) override;
 
-        void mousePressEvent(QMouseEvent *event) override;
+        bool keyPressEventFilter(QKeyEvent *event);
 
-        void mouseReleaseEvent(QMouseEvent *event) override;
+        bool mousePressEventFilter(QMouseEvent *event);
 
-        void inputMethodEvent(QInputMethodEvent *event) override;
+        bool mouseReleaseEventFilter(QMouseEvent *event);
 
-        QVariant inputMethodQuery(Qt::InputMethodQuery query) const override;
+        bool inputMethodEventFilter(QInputMethodEvent *event);
+
+        QVariant inputMethodQueryFilter(Qt::InputMethodQuery query) const;
 
         QPoint origin () {
             return mParent->origin();
@@ -93,10 +96,6 @@ namespace texmacs {
         }
 
     public slots:
-        void showKeyboard();
-
-        void hideKeyboard();
-
         void updateText();
 
     private:
@@ -104,6 +103,7 @@ namespace texmacs {
         qt_simple_widget_rep *mDrawer;
         edit_interface_rep *mEditor;
 
+        QVBoxLayout mLayout;
         QPlainTextEdit mTextEdit;
 
 

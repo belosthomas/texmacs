@@ -467,7 +467,9 @@ namespace texmacs {
 
     abstract_scheme *make_scheme(std::string name);
 
-    void register_all_scheme();
+    void initialize_schemes();
+
+    int64_t *get_scheme_stack_begin();
 
 #ifdef SCHEME_DECL
     SCHEME_DECL
