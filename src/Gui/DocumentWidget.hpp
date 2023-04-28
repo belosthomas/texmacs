@@ -16,6 +16,7 @@
 #include <QDebug>
 #include <QPlainTextEdit>
 #include <QVBoxLayout>
+#include <QGestureEvent>
 
 #include "ThingyTabInnerWindow.hpp"
 
@@ -43,17 +44,25 @@ namespace texmacs {
 
         void paint(QPainter &painter);
 
+        bool event(QEvent *event) override;
+
         bool eventFilter(QObject *obj, QEvent *event) override;
 
         bool keyPressEventFilter(QKeyEvent *event);
 
-        bool mousePressEventFilter(QMouseEvent *event);
+        void mousePressEvent(QMouseEvent *event) override;
 
-        bool mouseReleaseEventFilter(QMouseEvent *event);
+        void mouseReleaseEvent(QMouseEvent *event) override;
 
         bool inputMethodEventFilter(QInputMethodEvent *event);
 
         QVariant inputMethodQueryFilter(Qt::InputMethodQuery query) const;
+
+
+        void mouseMoveEvent (QMouseEvent* event) override;
+        void tabletEvent (QTabletEvent* event) override;
+        void dragEnterEvent(QDragEnterEvent *event) override;
+        void dropEvent(QDropEvent *event) override;
 
         QPoint origin () {
             return mParent->origin();
@@ -93,6 +102,10 @@ namespace texmacs {
 
         QScrollBar *verticalScrollBar() {
             return mParent->verticalScrollBar();
+        }
+
+        inline edit_interface_rep *editor() {
+            return mEditor;
         }
 
     public slots:

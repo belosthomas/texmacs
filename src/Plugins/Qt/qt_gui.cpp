@@ -622,6 +622,7 @@ qt_gui_rep::process_queued_events (int max) {
   }
 }
 
+/*
 void
 qt_gui_rep::process_keypress (qt_simple_widget_rep *wid, string key, time_t t) {
   typedef triple<widget, string, time_t > T;
@@ -668,6 +669,7 @@ void
 qt_gui_rep::process_delayed_commands () {
   add_event (queued_event (qp_type::QP_DELAYED_COMMANDS, blackbox()));
 }
+ */
 
 /*!
   FIXME: add more types and refine, compare with X11 version.
@@ -737,23 +739,23 @@ qt_gui_rep::update () {
     need_update();
     return;
   }
-  
+
     // cout << "<" << texmacs_time() << " " << N(delayed_queue) << " ";
-  
+
   updatetimer->stop();
   updating = true;
-  
+
   static int count_events    = 0;
   static int max_proc_events = 40;
-  
+
   time_t     now = texmacs_time();
   needing_update = false;
   time_credit    = 9 / (waiting_events.size() + 1);
-  
+
     // 1.
     // Check if a wait dialog is active and in that case remove it.
     // If we are here then the long operation has finished.
-  
+
  /* if (waitDialogs.count()) {
     waitWindow->layout()->removeWidget (waitDialogs.last());
     waitWindow->close();
@@ -762,33 +764,33 @@ qt_gui_rep::update () {
       waitDialogs.removeLast();
     }
   }
-  
+
   if (popup_wid_time > 0 && now > popup_wid_time) {
     popup_wid_time = 0;
     _popup_wid->send (SLOT_VISIBILITY, close_box<bool> (true));
   }
-  */
+*/
     // 2.
     // Manage delayed commands
-  
-  if (delayed_commands.must_wait (now))
-    process_delayed_commands();
-  
+
+//  if (delayed_commands.must_wait (now))
+//    process_delayed_commands();
+
     // 3.
     // If there are pending events in the private queue process them until the
     // limit in processed events is reached.
     // If there are no events or the limit is reached then proceed to a redraw.
-  
-  while (waiting_events.size() > 0 && count_events < max_proc_events) {
+
+ /* while (waiting_events.size() > 0 && count_events < max_proc_events) {
     process_queued_events (1);
     count_events++;
-  }
+  }*/
   // Repaint invalid regions and redraw
   bool postpone_treatment= (keyboard_events > 0 && keyboard_special == 0);
   keyboard_events = 0;
   keyboard_special= 0;
   count_events    = 0;
-  
+
   interrupted  = false;
   timeout_time = texmacs_time() + time_credit;
 
@@ -798,19 +800,19 @@ qt_gui_rep::update () {
     // renderer->begin();
     // qt_simple_widget_rep::repaint_all (ren);
   }
-  
+
   if (waiting_events.size() > 0) needing_update = true;
   if (interrupted)               needing_update = true;
   //if (!headless_mode && nr_windows == 0) qApp->quit();
-  
+
   time_t delay = delayed_commands.get_lapse() - texmacs_time();
   if (needing_update) delay = 0;
   else                delay = std::max ((time_t)0, std::min ((time_t)std_delay, delay));
   if (postpone_treatment) delay= 9; // NOTE: force occasional display
- 
+
   updatetimer->start (delay);
   updating = false;
-  
+
     // FIXME: we need to ensure that the interpose_handler is run at regular
     //        intervals (1/6th of sec) so that informations on the footbar are
     //        updated. (this should be better handled by promoting code in
@@ -1023,7 +1025,7 @@ external_event (string type, time_t t) {
   QTMWidget *tm_focus = qobject_cast<QTMWidget*>(qApp->focusWidget());
   if (tm_focus) {
     simple_widget_rep* wid = tm_focus->tm_widget();
-    if (wid) the_gui -> process_keypress (wid, type, t);
+   // if (wid) the_gui -> process_keypress (wid, type, t);
   }
 }
 

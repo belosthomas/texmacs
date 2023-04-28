@@ -21,7 +21,7 @@
 * debugging
 ******************************************************************************/
 
-static long int debug_status= 0;
+long int debug_status= 0;
 
 bool
 debug (int which, bool write_flag) {

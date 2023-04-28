@@ -1,9 +1,8 @@
 #include "Application.hpp"
+#include "DocumentWidget.hpp"
 
 #include <QDebug>
 #include <QMessageBox>
-
-using namespace Qt::StringLiterals;
 
 texmacs::Application::Application(int &argc, char **argv) : QApplication(argc, argv), mApplicationThread(QThread::currentThread()) {
     // Set the application informations
@@ -27,18 +26,47 @@ void texmacs::Application::addTab(ThingyTabInnerWindow *centralWidget) {
     currentWindow->show();
 }
 
+void texmacs::Application::withCurrentEditor(std::function<void(edit_interface_rep* e)> f) {
+    MainWindow *currentWindow = nullptr;
+    QWidget *qtwindow = activeWindow();
+    if (qtwindow != nullptr) {
+        currentWindow = dynamic_cast<MainWindow*>(qtwindow);
+    }
+    if (currentWindow == nullptr) {
+        return;
+    }
+
+    ThingyTabInnerWindow *currentTab = currentWindow->currentTab();
+
+    QWidget *centralWidget = currentTab->centralWidget();
+
+    DocumentWidget *documentWidget = dynamic_cast<DocumentWidget*>(centralWidget);
+
+    if (documentWidget == nullptr) {
+        return;
+    }
+
+    QTimer::singleShot(0, this, [this, documentWidget, f]() {
+        f(documentWidget->editor());
+    });
+
+}
+
 void texmacs::Application::showSchemeImplementationChooserWidget() {
     mWelcomeWidget = new WelcomeWidget();
     mWelcomeWidget->show();
 
-    auto allSchemes = get_scheme_factories();
-    for (auto scheme : allSchemes) {
-        mWelcomeWidget->addVersion(QString::fromStdString(scheme));
+    if (wantedSchemeImplementation() == "") {
+        auto allSchemes = get_scheme_factories();
+        for (auto scheme: allSchemes) {
+            mWelcomeWidget->addVersion(QString::fromStdString(scheme));
+        }
+    } else {
+        mWelcomeWidget->addVersion(QString::fromStdString(wantedSchemeImplementation()));
     }
 
     connect(mWelcomeWidget, &WelcomeWidget::launch, this, [this](QString version) {
         setWantedSchemeImplementation(version.toStdString());
-        mWelcomeWidget->hide();
         showSplashScreenAndLoadTeXMacs();
     });
 
@@ -50,14 +78,11 @@ void texmacs::Application::showSchemeImplementationChooserWidget() {
 }
 
 void texmacs::Application::showSplashScreenAndLoadTeXMacs() {
-    mSlpashScreen.setPixmap(QPixmap(":/TeXmacs/misc/images/splash.png").scaledToWidth(primaryScreen()->size().width() / 4, Qt::SmoothTransformation));
-    mSlpashScreen.show();
     connect(this, &Application::initializationMessage, this, [this](const QString& message) {
-        qInfo().noquote() << message;
-        mSlpashScreen.showMessage(message, Qt::AlignBottom | Qt::AlignCenter, Qt::black);
+        mWelcomeWidget->setStatus(message);
     });
     connect(this, &Application::initialized, this, [this]() {
-        mSlpashScreen.hide();
+        mWelcomeWidget->hide();
     });
     QTimer::singleShot(0, this, SLOT(onApplicationStarted()));
 }
@@ -164,6 +189,17 @@ void texmacs::Application::onApplicationStarted() {
         QApplication::exit(1);
         return;
     }
+
+    scheme().install_procedure("texmacs::application::set-initialization-message", [this](texmacs::abstract_scheme* scheme, tmscm args) {
+        string status = args->car()->to_string();
+        QString qstatus = QString::fromStdString(std::string(status.data(), N(status)));
+        emit initializationMessage("Initializing Scheme (" + qstatus + ")...");
+        return scheme->tmscm_unspefied();
+    }, 1, 0);
+
+    scheme().install_procedure("getlogin", [this](texmacs::abstract_scheme* scheme, tmscm args) {
+        return scheme->string_to_tmscm("liza");
+    }, 0, 0);
 
     emit initializationMessage("Opening Window...");
     try {

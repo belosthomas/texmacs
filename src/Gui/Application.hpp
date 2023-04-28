@@ -100,6 +100,13 @@ namespace texmacs {
             return mWantedScemeImplementation;
         }
 
+
+        void withCurrentEditor(std::function<void(edit_interface_rep* e)> f);
+
+        inline void execute(std::function<void()> f) {
+            QTimer::singleShot(0, this, f);
+        }
+
     public slots:
         /**
          * @brief Add a tab to the current window, or to a new window if there is no current window.
@@ -156,7 +163,6 @@ namespace texmacs {
         ResourcesExtractor mResourceExtractorThread;
 
         WelcomeWidget *mWelcomeWidget;
-        QSplashScreen mSlpashScreen;
         server *mServer = nullptr;
         std::list<MainWindow*> mWindows;
         PixmapManager mPixmapManager;

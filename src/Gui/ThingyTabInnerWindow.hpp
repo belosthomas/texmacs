@@ -67,6 +67,10 @@ namespace texmacs {
 
         void scrollContentsBy(int dx, int dy);
 
+        bool eventFilter(QObject *obj, QEvent *event) override;
+
+        bool wheelEventFilter(QWheelEvent *event);
+
     public slots:
         void setTitle(const QString &title) {
             mTitle = title;

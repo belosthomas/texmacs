@@ -38,27 +38,15 @@ set (TEXMACS_REVISION ${TEXMACS_VERSION})
 
 option(QT_VERSION "Qt version to use" "6")
 
-if (QT_VERSION STREQUAL "5" OR NOT QT_VERSION)
-    message(STATUS "Using Qt5")
-    find_package(Qt5 COMPONENTS Core Gui Widgets PrintSupport Svg OpenGL QuickWidgets)
-    if (NOT Qt5_FOUND)
-        message(FATAL_ERROR "Qt5.15 or higher version not found. Please specify the -DQt5_DIR (exemple -DQt5_DIR=D:/Qt/5.15.2/msvc2019_64/lib/cmake) variable or set the -DQT_VERSION option to 6")
-    else()
-        message(STATUS "Found Qt5 !")
-    endif()
+message(STATUS "Using Qt${QT_VERSION}")
+find_package(Qt${QT_VERSION} COMPONENTS Core Gui Widgets PrintSupport Svg OpenGL QuickWidgets)
+if (NOT Qt${QT_VERSION}_FOUND)
+    message(FATAL_ERROR "Qt${QT_VERSION} or higher version not found. Please specify the -DQt${QT_VERSION}_DIR (exemple -DQt${QT_VERSION}_DIR=D:/Qt/5.15.2/msvc2019_64/lib/cmake) variable or set the -DQT_VERSION to another value (5 or 6)")
+else()
+    message(STATUS "Found Qt${QT_VERSION} !")
 endif()
 
-if (QT_VERSION STREQUAL "6")
-    message(STATUS "Using Qt6")
-    find_package(Qt6 COMPONENTS Core Gui Widgets PrintSupport Svg OpenGL QuickWidgets)
-    if (NOT Qt6_FOUND)
-        message(FATAL_ERROR "Qt6 not found. Please specify the -DQt6_DIR variable or set the -DQT_VERSION option to 5")
-    else()
-        message(STATUS "Found Qt6 !")
-    endif()
-endif()
-
-if (NOT Qt6_FOUND AND NOT Qt5_FOUND)
+if (NOT Qt${QT_VERSION}_FOUND)
     message(FATAL_ERROR "Qt not found. Please specify the -DQt5_DIR or -DQt6_DIR variable or set the -DQT_VERSION option to 5 or 6")
 endif()
 
@@ -70,6 +58,15 @@ if (Qt5_FOUND)
     set(USE_GUILE_QT5 ON CACHE BOOL "Use Guile with Qt" FORCE)
 endif()
 
+
+# Create a function tm_add_executable that just call qt_add_executable
+function(tm_add_executable)
+    if (Qt6_FOUND)
+        qt_add_executable(${ARGV})
+    else ()
+        add_executable(${ARGV})
+    endif()
+endfunction()
 
 #######################################################################################################################
 #                                                                                                                     #

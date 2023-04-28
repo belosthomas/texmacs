@@ -41,7 +41,7 @@ endfunction()
 
 
 # Create the executable using Qt commands
-qt_add_executable(texmacs-gui
+tm_add_executable(texmacs-gui
 
         ${CMAKE_CURRENT_SOURCE_DIR}/main.cpp
 

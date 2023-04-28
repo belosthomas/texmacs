@@ -208,15 +208,15 @@ public:
   void refresh_language();
   
   /* queued processing */
-  void process_keypress (qt_simple_widget_rep *wid, string key, time_t t);
-  void process_keyboard_focus (qt_simple_widget_rep *wid, bool has_focus,
-                               time_t t);
-  void process_mouse (qt_simple_widget_rep *wid, string kind, SI x, SI y,
-                      int mods, time_t t, array<double> d= array<double> ());
-  void process_resize (qt_simple_widget_rep *wid, SI x, SI y);
-  void process_command (command _cmd);
-  void process_command (command _cmd, object _args);
-  void process_delayed_commands (); 
+  //void process_keypress (qt_simple_widget_rep *wid, string key, time_t t);
+  //void process_keyboard_focus (qt_simple_widget_rep *wid, bool has_focus,
+  //                             time_t t);
+  //void process_mouse (qt_simple_widget_rep *wid, string kind, SI x, SI y,
+  //                    int mods, time_t t, array<double> d= array<double> ());
+  //void process_resize (qt_simple_widget_rep *wid, SI x, SI y);
+  //void process_command (command _cmd);
+  //void process_command (command _cmd, object _args);
+  void process_delayed_commands ();
   void process_queued_events (int max = -1);
   
   /* befriended interface functions */

@@ -5,6 +5,9 @@
 #include "DocumentWidget.hpp"
 
 #include <QKeySequence>
+#include <QMimeData>
+#include <QBuffer>
+
 
 #include "edit_interface.hpp"
 #include "Plugins/Qt/qt_renderer.hpp"
@@ -36,6 +39,7 @@ texmacs::DocumentWidget::DocumentWidget(qt_simple_widget_rep *drawer, edit_inter
     connect(&mTextEdit, &QPlainTextEdit::textChanged, this, &DocumentWidget::updateText);
 
     mTextEdit.installEventFilter(this);
+    //mTextEdit.viewport()->installEventFilter(this);
 }
 
 void texmacs::DocumentWidget::paint(QPainter &painter) {
@@ -60,14 +64,29 @@ void texmacs::DocumentWidget::paint(QPainter &painter) {
     painter.drawPixmap(0, 0, antialiasedPixmap);
 }
 
+bool texmacs::DocumentWidget::event(QEvent *event) {
+    switch (event->type()) {
+        case QEvent::MouseButtonPress:
+            mousePressEvent(static_cast<QMouseEvent *>(event));
+            return false;
+        case QEvent::MouseButtonRelease:
+            mouseReleaseEvent(static_cast<QMouseEvent *>(event));
+            return false;
+        default:
+            return QWidget::event(event);
+    }
+}
+
 bool texmacs::DocumentWidget::eventFilter(QObject *obj, QEvent *event) {
     switch (event->type()) {
         case QEvent::KeyPress:
             return keyPressEventFilter(static_cast<QKeyEvent *>(event));
-        //case QEvent::MouseButtonPress:
-        //    return mousePressEventFilter(static_cast<QMouseEvent *>(event));
-        //case QEvent::MouseButtonRelease:
-        //    return mouseReleaseEventFilter(static_cast<QMouseEvent *>(event));
+        case QEvent::MouseButtonPress:
+            mousePressEvent(static_cast<QMouseEvent *>(event));
+            return false;
+        case QEvent::MouseButtonRelease:
+            mouseReleaseEvent(static_cast<QMouseEvent *>(event));
+            return false;
         case QEvent::InputMethod:
             return inputMethodEventFilter(static_cast<QInputMethodEvent *>(event));
         //case QEvent::InputMethodQuery:
@@ -192,7 +211,7 @@ mouse_decode(unsigned int mstate) {
 }
 
 
-bool texmacs::DocumentWidget::mousePressEventFilter(QMouseEvent *event) {
+void texmacs::DocumentWidget::mousePressEvent(QMouseEvent *event) {
     QPoint point = event->pos() + origin();
     coord2 pt = from_qpoint(point);
     unsigned int mstate = mouse_state(event, false);
@@ -223,7 +242,7 @@ bool texmacs::DocumentWidget::mousePressEventFilter(QMouseEvent *event) {
     event->accept();
 }
 
-bool texmacs::DocumentWidget::mouseReleaseEventFilter(QMouseEvent *event) {
+void texmacs::DocumentWidget::mouseReleaseEvent(QMouseEvent *event) {
     QPoint point = event->pos() + origin();
     coord2 pt = from_qpoint(point);
     unsigned int mstate = mouse_state(event, false);
@@ -316,6 +335,8 @@ bool texmacs::DocumentWidget::inputMethodEventFilter (QInputMethodEvent* event) 
     mEditor->handle_keypress(r, texmacs_time());
 
     event->accept();
+
+    return true;
 }
 
 QVariant texmacs::DocumentWidget::inputMethodQueryFilter (Qt::InputMethodQuery query) const {
@@ -342,3 +363,146 @@ QVariant texmacs::DocumentWidget::inputMethodQueryFilter (Qt::InputMethodQuery q
     */
     return QWidget::inputMethodQuery (query);
 }
+
+void texmacs::DocumentWidget::mouseMoveEvent (QMouseEvent* event) {
+    QPoint point = event->pos() + origin();
+    coord2 pt = from_qpoint(point);
+    unsigned int mstate = mouse_state (event, false);
+    string s = "move";
+
+    mEditor->handle_mouse(s, pt.x1, pt.x2, mstate, texmacs_time (), array<double>());
+    event->accept();
+}
+
+unsigned int tablet_state (QTabletEvent* event, bool flag) {
+    unsigned int i= 0;
+    Qt::MouseButtons bstate= event->buttons ();
+    Qt::MouseButton  tstate= event->button ();
+    if (flag) bstate= bstate | tstate;
+    if ((bstate & Qt::LeftButton     ) != 0) i += 1;
+    if ((bstate & Qt::MiddleButton   ) != 0) i += 2;
+    if ((bstate & Qt::RightButton    ) != 0) i += 4;
+    if ((bstate & Qt::XButton1       ) != 0) i += 8;
+    if ((bstate & Qt::XButton2       ) != 0) i += 16;
+    return i;
+}
+
+void texmacs::DocumentWidget::tabletEvent (QTabletEvent* event) {
+    unsigned int mstate = tablet_state (event, true);
+    string s= "move";
+    if (event->button() != 0) {
+        if (event->pressure () == 0) s= "release-" * mouse_decode (mstate);
+        else s= "press-" * mouse_decode (mstate);
+    }
+    if ((mstate & 4) == 0 || s == "press-right") {
+        QPoint point = event->pos() + origin() - surface().pos();
+        double x= point.x() + event->hiResGlobalX() - event->globalX();
+        double y= point.y() + event->hiResGlobalY() - event->globalY();
+        coord2 pt= coord2 ((SI) (x * PIXEL), (SI) (-y * PIXEL));
+        array<double> data;
+        data << ((double) event->pressure())
+             << ((double) event->rotation())
+             << ((double) event->xTilt())
+             << ((double) event->yTilt())
+             << ((double) event->z())
+             << ((double) event->tangentialPressure());
+        mEditor->handle_mouse(s, pt.x1, pt.x2, mstate, texmacs_time (), data);
+    }
+
+    event->accept();
+}
+
+void texmacs::DocumentWidget::dragEnterEvent(QDragEnterEvent *event) {
+    const QMimeData *md = event->mimeData();
+
+    if (md->hasText() ||
+        md->hasUrls() ||
+        md->hasImage() ||
+        md->hasFormat("application/pdf") ||
+        md->hasFormat("application/postscript"))
+        event->acceptProposedAction();
+}
+
+int drop_payload_serial  =0;
+hashmap<int, tree> payloads;
+
+void texmacs::DocumentWidget::dropEvent(QDropEvent *event) {
+    QPoint point = event->pos () + origin ();
+    coord2 pt= from_qpoint (point);
+
+    tree doc (CONCAT);
+    const QMimeData *md= event->mimeData ();
+    QByteArray buf;
+
+    if (md->hasUrls ()) {
+        QList<QUrl> l= md->urls ();
+        for (int i=0; i<l.size (); i++) {
+            string name;
+#ifdef OS_MACOS
+            name= from_qstring (fromNSUrl (l[i]));
+#else
+            name= from_qstring (l[i].toLocalFile ());
+#endif
+            string orig_name= name;
+#ifdef OS_MINGW
+            if (N(name) >=2 && is_alpha (name[0]) && name[1] == ':')
+                name= "/" * locase_all (name (0, 1)) * name (2, N(name));
+#endif
+            string extension = suffix (name);
+            if ((extension == "eps") || (extension == "ps")   ||
+                #if (QT_VERSION >= 0x050000)
+                (extension == "svg") ||
+                #endif
+                (extension == "pdf") || (extension == "png")  ||
+                (extension == "jpg") || (extension == "jpeg")) {
+                string w, h;
+                qt_pretty_image_size (url_system (orig_name), w, h);
+                tree im (IMAGE, name, w, h, "", "");
+                doc << im;
+            } else {
+                doc << name;
+            }
+        }
+    } else if (md->hasImage ()) {
+        QBuffer qbuf (&buf);
+        QImage image= qvariant_cast<QImage> (md->imageData());
+        QSize size= image.size ();
+        qbuf.open (QIODevice::WriteOnly);
+        image.save (&qbuf, "PNG");
+        int ww= size.width (), hh= size.height ();
+        string w, h;
+        qt_pretty_image_size (ww, hh, w, h);
+        tree t (IMAGE, tree (RAW_DATA, string (buf.constData (), buf.size()), "png"),
+                w, h, "", "");
+        doc << t;
+    } else if (md->hasFormat("application/postscript")) {
+        buf= md->data("application/postscript");
+        tree t (IMAGE, tree (RAW_DATA, string (buf.constData (), buf.size ()), "ps"),
+                "", "", "", "");
+        doc << t;
+    } else if (md->hasFormat("application/pdf")) {
+        buf= md->data("application/pdf");
+        tree t (IMAGE, tree (RAW_DATA, string (buf.constData (), buf.size ()), "pdf"),
+                "", "", "", "");
+        doc << t;
+    } else if (md->hasText ()) {
+        buf= md->text ().toUtf8 ();
+        doc << string (buf.constData (), buf.size ());
+    }
+
+    if (N(doc)>0) {
+        if (N(doc) == 1)
+            doc= doc[0];
+        else {
+            tree sec (CONCAT, doc[0]);
+            for (int i=1; i<N(doc); i++)
+                sec << " " << doc[i];
+            doc= sec;
+        }
+        int ticket= drop_payload_serial++;
+        payloads (ticket)= doc;
+        mEditor->handle_mouse ("drop", pt.x1, pt.x2, ticket, texmacs_time (), array<double> ());
+        event->acceptProposedAction();
+    }
+}
+

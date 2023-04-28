@@ -36,6 +36,8 @@ typedef unsigned int color;
 #define MAX_SI 0x7fffffff
 #define MIN_SI 0x80000000
 
+extern long int debug_status;
+
 /******************************************************************************
 * debugging
 ******************************************************************************/

@@ -22,6 +22,8 @@
 #include "QTMMenuHelper.hpp"
 #include "QTMGuiHelper.hpp"
 
+#include "Gui/Application.hpp"
+
 #include <QMessageBox>
 #include <QLabel>
 #include <QHBoxLayout>
@@ -425,8 +427,8 @@ qt_input_text_widget_rep::commit(bool flag) {
   {
     if (done) return;
     done = true;
-    the_gui->process_command (cmd, ok
-                              ? list_object (object_from (input))
-                              : list_object (object_from (false)));
+    texmacs::getApplication().execute([this](){
+        cmd->apply(ok ? list_object (object_from (input)) : list_object (object_from (false)));
+    });
   }
 }

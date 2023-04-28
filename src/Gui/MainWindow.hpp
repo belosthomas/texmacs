@@ -37,6 +37,14 @@ namespace texmacs {
 
         void addTab(ThingyTabInnerWindow *widget);
 
+        inline ThingyTabInnerWindow* currentTab() {
+            QWidget *currentWidget = mCentralStackedLayout.currentWidget();
+            if (currentWidget == nullptr) {
+                return nullptr;
+            }
+            return dynamic_cast<ThingyTabInnerWindow*>(currentWidget);
+        }
+
     public slots:
         void onTabChanged(int index);
 

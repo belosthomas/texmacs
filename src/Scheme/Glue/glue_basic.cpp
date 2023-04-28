@@ -6525,7 +6525,7 @@ tmg_url_unix (tmscm arg1, tmscm arg2) {
   url out= url (in1, in2);
   // TMSCM_ALLOW_INTS;
 
-  string concretized  = materialize(out);
+  //string concretized  = materialize(out);
 
   return url_to_tmscm (out);
 }
@@ -7006,11 +7006,15 @@ tmscm
 tmg_url_resolve_pattern (tmscm arg1) {
   TMSCM_ASSERT_URL (arg1, TMSCM_ARG1, "url-resolve-pattern");
 
+  qDebug() << "tmg_url_resolve_pattern begin";
+
   url in1= arg1->to_url();
 
   // TMSCM_DEFER_INTS;
   url out= resolve_pattern (in1);
   // TMSCM_ALLOW_INTS;
+
+  qDebug() << "tmg_url_resolve_pattern end";
 
   return url_to_tmscm (out);
 }
@@ -7019,11 +7023,16 @@ tmscm
 tmg_url_existsP (tmscm arg1) {
   TMSCM_ASSERT_URL (arg1, TMSCM_ARG1, "url-exists?");
 
+    qDebug() << "tmg_url_existsP begin";
+
   url in1= arg1->to_url();
 
   // TMSCM_DEFER_INTS;
   bool out= exists (in1);
   // TMSCM_ALLOW_INTS;
+
+  string in1_m = as_string(in1);
+  qDebug() << "tmg_url_existsP" << QString::fromStdString(std::string(in1_m.data(), N(in1_m))) << " " << out;
 
   return scheme().bool_to_tmscm (out);
 }

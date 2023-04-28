@@ -6,6 +6,8 @@
 #include <QProgressBar>
 #include <QGridLayout>
 #include <QPushButton>
+#include <QLabel>
+#include <QSplashScreen>
 
 namespace texmacs {
 
@@ -16,9 +18,14 @@ namespace texmacs {
     public:
         inline WelcomeWidget(QWidget *parent = 0) {
 
-            mLayout.addWidget(&mComboBox, 0, 0);
-            mLayout.addWidget(&mLaunchButton, 0, 1);
-            mLayout.addWidget(&mProgressBar, 1, 0, 1, 2);
+            mBanner.setPixmap(QPixmap(":/TeXmacs/misc/images/splash.png").scaledToWidth(QApplication::primaryScreen()->size().width() / 4, Qt::SmoothTransformation));
+
+
+            mLayout.addWidget(&mBanner, 0, 0, 1, 2);
+            mLayout.addWidget(&mComboBox, 1, 0);
+            mLayout.addWidget(&mLaunchButton, 1, 1);
+            mLayout.addWidget(&mProgressBar, 2, 0, 1, 2);
+            mLayout.addWidget(&mStatus, 3, 0, 1, 2);
 
             setLayout(&mLayout);
 
@@ -36,22 +43,32 @@ namespace texmacs {
         }
 
         void setReady() {
-            mLaunchButton.setEnabled(true);
+            if (mComboBox.count() == 1) {
+                emit launch(mComboBox.currentText());
+            } else {
+                mLaunchButton.setEnabled(true);
+            }
         }
 
         void addVersion(QString version) {
             mComboBox.addItem(version);
         }
 
+        void setStatus(const QString &status) {
+            mStatus.setText(status);
+        }
+
     signals:
         void launch(QString version);
 
     private:
-
         QGridLayout mLayout;
+
+        QLabel mBanner;
         QComboBox mComboBox;
         QPushButton mLaunchButton;
         QProgressBar mProgressBar;
+        QLabel mStatus;
 
     };
 

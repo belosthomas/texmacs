@@ -128,7 +128,7 @@ QTMWidget::resizeEvent (QResizeEvent* event) {
 void
 QTMWidget::resizeEventBis (QResizeEvent *event) {
   coord2 s = from_qsize (event->size());
-  the_gui -> process_resize (tm_widget(), s.x1, s.x2);
+  // old code : the_gui -> process_resize (tm_widget(), s.x1, s.x2);
 }
 
 /*!
@@ -220,8 +220,8 @@ QTMWidget::mousePressEvent (QMouseEvent* event) {
   coord2 pt = from_qpoint(point);
   unsigned int mstate= mouse_state (event, false);
   string s= "press-" * mouse_decode (mstate);
-  the_gui -> process_mouse (tm_widget(), s, pt.x1, pt.x2,
-                            mstate, texmacs_time ());
+    // old code : the_gui -> process_mouse (tm_widget(), s, pt.x1, pt.x2,
+    // old code :                         mstate, texmacs_time ());
   event->accept();
 }
 
@@ -232,8 +232,8 @@ QTMWidget::mouseReleaseEvent (QMouseEvent* event) {
   coord2 pt = from_qpoint(point);
   unsigned int mstate = mouse_state (event, true);
   string s = "release-" * mouse_decode (mstate);
-  the_gui->process_mouse (tm_widget(), s, pt.x1, pt.x2,
-                            mstate, texmacs_time());
+    // old code : the_gui->process_mouse (tm_widget(), s, pt.x1, pt.x2,
+    // old code :                         mstate, texmacs_time());
   event->accept();
 }
 
@@ -244,8 +244,8 @@ QTMWidget::mouseMoveEvent (QMouseEvent* event) {
   coord2 pt = from_qpoint(point);
   unsigned int mstate = mouse_state (event, false);
   string s = "move";
-  the_gui->process_mouse (tm_widget(), s, pt.x1, pt.x2,
-                          mstate, texmacs_time ());
+    // old code : the_gui->process_mouse (tm_widget(), s, pt.x1, pt.x2,
+    // old code :                         mstate, texmacs_time ());
   event->accept();
 }
 
@@ -285,29 +285,10 @@ QTMWidget::tabletEvent (QTabletEvent* event) {
          << ((double) event->yTilt())
          << ((double) event->z())
          << ((double) event->tangentialPressure());
-    the_gui->process_mouse (tm_widget(), s, pt.x1, pt.x2,
-                            mstate, texmacs_time (), data);
+      // old code :  the_gui->process_mouse (tm_widget(), s, pt.x1, pt.x2,
+      // old code :                         mstate, texmacs_time (), data);
   }
-  /*
-  cout << HRULE << LF;
-  cout << "button= " << event->button() << LF;
-  cout << "globalX= " << event->globalX() << LF;
-  cout << "globalY= " << event->globalY() << LF;
-  cout << "hiResGlobalX= " << event->hiResGlobalX() << LF;
-  cout << "hiResGlobalY= " << event->hiResGlobalY() << LF;
-  cout << "globalX= " << event->globalX() << LF;
-  cout << "globalY= " << event->globalY() << LF;
-  cout << "x= " << event->x() << LF;
-  cout << "y= " << event->y() << LF;
-  cout << "z= " << event->z() << LF;
-  cout << "xTilt= " << event->xTilt() << LF;
-  cout << "yTilt= " << event->yTilt() << LF;
-  cout << "pressure= " << event->pressure() << LF;
-  cout << "rotation= " << event->rotation() << LF;
-  cout << "tangentialPressure= " << event->tangentialPressure() << LF;
-  cout << "pointerType= " << event->pointerType() << LF;
-  cout << "uniqueId= " << event->uniqueId() << LF;
-  */
+
   event->accept();
 }
 #endif
@@ -408,8 +389,8 @@ QTMWidget::gestureEvent (QGestureEvent* event) {
   QPoint point (hotspot.x(), hotspot.y());
   coord2 pt = from_qpoint (point);
   //cout << s << ", " << pt.x1 << ", " << pt.x2 << LF;
-  the_gui->process_mouse (tm_widget(), s, pt.x1, pt.x2,
-                          0, texmacs_time (), data);
+    // old code : the_gui->process_mouse (tm_widget(), s, pt.x1, pt.x2,
+    // old code :                       0, texmacs_time (), data);
   event->accept();
 }
 
@@ -440,7 +421,7 @@ void
 QTMWidget::focusInEvent (QFocusEvent * event) {
   if (!is_nil (tmwid)) {
     if (DEBUG_QT) debug_qt << "FOCUSIN: " << tm_widget()->type_as_string() << LF;
-    the_gui->process_keyboard_focus (tm_widget(), true, texmacs_time());
+      // old code : the_gui->process_keyboard_focus (tm_widget(), true, texmacs_time());
   }
   QTMScrollView::focusInEvent (event);
 }
@@ -449,7 +430,7 @@ void
 QTMWidget::focusOutEvent (QFocusEvent * event) {
   if (!is_nil (tmwid)) {
     if (DEBUG_QT) debug_qt << "FOCUSOUT: " << tm_widget()->type_as_string() << LF;
-    the_gui -> process_keyboard_focus (tm_widget(), false, texmacs_time());
+      // old code :  the_gui -> process_keyboard_focus (tm_widget(), false, texmacs_time());
   }
   QTMScrollView::focusOutEvent (event);
 }
@@ -479,8 +460,8 @@ QTMWidget::dragEnterEvent (QDragEnterEvent *event)
 // cache to transfer drop data to the editor
 // via standard mouse events, see dropEvent below
 
-int drop_payload_serial  =0;
-hashmap<int, tree> payloads;
+extern int drop_payload_serial;
+extern hashmap<int, tree> payloads;
 
 void
 QTMWidget::dropEvent (QDropEvent *event) {
@@ -560,8 +541,8 @@ QTMWidget::dropEvent (QDropEvent *event) {
     }
     int ticket= drop_payload_serial++;
     payloads (ticket)= doc;
-    the_gui->process_mouse (tm_widget(), "drop", pt.x1, pt.x2,
-                            ticket, texmacs_time ());
+      // old code : the_gui->process_mouse (tm_widget(), "drop", pt.x1, pt.x2,
+      // old code :                         ticket, texmacs_time ());
     event->acceptProposedAction();
   }
 }
@@ -615,8 +596,8 @@ QTMWidget::wheelEvent(QWheelEvent *event) {
     coord2 wh = from_qpoint (wheel);
     unsigned int mstate= wheel_state (event);
     array<double> data; data << ((double) wh.x1) << ((double) wh.x2);
-    the_gui -> process_mouse (tm_widget(), "wheel", pt.x1, pt.x2,
-                              mstate, texmacs_time (), data);
+      // old code : the_gui -> process_mouse (tm_widget(), "wheel", pt.x1, pt.x2,
+      // old code :                         mstate, texmacs_time (), data);
   }
   else if (QApplication::keyboardModifiers() == Qt::ControlModifier) {
     if (event->angleDelta().y() > 0)

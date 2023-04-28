@@ -22,6 +22,8 @@
 #include "QTMStyle.hpp"
 #include "QTMTreeModel.hpp"
 
+#include "Gui/Application.hpp"
+
 #include <QToolTip>
 #include <QCompleter>
 #include <QKeyEvent>
@@ -36,14 +38,9 @@ void
 QTMCommand::apply()  {
 BEGIN_SLOT
   if (!is_nil (cmd)) {
-    the_gui->process_command (cmd);
-    if (DEBUG_QT) {
-      debug_qt << "QTMCommand::apply() (delayed)\n";
-      /* FIXME: this sometimes crashes:
-         cmd->print(debug_qt);
-         debug_qt << "\n";
-      */
-    }
+      texmacs::getApplication().execute([this]() {
+          cmd->apply();
+      });
   }
 END_SLOT
 }
