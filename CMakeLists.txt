@@ -62,10 +62,11 @@ endif()
 # Create a function tm_add_executable that just call qt_add_executable
 function(tm_add_executable)
     if (Qt6_FOUND)
-        qt_add_executable(${ARGV})
+        qt_add_executable(${target_name} ${ARGN})
     else ()
-        add_executable(${ARGV})
+        add_executable(${target_name} ${ARGN})
     endif()
+    set_target_properties(${target_name} PROPERTIES LINK_FLAGS "-Wl,-stack_size,8388608")
 endfunction()
 
 #######################################################################################################################

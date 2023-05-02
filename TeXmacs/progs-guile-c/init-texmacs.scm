@@ -257,10 +257,10 @@
 
 ;(texmacs::application::set-initialization-message "Booting programming modes")
 (lazy-format (prog prog-format) scheme)
-(lazy-format (code-format) cpp julia scala java json csv)
-(lazy-format (mathemagix-format) mathemagix)
-(lazy-format (python-format) python)
-(lazy-format (scilab-format) scilab)
+;(lazy-format (code-format) cpp julia scala java json csv)
+;(lazy-format (mathemagix-format) mathemagix)
+;(lazy-format (python-format) python)
+;(lazy-format (scilab-format) scilab)
 (lazy-keyboard (prog prog-kbd) in-prog?)
 (lazy-menu (prog prog-menu) prog-format-menu prog-format-icons
 	   prog-menu prog-icons)
@@ -514,7 +514,7 @@
 ;(display* "memory: " (texmacs-memory) " bytes")
 
 ;(texmacs::application::set-initialization-message "Booting autoupdater")
-(when (updater-supported?) 
+(when (updater-supported?)
   (use-modules (utils misc updater))
   (delayed (:idle 2000) (updater-initialize)))
 ;(display* "time: " (- (texmacs-time) boot-start) "")

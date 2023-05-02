@@ -75,6 +75,7 @@ namespace texmacs {
     private:
         bool mIsInitialized = false;
         thread_safe_queue<std::function<void()>, 10> mQueue;
+        guile_no_thread mGuileNoThread;
     };
 
 }

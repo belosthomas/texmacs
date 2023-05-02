@@ -9,6 +9,13 @@ using namespace texmacs;
 
 int main(int argc, char** argv) {
 
+
+    std::chrono::time_point<std::chrono::system_clock> start;
+    std::chrono::system_clock::duration elapsed_seconds;
+
+    // add start and elapsed_seconds
+    std::chrono::time_point<std::chrono::system_clock> test = start + elapsed_seconds;
+
     // Find all the available Guile implementations
     initialize_schemes();
 

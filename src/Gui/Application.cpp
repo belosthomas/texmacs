@@ -97,15 +97,34 @@ void texmacs::Application::resetTeXmacs() {
 
 void texmacs::Application::initializeEnvironmentVariables() {
     emit initializationMessage("Initializing environment variable...");
-    QString texmacsHomePath = QDir::homePath() + "/.TeXmacs";
-    QString texmacsPath = QDir::homePath() + "/.TeXmacs/TeXmacs";
-    QString texmacsProgsPath = QDir::homePath() + "/.TeXmacs/TeXmacs/progs-";
-    QString texmacsPluginsPath = QDir::homePath() + "/.TeXmacs/TeXmacs/plugins";
 
-    set_env("TEXMACS_HOME_PATH", string(texmacsHomePath.toUtf8().constData(), texmacsHomePath.toUtf8().size()));
-    set_env("TEXMACS_PATH", string(texmacsPath.toUtf8().constData(), texmacsPath.toUtf8().size()));
-    set_env("TEXMACS_PROGS_PATH", string(texmacsProgsPath.toUtf8().constData(), texmacsProgsPath.toUtf8().size()) * scheme().scheme_dialect());
-    set_env("TEXMACS_PLUGINS_PATH", string(texmacsPluginsPath.toUtf8().constData(), texmacsPluginsPath.toUtf8().size()));
+    QString login = qgetenv("USER");
+    if (login.isEmpty()) {
+        login = qgetenv("USERNAME");
+    }
+    if (login.isEmpty()) {
+        login = qgetenv("LOGNAME");
+    }
+    if (login.isEmpty()) {
+        login = qgetenv("USERDOMAIN");
+    }
+    if (login.isEmpty()) {
+        login = qgetenv("HOSTNAME");
+    }
+    if (login.isEmpty()) {
+        login = "unknown";
+    }
+    mEnvironment.login = login;
+
+    mEnvironment.homePath = QDir::homePath() + "/.TeXmacs";
+    mEnvironment.path = QDir::homePath() + "/.TeXmacs/TeXmacs";
+    mEnvironment.progsPath = QDir::homePath() + "/.TeXmacs/TeXmacs/progs-" + QString::fromStdString(std::string(scheme().scheme_dialect().data(), N(scheme().scheme_dialect())));
+    mEnvironment.pluginsPath = QDir::homePath() + "/.TeXmacs/TeXmacs/plugins";
+
+    qputenv("TEXMACS_HOME_PATH", mEnvironment.homePath.toUtf8());
+    qputenv("TEXMACS_PATH", mEnvironment.path.toUtf8());
+    qputenv("TEXMACS_PROGS_PATH", mEnvironment.progsPath.toUtf8());
+    qputenv("TEXMACS_PLUGINS_PATH", mEnvironment.pluginsPath.toUtf8());
 
     original_path= get_env ("PATH");
     load_user_preferences ();
@@ -198,8 +217,41 @@ void texmacs::Application::onApplicationStarted() {
     }, 1, 0);
 
     scheme().install_procedure("getlogin", [this](texmacs::abstract_scheme* scheme, tmscm args) {
-        return scheme->string_to_tmscm("liza");
+        string loginString = string(mEnvironment.login.toUtf8().constData(), mEnvironment.login.toUtf8().size());
+        return scheme->string_to_tmscm(loginString);
     }, 0, 0);
+
+    scheme().install_procedure("texmacs::application::texmacs-path", [this](texmacs::abstract_scheme* scheme, tmscm args) {
+        string pathString = string(mEnvironment.path.toUtf8().constData(), mEnvironment.path.toUtf8().size());
+        return scheme->string_to_tmscm(pathString);
+    }, 0, 0);
+
+    scheme().install_procedure("texmacs::application::texmacs-progs-path", [this](texmacs::abstract_scheme* scheme, tmscm args) {
+        string progsPathString = string(mEnvironment.progsPath.toUtf8().constData(), mEnvironment.progsPath.toUtf8().size());
+        return scheme->string_to_tmscm(progsPathString);
+    }, 0, 0);
+
+    scheme().install_procedure("texmacs::application::texmacs-plugins-path", [this](texmacs::abstract_scheme* scheme, tmscm args) {
+        string pluginsPathString = string(mEnvironment.pluginsPath.toUtf8().constData(), mEnvironment.pluginsPath.toUtf8().size());
+        return scheme->string_to_tmscm(pluginsPathString);
+    }, 0, 0);
+
+    scheme().install_procedure("texmacs::application::texmacs-home-path", [this](texmacs::abstract_scheme* scheme, tmscm args) {
+        string homePathString = string(mEnvironment.homePath.toUtf8().constData(), mEnvironment.homePath.toUtf8().size());
+        return scheme->string_to_tmscm(homePathString);
+    }, 0, 0);
+
+    string tm_init_file = "$TEXMACS_PROGS_PATH/init-texmacs.scm";
+    string my_init_file = "$TEXMACS_PROGS_PATH/my-init-texmacs.scm";
+
+    bench_start ("initialize scheme");
+    if (exists (tm_init_file)) exec_file (tm_init_file);
+    if (exists (my_init_file)) exec_file (my_init_file);
+    bench_cumul ("initialize scheme");
+    if (my_init_cmds != "") {
+        my_init_cmds= "(begin" * my_init_cmds * ")";
+        exec_delayed (scheme_cmd (my_init_cmds), my_init_cmds);
+    }
 
     emit initializationMessage("Opening Window...");
     try {

@@ -1,6 +1,8 @@
 #ifndef TEXMACS_GUI_WELCOME_WIDGET_HPP
 #define TEXMACS_GUI_WELCOME_WIDGET_HPP
 
+#include <QApplication>
+#include <QScreen>
 #include <QWidget>
 #include <QComboBox>
 #include <QProgressBar>
@@ -18,7 +20,13 @@ namespace texmacs {
     public:
         inline WelcomeWidget(QWidget *parent = 0) {
 
-            mBanner.setPixmap(QPixmap(":/TeXmacs/misc/images/splash.png").scaledToWidth(QApplication::primaryScreen()->size().width() / 4, Qt::SmoothTransformation));
+            mSplashPixmap = QPixmap(":/TeXmacs/misc/images/splash.png");
+
+#if ANDROID
+            mBanner.setPixmap(mSplashPixmap.scaledToWidth(QApplication::primaryScreen()->size().width(), Qt::SmoothTransformation));
+#else
+            mBanner.setPixmap(mSplashPixmap.scaledToWidth(QApplication::primaryScreen()->size().width() / 4, Qt::SmoothTransformation));
+#endif
 
 
             mLayout.addWidget(&mBanner, 0, 0, 1, 2);
@@ -62,6 +70,7 @@ namespace texmacs {
         void launch(QString version);
 
     private:
+        QPixmap mSplashPixmap;
         QGridLayout mLayout;
 
         QLabel mBanner;

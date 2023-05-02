@@ -60,24 +60,14 @@ void guile_log_function(const char *cmsg, int len) {
 
 void texmacs::guile_thread::run() {
 
-    int64_t stack_size = 100 * 1024 * 1024;
-    int64_t *stack_base = &stack_size; // this requires the -fno-strict-aliasing compiler flag
-
-    scm_init_guile((int64_t*)stack_base, stack_size);
-
-    SCM object_stack;
-
-    scm_c_eval_string (guile_init_code);
-    object_stack = scm_variable_ref (scm_c_lookup("object-stack"));
-
     while (true) {
-        (void)object_stack; // we want to keep the object_stack variable alive
         std::function<void()> f = *mQueue.getPopElement();
         if (mQueue.isDestroyed()) {
             break;
         }
         mQueue.notifyPop();
-        f();
+
+        mGuileNoThread.addToLaunchQueue(f, "guile_thread::run");
     }
 
     return;
@@ -92,16 +82,16 @@ void texmacs::guile_thread::addToLaunchQueue(std::function<void()> f, std::strin
     qDebug() << "Adding command to Guile Launche Queue : '" << QString::fromStdString(debugInfo) << "'";
 
     if (!mIsInitialized) {
-        scm_use_embedded_ice9();
-        scm_set_log_function(guile_log_function);
-        set_error_callback(guile_error);
+        //scm_use_embedded_ice9();
+        //scm_set_log_function(guile_log_function);
+        //set_error_callback(guile_error);
 
         start();
         mIsInitialized = true;
 
-        addToLaunchQueue([]() {
-            initialize_smobs();
-        }, "initialize_smobs");
+        //addToLaunchQueue([]() {
+        //    initialize_smobs();
+        //}, "initialize_smobs");
     }
 
     // check if we are in the guile thread with pthread
@@ -110,7 +100,7 @@ void texmacs::guile_thread::addToLaunchQueue(std::function<void()> f, std::strin
         return;
     }
 
-    *mQueue.getPushElement() = std::move(f);
+    *mQueue.getPushElement() = f;
     mQueue.notifyPush();
 }
 

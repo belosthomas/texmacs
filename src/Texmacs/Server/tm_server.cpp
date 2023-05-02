@@ -103,21 +103,7 @@ void tm_server_rep::init () {
   gui_interpose (texmacs_interpose_handler);
   set_wait_handler (texmacs_wait_handler);
 
-  if (is_none(tm_init_file)) {
-      tm_init_file = "$TEXMACS_PROGS_PATH/init-texmacs.scm";
-  }
-  if (is_none(my_init_file)) {
-      my_init_file = "$TEXMACS_PROGS_PATH/my-init-texmacs.scm";
-  }
 
-  bench_start ("initialize scheme");
-  if (exists (tm_init_file)) exec_file (tm_init_file);
-  if (exists (my_init_file)) exec_file (my_init_file);
-  bench_cumul ("initialize scheme");
-  if (my_init_cmds != "") {
-    my_init_cmds= "(begin" * my_init_cmds * ")";
-    exec_delayed (scheme_cmd (my_init_cmds), my_init_cmds);
-  }
 }
 
 tm_server_rep::~tm_server_rep () {}

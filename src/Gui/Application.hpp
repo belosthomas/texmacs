@@ -101,11 +101,38 @@ namespace texmacs {
         }
 
 
+        /**
+         * @brief Execute a function in the application thread with the current editor.
+         * If no editor is currently opened, the function is not executed.
+         * @param f The function to execute, taking the current editor as parameter.
+         */
         void withCurrentEditor(std::function<void(edit_interface_rep* e)> f);
 
+        /**
+         * @brief Execute a function in the application thread.
+         * @param f The function to execute.
+         */
         inline void execute(std::function<void()> f) {
             QTimer::singleShot(0, this, f);
         }
+
+
+        inline QString texmacsHomePath() const {
+            return mEnvironment.homePath;
+        }
+
+        inline QString texmacsPath() const {
+            return mEnvironment.path;
+        }
+
+        inline QString texmacsProgsPath() const {
+            return mEnvironment.progsPath;
+        }
+
+        inline QString texmacsPluginsPath() const {
+            return mEnvironment.pluginsPath;
+        }
+
 
     public slots:
         /**
@@ -167,6 +194,14 @@ namespace texmacs {
         std::list<MainWindow*> mWindows;
         PixmapManager mPixmapManager;
         std::string mWantedScemeImplementation = "";
+
+        struct {
+            QString login;
+            QString homePath;
+            QString path;
+            QString progsPath;
+            QString pluginsPath;
+        } mEnvironment;
 
     };
 
